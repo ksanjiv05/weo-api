@@ -1,0 +1,13 @@
+1. Never Run Node.js With Root Privileges
+   Running Node.js with root privileges is not recommended as it goes against the principle of least privilege. No matter if your backend is on a dedicated server or Docker container, you should always launch it as a non-root user,
+
+If you instead run Node.js with root privileges, any vulnerabilities in your project or its dependencies can potentially be exploited to gain unauthorized access to your system. For example, an attacker could harness them to execute arbitrary code, access sensitive files, or even take control of the entire machine. Thus, using root users for Node.js must be avoided.
+
+The best practice here is to create a dedicated user for running Node.js. This user should have only the permissions required to launch the app. This way, attackers who succeed in compromising your backend will be restricted to that user’s privileges, limiting the potential damage they can cause.
+
+7. Do Not Send Unnecessary Info
+   Any information provided to the attacker unintentionally can be used against you. For this reason, server responses should contain only what the caller strictly needs. For example, avoid returning detailed error messages or stack traces directly to the client. Instead, provide generic error messages that do not reveal specific implementation details. The easiest at to do so is to run Node.js in production mode setting the NODE_ENV=production env, otherwise Express will add the stack trace in the error responses.
+
+Similarly, you must be careful about the data included in API responses. Return only necessary data fields and avoid exposing sensitive information not requested by the caller. This will minimize the risk of accidentally disclosing confidential or privileged information.
+
+https://semaphoreci.com/blog/securing-nodejs

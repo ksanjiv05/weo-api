@@ -1,0 +1,7 @@
+node_modules
+.env
+*.png
+*.jpeg
+*.svg
+dist
+qioseonlabsweo-firebase-adminsdk-nwr99-0ebf16a8f0.json

@@ -1,0 +1,134 @@
+
+WeO Data Schema
+
+1. Offer Schema
+
+interface IOffer {
+    offerId:string;
+    offerImg: string[],
+    offerTitle:string;
+    offerDescription:string;
+    offerSummary:string;
+    offerQuantity:number;
+    offerValidUpTo:string;//date
+    offerMedias:string[];//videos and images
+    maxOReward:number; // that not in used,  (see last section to update this @sanjiv)
+    minOToAccessOffer:number; 
+    isNegotiaable:boolean;
+    offerPrice:number;//mrp
+    offerCategories:string[];
+    offerTags:string[];
+    offerLocation:{
+        lat:number
+        lng:number
+    },
+    offerCreatorId:string,
+    availableQuantity:number,
+    currency:string,
+    maxInstallament:number,
+    offerType:string,//subscriptionBased/ one time /
+    isListed:boolean, // to identify whether offer is listed or draft
+
+    //////////////////////////
+    offerMinPrice:number,
+    offerMaxPrice:number,
+    offerInstallmentPrice:number,
+    offerInstallmentFrequency:number,
+    oNetworkPrice:number,//what the O is trading at during the time of Offer activation
+    oBuyInConversionPrice:number,//for Offer Collector user variable
+    oBuyInConversionPriceForOfferMaker:number,//for Offer Maker/lister user variable
+    offerOearningMinPrice:number,
+    offerOearningMaxPrice:number,
+    offerInstallmentOprice:number,
+    offerInstallmentOallocationFrequency:number,
+    offerUnitQuantitySelectionVariable:string,
+    offerUnitFixedVariable:string,
+    offerUnitVariable:string,
+    offerUnitsFixedRelativeToPricePoint:string,
+    offerUnitsDynamicRelativeToPricePoint:string,
+    offerDurationQuantitySelectionVariable:string,
+    offerDurationFixedVariable:string,
+    offerDurationVariable:string,
+    offerDurationFixedRelativeToPricePoint:string,
+    offerDurationDynamicRelativeToPricePoint:string,
+    offerCirculationQuantitySelectionVariable:string,
+    offerCirculationPerUserVariable:string,
+    offerCirculationFixedVariable:string,
+    offerCirculationVariable:string,
+    offerCirculationFixedRelativeToPricePoint:string,
+    offerCirculationDynamicRelativeToPricePoint:string,
+    offerActivationLocationVariable:string,
+    offerLocationRelativeToAdjacentOfferActivationLocationsVariable:string,
+    offerLocationFixedVariable:string,
+    offerLocationVariable:string,
+    offerLocationFixedRelativeToPricePoint:string,
+    offerLocationDynamicRelativeToPricePoint:string,
+    offerReferralSourceOtherUsersTypesExistingUsersAndPotentialFutureUsers:string,
+    offerReferralSourceOtherUsersExistingAndPotential:string,
+    offerReferralVariableDynamicsFixedAndExpandableAreaFixedAndVariableTimingVariables:string,
+    offerReferralFixedRelativeToPricePoint:string,
+    offerReferralDynamicRelativeToPricePoint:string,
+    offerResaleVariable:string,
+    offerResalePricingVariableVariableDynamicMinAndMaxUnits:string,
+    offerResaleOPricingVariablesForOfferCreatorAndCollectorUsersVariableDynamicMinAndMaxUnits:string,
+    offerResaleUnitsVariable:string,
+    offerResaleDurationVariable:string,
+    offerResaleActivationTimingVariable:string,
+    offerResaleLocationTimingVariable:string,
+    offerResaleFrequencyVariable:string,
+    offerResaleCirculationVariable:string,
+    offerResaleCirculationFixedRelativeToPricePoint:string,
+    offerResaleCirculationDynamicRelativeToPricePoint:string,
+    offerResaleActivationLocationVariable:string,
+    offerResaleLocationRelativeToAdjacentOfferActivationLocationsVariable:string,
+    offerResaleLocationFixedVariable:string,
+    offerResaleLocationVariable:string,
+    offerResaleLocationFixedRelativeToPricePoint:string,
+    offerResaleLocationDynamicRelativeToPricePoint:string,
+    offerResaleReferralSourceOtherUsersTypesExistingUsersAndPotentialFutureUsers:string,
+    offerResaleReferralSourceOtherUsersExistingAndPotential:string,
+    offerResaleReferralVariableDynamicsFixedAndExpandableAreaFixedAndVariableTimingVariables:string,
+    offerResaleReferralFixedRelativeToPricePoint:string,
+    offerResaleReferralDynamicRelativeToPricePoint:string,
+
+
+
+
+}
+
+
+2. Brand Profile/Storefront Schema
+
+interface CreatorStoreProfile{
+    creatorId:string,
+    storeName:string, //
+    brandName:string,
+    brandLogo:string,
+    brandCoverPhoto:string,
+    storeAddresses:[
+        {
+            storeOwnerName:string,
+            city:string,
+            state:string,
+            country:string
+            addresse:string
+            pinCode:string
+            lat:string
+            lng:string
+            contact:string
+
+        }
+    ],
+    productCategories:string[];
+    serviceableArea:"regional"|"country"|"state"|"city";
+    storeType:"online"|"offline"|"both"
+    repeatBussiness:boolean,
+    website:string
+    supportEmail:string,
+    margines:string
+    
+}
+
+3. Offer and O Pricing Schema(@Sanjiv, please rewrite these parameters in code)Offer pricing variables-Offer min price-Offer max price (set by regulations or by offer creator user)-Offer installment price variable-Offer installment frequency variableOffer O earning/pricing variables-O network price variable (what the O is trading at during the time of Offer activation)-O buy-in/conversion price for Offer Collector user variable-O buy-in/conversion price for Offer Maker/lister user variable-Offer O earning min price-Offer O earning max price (set by regulations or by offer creator user)-Offer installment O price variable-Offer installment O allocation frequency variableOffer unit naming selection variables -Offer unit quantity selection variable-Offer unit fixed variable-Offer unit variable/dynamic (min and max units)-Offer units fixed relative to price point -Offer units dynamic relative to price point Offer duration naming selection variables -Offer duration quantity selection variable-Offer duration fixed variable-Offer duration variable/dynamic (min and max units)-Offer duration fixed relative to price point -Offer duration dynamic relative to price point Offer referral per circulation variables-Offer circulation quantity selection variable -Offer circulation per user variable-Offer circulation fixed variable-Offer circulation variable/dynamic (min and max units)-Offer circulation fixed relative to price point -Offer circulation dynamic relative to price point Offer activation location variable -Offer location relative to adjacent offer activation locations variable-Offer location fixed variable-Offer location variable/dynamic (fixed and expandable area variable)-Offer location fixed relative to price point -Offer location dynamic relative to price point 
+
+Offer referral variables -Offer referral source other users types existing users and potential future users(social media, permalink/QR code/Embed code/Messaging/Media sharing method)-Offer referral source other users existing and potential (social media, permalink/QR code/Embed code/Messaging/Media sharing method)-Offer referral variable/dynamics (fixed and expandable area + fixed and variable timing variables)-Offer referral fixed relative to price point -Offer referral dynamic relative to price point -Offer resale variable-Offer resale pricing variable variable/dynamic (min and max units)-Offer resale O pricing variables (for Offer creator and Collector users) variable/dynamic (min and max units)-Offer resale units variable-Offer resale duration variable-Offer resale activation timing variable-Offer resale location timing variable-Offer resale frequency variable-Offer resale circulation variable
