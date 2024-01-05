@@ -5,34 +5,25 @@ import { IAddress } from "../../interfaces/IAddress";
 import { responseObj } from "../../helper/response";
 import { HTTP_STATUS_CODES } from "../../config/statusCode";
 import User from "../../models/User";
+import { validationResult } from "express-validator";
 
 export const addAddress = async (req: Request, res: Response) => {
   try {
-    const { uid, city, state, pincode, country, address }: IAddress = req.body;
+    const errors = validationResult(req);
 
-    if (
-      uid === "" ||
-      city === "" ||
-      state === "" ||
-      pincode === "" ||
-      country === "" ||
-      address == ""
-    )
-      return responseObj({
-        resObj: res,
-        type: "error",
-        statusCode: HTTP_STATUS_CODES.BAD_REQUEST,
-        msg: "All fields are required",
-        error: null,
-        data: null,
+    if (!errors.isEmpty()) {
+      return res.status(400).json({
+        success: false,
+        errors: errors.array({}),
       });
-
+    }
+    const { uid } = req.body;
     const newAddress = new Address(req.body);
     await newAddress.save();
     await User.updateOne(
       { uid },
       {
-        $push: {
+        $addToSet: {
           address: newAddress._id,
         },
       }

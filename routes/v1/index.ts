@@ -13,8 +13,8 @@ import {
 import { auth } from "../../middelware/auth";
 
 import {
-  // getAiGenratedChatResponce,
-  getAiGenratedImg,
+  getAiGeneratedChatResponse,
+  getAiGeneratedImg,
 } from "../../controllers/aiController/ai";
 import { getCategories } from "../../controllers/categoryController/category";
 import { addOffer, updateOffer } from "../../controllers/offerController/offer";
@@ -60,8 +60,8 @@ router.delete("/user", auth, deleteUserProfile);
 router.post("/static", upload.single("file"), uploadStaticFile);
 router.post("/static/bulk", upload.array("files"), uploadStaticFiles);
 
-router.post("/avatars", getAiGenratedImg);
-// router.post("/weo/chat", getAiGenratedChatResponce);
+router.post("/avatars", getAiGeneratedImg);
+router.post("/weo/chat", getAiGeneratedChatResponse);
 
 //category routes
 router.get("/category/all", getCategories);

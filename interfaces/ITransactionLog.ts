@@ -52,6 +52,10 @@ import { Document } from "mongoose";
 export interface ITransactionLog extends Document {
   uid: string;
   offerId: string;
+  offerName?: string;
+  brandName?: string;
+  offerImg?: string;
+
   creatorId: string;
 
   orderId: string | null;

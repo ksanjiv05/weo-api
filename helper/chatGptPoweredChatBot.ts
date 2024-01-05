@@ -17,7 +17,7 @@ const baseCompressor = LLMChainExtractor.fromLLM(model);
 
 const text = fs.readFileSync("weo.txt", "utf8");
 
-export const getQueryResponce = async (query: string) => {
+export const getQueryResponse = async (query: string) => {
   const textSplitter = new RecursiveCharacterTextSplitter({ chunkSize: 1000 });
   const docs = await textSplitter.createDocuments([text]);
 

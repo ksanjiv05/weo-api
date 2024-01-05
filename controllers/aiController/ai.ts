@@ -3,9 +3,9 @@ import { openai } from "../../config/config";
 import logging from "../../config/logging";
 import { HTTP_STATUS_CODES } from "../../config/statusCode";
 import { responseObj } from "../../helper/response";
-// import { getQueryResponce } from "../../helper/chatGptPoweredChatBot";
+import { getQueryResponse } from "../../helper/chatGptPoweredChatBot";
 
-export const getAiGenratedImg = async (req: Request, res: Response) => {
+export const getAiGeneratedImg = async (req: Request, res: Response) => {
   try {
     const { promptString = "", size = "512x512", n = 1 } = req.body;
 
@@ -46,41 +46,41 @@ export const getAiGenratedImg = async (req: Request, res: Response) => {
   }
 };
 
-// export const getAiGenratedChatResponce = async (
-//   req: Request,
-//   res: Response
-// ) => {
-//   try {
-//     const { queryString = "" } = req.body;
+export const getAiGeneratedChatResponse = async (
+  req: Request,
+  res: Response
+) => {
+  try {
+    const { queryString = "" } = req.body;
 
-//     if (queryString == "")
-//       return responseObj({
-//         resObj: res,
-//         type: "error",
-//         statusCode: HTTP_STATUS_CODES.BAD_REQUEST,
-//         msg: "Please provide query",
-//         error: null,
-//         data: null,
-//       });
+    if (queryString == "")
+      return responseObj({
+        resObj: res,
+        type: "error",
+        statusCode: HTTP_STATUS_CODES.BAD_REQUEST,
+        msg: "Please provide query",
+        error: null,
+        data: null,
+      });
 
-//     const response = await getQueryResponce(queryString);
-//     return responseObj({
-//       resObj: res,
-//       type: "success",
-//       statusCode: HTTP_STATUS_CODES.SUCCESS,
-//       msg: "here your answer",
-//       error: null,
-//       data: response,
-//     });
-//   } catch (error: any) {
-//     logging.error("AI Chat", "unable to add connect chat bot", error);
-//     return responseObj({
-//       resObj: res,
-//       type: "error",
-//       statusCode: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR,
-//       msg: "unable to add connect chat bot",
-//       error: error.message ? error.message : error,
-//       data: null,
-//     });
-//   }
-// };
+    const response = await getQueryResponse(queryString);
+    return responseObj({
+      resObj: res,
+      type: "success",
+      statusCode: HTTP_STATUS_CODES.SUCCESS,
+      msg: "here your answer",
+      error: null,
+      data: response,
+    });
+  } catch (error: any) {
+    logging.error("AI Chat", "unable to add connect chat bot", error);
+    return responseObj({
+      resObj: res,
+      type: "error",
+      statusCode: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR,
+      msg: "unable to add connect chat bot",
+      error: error.message ? error.message : error,
+      data: null,
+    });
+  }
+};

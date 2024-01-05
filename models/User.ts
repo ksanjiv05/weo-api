@@ -30,10 +30,10 @@ const UserSchema: Schema = new Schema(
       passportImage: String,
       drivingLicenseImage: String,
     },
-    device: [{ type: Schema.Types.ObjectId, ref: "Device" }],
-    addresses: [{ type: Schema.Types.ObjectId, ref: "Address" }],
-    wishLists: [{ type: Schema.Types.ObjectId, ref: "Offer" }],
-    likes: [{ type: Schema.Types.ObjectId, ref: "Offer" }],
+    device: [String], //[{ type: Schema.Types.ObjectId, ref: "Device" }],
+    addresses: [String], //[{ type: Schema.Types.ObjectId, ref: "Address" }],
+    wishLists: [String], //[{ type: Schema.Types.ObjectId, ref: "Offer" }],
+    likes: [String], //[{ type: Schema.Types.ObjectId, ref: "Offer" }],
 
     socialMedia: {
       instagramURL: String,
