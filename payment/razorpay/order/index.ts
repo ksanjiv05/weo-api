@@ -1,13 +1,6 @@
 import instance from "..";
 import logging from "../../../config/logging";
-
-export interface IOrderCreateOptions {
-  amount: number;
-  currency?: string;
-  receipt: string;
-  partial_payment?: boolean;
-  notes?: undefined | any;
-}
+import { OrderCreateOptions } from "../../../types";
 
 export const createOrder = async ({
   amount,
@@ -15,7 +8,7 @@ export const createOrder = async ({
   receipt,
   partial_payment = false,
   notes,
-}: IOrderCreateOptions) => {
+}: OrderCreateOptions) => {
   try {
     const order = await instance.orders.create({
       amount,

@@ -18,14 +18,19 @@
 //   })
 
 import instance from "..";
+import {
+  TransferFromAccount,
+  TransferFromAmount,
+  TransferFromPayment,
+} from "../../../types";
 
-export const transfer = async (
-  paymentId: string,
-  account: string,
-  amount: string,
+export const transfer = async ({
+  paymentId,
+  account,
+  amount,
   currency = "INR",
-  name = ""
-) => {
+  name = "",
+}: TransferFromPayment) => {
   try {
     const response = await instance.payments.transfer(paymentId, {
       transfers: [
@@ -83,13 +88,13 @@ export const transfer = async (
 //     ]
 //   })
 
-export const transferFromOrder = async (
-  amount: number,
-  currency: string,
-  account: string,
-  amounToTransfer: string,
-  name = ""
-) => {
+export const transferFromOrder = async ({
+  amount,
+  currency,
+  account,
+  amounToTransfer,
+  name = "",
+}: TransferFromAmount) => {
   try {
     const response = await instance.orders.create({
       amount,
@@ -121,11 +126,11 @@ export const transferFromOrder = async (
 //     "currency": "INR"
 //   })
 
-export const createDirectTransfer = async (
-  account: string,
-  amount: string,
-  currency = "INR"
-) => {
+export const createDirectTransfer = async ({
+  account,
+  amount,
+  currency = "INR",
+}: TransferFromAccount) => {
   try {
     const response = await instance.transfers.create({
       account,

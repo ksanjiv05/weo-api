@@ -22,6 +22,7 @@
 
 import axios from "axios";
 import instance from "..";
+import { BankAccout } from "../../../types";
 // ifsc: string,
 //   account_number: string,
 //   description: string,
@@ -125,17 +126,6 @@ export const closeVirtualAccount = async (virtualId: string) => {
 //https://github.com/razorpay/razorpay-node/blob/master/documents/upi.md#create-a-recurring-payment
 
 //https://razorpay.com/docs/api/payments/route/account-apis-beta/
-interface IAddBankAccount {
-  name: string;
-  email: string;
-  business_name: string;
-  ifsc_code: string;
-  beneficiary_name: string;
-  account_type: string;
-  account_number: string;
-  uid: string;
-  isUpdate?: boolean;
-}
 
 export const addBankAccount = async ({
   name,
@@ -147,7 +137,7 @@ export const addBankAccount = async ({
   account_number,
   uid,
   isUpdate,
-}: IAddBankAccount) => {
+}: BankAccout) => {
   try {
     const config = {
       auth: {

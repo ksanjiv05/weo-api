@@ -7,6 +7,12 @@ import {
   addBankAccount,
   createVirtualAccount,
 } from "../../payment/razorpay/account";
+import {
+  createDirectTransfer,
+  transfer,
+} from "../../payment/razorpay/transfer";
+import instance from "../../payment/razorpay";
+import { createRefund } from "../../payment/razorpay/refund";
 
 export const createOfferOrder = async (req: Request, res: Response) => {
   try {
@@ -77,6 +83,131 @@ export const createSellerAccount = async (req: Request, res: Response) => {
       type: "error",
       statusCode: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR,
       msg: "Unable to create virtual account",
+      error: error.message ? error.message : error,
+      data: null,
+    });
+  }
+};
+
+export const initiateTransfer = async (req: Request, res: Response) => {
+  try {
+    const { paymentId, account, amount, currency, name } = req.body;
+    const transfer = await createDirectTransfer({
+      account,
+      amount,
+      currency,
+    });
+    return responseObj({
+      resObj: res,
+      type: "success",
+      statusCode: HTTP_STATUS_CODES.SUCCESS,
+      msg: "transfer initiated successfully",
+      error: null,
+      data: transfer,
+    });
+  } catch (error: any) {
+    console.log(error);
+    logging.error(
+      "Amount Transfer Error",
+      "Unable to initiate transfer ",
+      error
+    );
+    return responseObj({
+      resObj: res,
+      type: "error",
+      statusCode: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR,
+      msg: "Unable to initiate transfer",
+      error: error.message ? error.message : error,
+      data: null,
+    });
+  }
+};
+
+export const getAccountDetails = async (req: Request, res: Response) => {
+  try {
+    const { account_id } = req.body;
+    const account = await instance.accounts.fetch(account_id);
+    return responseObj({
+      resObj: res,
+      type: "success",
+      statusCode: HTTP_STATUS_CODES.SUCCESS,
+      msg: "account details fetched successfully",
+      error: null,
+      data: account,
+    });
+  } catch (error: any) {
+    console.log(error);
+    logging.error(
+      "Account Details Error",
+      "Unable to fetch account details ",
+      error
+    );
+    return responseObj({
+      resObj: res,
+      type: "error",
+      statusCode: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR,
+      msg: "Unable to fetch account details",
+      error: error.message ? error.message : error,
+      data: null,
+    });
+  }
+};
+
+// export const getAccountDetailsByUid = async (req: Request, res: Response) => {
+//   try {
+//     const { uid } = req.body;
+//     const account = await instance.accounts.fetchByCustomerId(uid);
+//     return responseObj({
+//       resObj: res,
+//       type: "success",
+//       statusCode: HTTP_STATUS_CODES.SUCCESS,
+//       msg: "account details fetched successfully",
+//       error: null,
+//       data: account,
+//     });
+//   } catch (error: any) {
+//     console.log(error);
+//     logging.error(
+//       "Account Details Error",
+//       "Unable to fetch account details ",
+//       error
+//     );
+//     return responseObj({
+//       resObj: res,
+//       type: "error",
+//       statusCode: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR,
+//       msg: "Unable to fetch account details",
+//       error: error.message ? error.message : error,
+//       data: null,
+//     });
+//   }
+// }
+
+export const initiateRefund = async (req: Request, res: Response) => {
+  try {
+    const { paymentId, amount, currency, notes } = req.body;
+    const refund = createRefund({
+      paymentId,
+      amount,
+      // currency,
+      notes,
+    });
+    return responseObj({
+      resObj: res,
+      type: "success",
+      statusCode: HTTP_STATUS_CODES.SUCCESS,
+      msg: "refund initiated successfully",
+      error: null,
+      data: refund,
+    });
+  } catch (error: any) {
+    console.log(error);
+    logging.error("Refund Error", "Unable to initiate refund ", error);
+    return responseObj({
+      resObj: res,
+      type: "error",
+      statusCode: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR,
+      msg: "Unable to initiate refund",
       error: error.message ? error.message : error,
       data: null,
     });
