@@ -4,9 +4,6 @@
 sudo apt update
 sudo apt upgrade -y
 
-# Install Git
-sudo apt install -y git
-
 # Install Node.js and npm using NodeSource repository
 curl -sL https://deb.nodesource.com/setup_20.x | sudo -E bash -
 sudo apt install -y nodejs
@@ -40,7 +37,5 @@ npm -v
 
 # Display Nginx version
 nginx -v
-
-git clone https://github.com/ksanjiv05/wee-api.git
 
 echo "Node.js, npm (v14), and Nginx have been installed and configured."
