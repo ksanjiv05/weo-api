@@ -11,7 +11,7 @@ export const DB_URL: string =
 
 import { Configuration, OpenAIApi } from "openai";
 const configuration = new Configuration({
-  apiKey: process.env.OPENAI_API_KEY, //"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",
+  apiKey: process.env.OPENAI_API_KEY,
 });
 export const openai = new OpenAIApi(configuration);
 

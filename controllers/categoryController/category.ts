@@ -8,19 +8,17 @@ import User from "../../models/User";
 
 export const addCategory = async (req: Request, res: Response) => {
   try {
-    const {}: ICategory = req.body;
+    const { categoryTitle = "", categoryPic = "" }: ICategory = req.body;
 
-    // if (
-
-    // )
-    //   return responseObj({
-    //     resObj: res,
-    //     type: "error",
-    //     statusCode: HTTP_STATUS_CODES.BAD_REQUEST,
-    //     msg: "All fields are required",
-    //     error: null,
-    //     data: null,
-    //   });
+    if (categoryTitle === "" || categoryTitle === "")
+      return responseObj({
+        resObj: res,
+        type: "error",
+        statusCode: HTTP_STATUS_CODES.BAD_REQUEST,
+        msg: "Please provide category title and ",
+        error: null,
+        data: null,
+      });
 
     const newCategory = new Category(req.body);
     await newCategory.save();

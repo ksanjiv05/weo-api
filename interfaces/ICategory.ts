@@ -10,7 +10,7 @@ export interface ICategory extends Document {
   categories?: string[];
   categoryPic: string;
   activeCategoryPic: string;
-  description: string;
+  description?: string;
   createdAt?: Date;
   updateAt?: Date;
 }
