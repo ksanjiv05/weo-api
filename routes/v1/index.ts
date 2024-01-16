@@ -52,13 +52,13 @@ const router = express.Router();
 
 //user profile routes
 router.post("/user", userDataValidateCheckPointA, register);
-router.put("/user", userDataValidateCheckPointB, updateUser);
+router.put("/user", auth, userDataValidateCheckPointB, updateUser);
 router.get("/user", auth, getUserProfile);
 router.delete("/user", auth, deleteUserProfile);
 
 //static no need to we use aws s3
-router.post("/static", upload.single("file"), uploadStaticFile);
-router.post("/static/bulk", upload.array("files"), uploadStaticFiles);
+// router.post("/static", upload.single("file"), uploadStaticFile);
+// router.post("/static/bulk", upload.array("files"), uploadStaticFiles);
 
 router.post("/avatars", getAiGeneratedImg);
 router.post("/weo/chat", getAiGeneratedChatResponse);
@@ -68,20 +68,20 @@ router.get("/category/all", getCategories);
 
 //offer routes
 //path/checkpoint
-router.post("/offer/1", offerDataValidateCheckPointA, addOffer);
-router.put("/offer/2", offerDataValidateCheckPointB, updateOffer);
-router.put("/offer/3", offerDataValidateCheckPointC, updateOffer);
-router.put("/offer/4", offerDataValidateCheckPointD, updateOffer);
-router.put("/offer/5", offerDataValidateCheckPointE, updateOffer);
-router.put("/offer/6", offerDataValidateCheckPointF, updateOffer);
+router.post("/offer/1", auth, offerDataValidateCheckPointA, addOffer);
+router.put("/offer/2", auth, offerDataValidateCheckPointB, updateOffer);
+router.put("/offer/3", auth, offerDataValidateCheckPointC, updateOffer);
+router.put("/offer/4", auth, offerDataValidateCheckPointD, updateOffer);
+router.put("/offer/5", auth, offerDataValidateCheckPointE, updateOffer);
+router.put("/offer/6", auth, offerDataValidateCheckPointF, updateOffer);
 
 //brand routes
-router.post("/brand/1", brandDataValidateCheckPointA, addBrand);
-router.put("/brand/2", brandDataValidateCheckPointB, updateBrand);
-router.put("/brand/3", brandDataValidateCheckPointC, updateBrand);
-router.put("/brand/4", brandDataValidateCheckPointD, updateBrand);
+router.post("/brand/1", auth, brandDataValidateCheckPointA, addBrand);
+router.put("/brand/2", auth, brandDataValidateCheckPointB, updateBrand);
+router.put("/brand/3", auth, brandDataValidateCheckPointC, updateBrand);
+router.put("/brand/4", auth, brandDataValidateCheckPointD, updateBrand);
 
-router.post("/address", addressDataValidate, addAddress);
+router.post("/address", auth, addressDataValidate, addAddress);
 
 //payment routes
 
