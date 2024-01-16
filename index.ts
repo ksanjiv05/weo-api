@@ -7,7 +7,6 @@ import router from "./routes/v1";
 import helmet from "helmet";
 //initial scripts
 import "./scripts/category";
-import { decryptText, encryptData, generateKeyPair } from "./helper/utils";
 import rateLimiterMiddleware from "./middelware/rateLimiter";
 import path from "path";
 
@@ -18,6 +17,11 @@ const app: Express = express();
 const port = 4000;
 app.use(helmet());
 app.disable("x-powered-by");
+app.disable("etag");
+//  app.use(helmet.noCache({ noEtag: true })); // set Cache-Control header
+app.use(helmet.noSniff()); // set X-Content-Type-Options header
+app.use(helmet.frameguard()); // set X-Frame-Options header
+app.use(helmet.xssFilter()); // set X-XSS-Protection header
 app.use(cors());
 app.use(express.json({ limit: "100mb" }));
 app.use(express.urlencoded({ extended: true }));
