@@ -21,11 +21,6 @@ export interface IOffer extends Document {
   totalServiceUnitItems: number;
   durationUnitType: string;
   durationUnitItems: number;
-
-  // Service unit name : String — [Quantity/Classes/Hours/Lessons/Miles/Sessions/Minutes/Movies]
-  // Total Service unit type: String — [Fixed/Dynamic]
-  // Duration unit type: String — [Minutes/Hours/Days/Weeks/Months/Years]
-  // Duration unit items: int
   totalOffersAvailable: number;
   offerLimitPerCustomer: number;
   offerActivitiesAt: string; //[Both/Online Store/Offline]
@@ -38,3 +33,8 @@ export interface IOffer extends Document {
   cratededAt?: number;
   updateAt?: number;
 }
+
+// Service unit name : String — [Quantity/Classes/Hours/Lessons/Miles/Sessions/Minutes/Movies]
+// Total Service unit type: String — [Fixed/Dynamic]
+// Duration unit type: String — [Minutes/Hours/Days/Weeks/Months/Years]
+// Duration unit items: int

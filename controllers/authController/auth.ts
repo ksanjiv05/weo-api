@@ -23,7 +23,7 @@ export const register = async (req: Request, res: Response) => {
     return responseObj({
       resObj: res,
       type: "success",
-      statusCode: HTTP_STATUS_CODES.SUCCESS,
+      statusCode: HTTP_STATUS_CODES.CREATED,
       msg: "successfully registered",
       error: null,
       data: newUser,

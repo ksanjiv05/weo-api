@@ -28,7 +28,7 @@ export interface IUser extends Document {
   name: string;
   description: string;
   profileImage?: string;
-  phoneNumber: string;
+  phone: string;
   coverImg?: string;
   email?: string;
 
@@ -36,15 +36,15 @@ export interface IUser extends Document {
   fcmToken?: string;
 
   successRate: number;
-  learned: number;
+  earned: number;
 
-  addresses?: IAddress[];
   socialMedia: SocialMediaProps;
   kyc: kycProps;
-  devices: IDevice[];
 
-  wishLists: IOffer[];
-  likes: IOffer[];
+  addresses?: string[];
+  devices: string[];
+  wishLists: string[];
+  likes: string[];
 
   bankAccounts: bankAccountProps[];
   createdAt: number;

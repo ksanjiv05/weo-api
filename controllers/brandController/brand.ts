@@ -90,3 +90,100 @@ export const updateBrand = async (req: Request, res: Response) => {
     });
   }
 };
+
+export const getBrands = async (req: Request, res: Response) => {
+  try {
+    const brands = await Brand.find({});
+
+    return responseObj({
+      resObj: res,
+      type: "success",
+      statusCode: HTTP_STATUS_CODES.SUCCESS,
+      msg: "you are successfully get Brands",
+      error: null,
+      data: brands,
+    });
+  } catch (error: any) {
+    logging.error("Brand", "unable to get Brands", error);
+    return responseObj({
+      resObj: res,
+      type: "error",
+      statusCode: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR,
+      msg: "unable to get Brands",
+      error: error.message ? error.message : "internal server error",
+      data: null,
+    });
+  }
+};
+
+export const getBrand = async (req: Request, res: Response) => {
+  try {
+    const { brandId = "" } = req.params;
+    if (brandId == "") {
+      return responseObj({
+        resObj: res,
+        type: "error",
+        statusCode: HTTP_STATUS_CODES.BAD_REQUEST,
+        msg: "please provide brandId",
+        error: "please provide brandId",
+        data: null,
+      });
+    }
+    const brand = await Brand.findOne({ _id: brandId });
+
+    return responseObj({
+      resObj: res,
+      type: "success",
+      statusCode: HTTP_STATUS_CODES.SUCCESS,
+      msg: "you are successfully get Brand",
+      error: null,
+      data: brand,
+    });
+  } catch (error: any) {
+    logging.error("Brand", "unable to get Brand", error);
+    return responseObj({
+      resObj: res,
+      type: "error",
+      statusCode: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR,
+      msg: "unable to get Brand",
+      error: error.message ? error.message : "internal server error",
+      data: null,
+    });
+  }
+};
+
+export const deleteBrand = async (req: Request, res: Response) => {
+  try {
+    const { brandId = "" } = req.params;
+    if (brandId == "") {
+      return responseObj({
+        resObj: res,
+        type: "error",
+        statusCode: HTTP_STATUS_CODES.BAD_REQUEST,
+        msg: "please provide brandId",
+        error: "please provide brandId",
+        data: null,
+      });
+    }
+    await Brand.deleteOne({ _id: brandId });
+
+    return responseObj({
+      resObj: res,
+      type: "success",
+      statusCode: HTTP_STATUS_CODES.SUCCESS,
+      msg: "you are successfully deleted Brand",
+      error: null,
+      data: null,
+    });
+  } catch (error: any) {
+    logging.error("Brand", "unable to delete Brand", error);
+    return responseObj({
+      resObj: res,
+      type: "error",
+      statusCode: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR,
+      msg: "unable to delete Brand",
+      error: error.message ? error.message : "internal server error",
+      data: null,
+    });
+  }
+};

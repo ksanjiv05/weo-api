@@ -14,11 +14,6 @@ type OfflineLocationProps = {
   landmark: string;
 };
 
-// user_Id: int
-// brand_name: string
-// brand_description: string
-// status: string/int — [pending/live/onhold]
-
 export interface IBrand extends Document {
   uid: string; //user_Id
   brandName: string; //brand_name
@@ -36,3 +31,8 @@ export interface IBrand extends Document {
   createdAt: Date;
   updateAt: Date;
 }
+
+// user_Id: int
+// brand_name: string
+// brand_description: string
+// status: string/int — [pending/live/onhold]

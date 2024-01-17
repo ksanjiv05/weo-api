@@ -2,6 +2,8 @@ import dotenv from "dotenv";
 dotenv.config();
 import cors from "cors";
 import express, { Express, Request, Response } from "express";
+import swaggerUI from "swagger-ui-express";
+import swaggerJsdoc from "swagger-jsdoc";
 import "./db";
 import router from "./routes/v1";
 import helmet from "helmet";
@@ -9,6 +11,7 @@ import helmet from "helmet";
 import "./scripts/category";
 import rateLimiterMiddleware from "./middelware/rateLimiter";
 import path from "path";
+import { swaggerOptions } from "./config/swagger";
 
 //end scripts
 
@@ -47,3 +50,10 @@ app.listen(port, () => {
 //Transaction
 
 // import "./helper/oCalculator/index";
+
+const specs = swaggerJsdoc(swaggerOptions);
+app.use(
+  "/api-docs",
+  swaggerUI.serve,
+  swaggerUI.setup(specs, { explorer: true })
+);

@@ -4,12 +4,6 @@
  */
 
 import express from "express";
-import {
-  deleteUserProfile,
-  getUserProfile,
-  register,
-  updateUser,
-} from "../../controllers/authController/auth";
 import { auth } from "../../middelware/auth";
 
 import {
@@ -17,31 +11,7 @@ import {
   getAiGeneratedImg,
 } from "../../controllers/aiController/ai";
 import { getCategories } from "../../controllers/categoryController/category";
-import { addOffer, updateOffer } from "../../controllers/offerController/offer";
-import { upload } from "../../middelware/upload";
-import {
-  offerDataValidateCheckPointA,
-  offerDataValidateCheckPointB,
-  offerDataValidateCheckPointC,
-  offerDataValidateCheckPointD,
-  offerDataValidateCheckPointE,
-  offerDataValidateCheckPointF,
-} from "../../middelware/validator/offerValidtor";
-import {
-  brandDataValidateCheckPointA,
-  brandDataValidateCheckPointB,
-  brandDataValidateCheckPointC,
-  brandDataValidateCheckPointD,
-} from "../../middelware/validator/brandValidator";
-import { addBrand, updateBrand } from "../../controllers/brandController/brand";
-import {
-  uploadStaticFile,
-  uploadStaticFiles,
-} from "../../controllers/staticController/static";
-import {
-  userDataValidateCheckPointA,
-  userDataValidateCheckPointB,
-} from "../../middelware/validator/userValidator";
+
 import {
   createOfferOrder,
   createSellerAccount,
@@ -50,11 +20,18 @@ import { addressDataValidate } from "../../middelware/validator/address";
 import { addAddress } from "../../controllers/addressController/address";
 const router = express.Router();
 
+import userRoute from "./user";
+import brandRoute from "./brand";
+import offerRoute from "./offer";
+
 //user profile routes
-router.post("/user", userDataValidateCheckPointA, register);
-router.put("/user", auth, userDataValidateCheckPointB, updateUser);
-router.get("/user", auth, getUserProfile);
-router.delete("/user", auth, deleteUserProfile);
+router.use(userRoute);
+
+//brand routes
+router.use(brandRoute);
+
+//offer routes
+router.use(offerRoute);
 
 //static no need to we use aws s3
 // router.post("/static", upload.single("file"), uploadStaticFile);
@@ -67,19 +44,6 @@ router.post("/weo/chat", auth, getAiGeneratedChatResponse);
 router.get("/category/all", getCategories);
 
 //offer routes
-//path/checkpoint
-router.post("/offer/1", auth, offerDataValidateCheckPointA, addOffer);
-router.put("/offer/2", auth, offerDataValidateCheckPointB, updateOffer);
-router.put("/offer/3", auth, offerDataValidateCheckPointC, updateOffer);
-router.put("/offer/4", auth, offerDataValidateCheckPointD, updateOffer);
-router.put("/offer/5", auth, offerDataValidateCheckPointE, updateOffer);
-router.put("/offer/6", auth, offerDataValidateCheckPointF, updateOffer);
-
-//brand routes
-router.post("/brand/1", auth, brandDataValidateCheckPointA, addBrand);
-router.put("/brand/2", auth, brandDataValidateCheckPointB, updateBrand);
-router.put("/brand/3", auth, brandDataValidateCheckPointC, updateBrand);
-router.put("/brand/4", auth, brandDataValidateCheckPointD, updateBrand);
 
 router.post("/address", auth, addressDataValidate, addAddress);
 

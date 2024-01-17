@@ -21,7 +21,7 @@ const UserSchema: Schema = new Schema(
       type: String,
       required: true,
     },
-
+    earned: Number,
     fcmToken: String,
     kyc: {
       panCardImage: String,
