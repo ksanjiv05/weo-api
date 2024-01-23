@@ -1,6 +1,9 @@
 import express from "express";
-import { auth } from "firebase-admin";
-import { addOffer, updateOffer } from "../../controllers/offerController/offer";
+import {
+  addOffer,
+  getOffers,
+  updateOffer,
+} from "../../controllers/offerController/offer";
 import {
   offerDataValidateCheckPointA,
   offerDataValidateCheckPointB,
@@ -9,6 +12,7 @@ import {
   offerDataValidateCheckPointE,
   offerDataValidateCheckPointF,
 } from "../../middelware/validator/offerValidtor";
+import { auth } from "../../middelware/auth";
 
 const router = express.Router();
 
@@ -129,114 +133,6 @@ const router = express.Router();
 /**
  * @swagger
  * /offers:
- *   get:
- *     summary: Get all offers
- *     tags: [Offers]
- *     security:
- *       - bearerAuth: []
- *     responses:
- *       200:
- *         description: Successful operation
- *         content:
- *           application/json:
- *             example:
- *               offers:
- *                 - checkpoint: 1
- *                   creatorId: "user1"
- *                   brandId: "brand1"
- *                   brandName: "Brand 1"
- *                   productIds: ["product1", "product2"]
- *                   offerTitle: "Offer 1"
- *                   offerDescription: "Description of Offer 1"
- *                   offerMedia: ["media1.jpg", "media2.jpg"]
- *                   offerPriceType: "Fixed"
- *                   offerPriceAmount: 10.99
- *                   paymentType: "Credit Card"
- *                   installmentTimePeriod: "Monthly"
- *                   installmentDuration: 12
- *                   minAccessBalance: 50.0
- *                   maxOAccess: 100.0
- *                   serviceUnitName: "Unit"
- *                   totalServiceUnitType: "Hour"
- *                   totalServiceUnitItems: 10
- *                   durationUnitType: "Day"
- *                   durationUnitItems: 30
- *                   totalOffersAvailable: 100
- *                   offerLimitPerCustomer: 2
- *                   offerActivitiesAt: "Both"
- *                   offerActivationStartTime: 1644931200
- *                   offerActivationEndTime: 1645017600
- *                   offerValidityStartDate: 1645099200
- *                   offerValidityEndDate: 1645185600
- *                   offerStatus: "live"
- *                   offerThumbnailImage: "thumbnail.jpg"
- *                   createdAt: 1644927600
- *                   updateAt: 1644927600
- *       401:
- *         description: Unauthorized
- */
-
-/**
- * @swagger
- * /offers/{checkpoint}:
- *   get:
- *     summary: Get an offer by checkpoint
- *     tags: [Offers]
- *     security:
- *       - bearerAuth: []
- *     parameters:
- *       - in: path
- *         name: checkpoint
- *         required: true
- *         description: Checkpoint of the offer
- *         schema:
- *           type: number
- *     responses:
- *       200:
- *         description: Successful operation
- *         content:
- *           application/json:
- *             example:
- *               checkpoint: 1
- *               creatorId: "user1"
- *               brandId: "brand1"
- *               brandName: "Brand 1"
- *               productIds: ["product1", "product2"]
- *               offerTitle: "Offer 1"
- *               offerDescription: "Description of Offer 1"
- *               offerMedia: ["media1.jpg", "media2.jpg"]
- *               offerPriceType: "Fixed"
- *               offerPriceAmount: 10.99
- *               paymentType: "Credit Card"
- *               installmentTimePeriod: "Monthly"
- *               installmentDuration: 12
- *               minAccessBalance: 50.0
- *               maxOAccess: 100.0
- *               serviceUnitName: "Unit"
- *               totalServiceUnitType: "Hour"
- *               totalServiceUnitItems: 10
- *               durationUnitType: "Day"
- *               durationUnitItems: 30
- *               totalOffersAvailable: 100
- *               offerLimitPerCustomer: 2
- *               offerActivitiesAt: "Both"
- *               offerActivationStartTime: 1644931200
- *               offerActivationEndTime: 1645017600
- *               offerValidityStartDate: 1645099200
- *               offerValidityEndDate: 1645185600
- *               offerStatus: "live"
- *               offerThumbnailImage: "thumbnail.jpg"
- *               createdAt: 1644927600
- *               updateAt: 1644927600
- *       404:
- *         description: Offer not found
- *       401:
- *         description: Unauthorized
- */
-
-/**
- * @swagger
- * /offers:
  *   post:
  *     summary: Create a new offer
  *     tags: [Offers]
@@ -309,11 +205,122 @@ const router = express.Router();
  *
  */
 
-router.post("/offer/1", auth, offerDataValidateCheckPointA, addOffer);
-router.put("/offer/2", auth, offerDataValidateCheckPointB, updateOffer);
-router.put("/offer/3", auth, offerDataValidateCheckPointC, updateOffer);
-router.put("/offer/4", auth, offerDataValidateCheckPointD, updateOffer);
-router.put("/offer/5", auth, offerDataValidateCheckPointE, updateOffer);
-router.put("/offer/6", auth, offerDataValidateCheckPointF, updateOffer);
+/**
+ * @swagger
+ * /offers:
+ *   get:
+ *     summary: Get all offers
+ *     tags: [Offers]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Successful operation
+ *         content:
+ *           application/json:
+ *             example:
+ *               offers:
+ *                 - checkpoint: 1
+ *                   creatorId: "user1"
+ *                   brandId: "brand1"
+ *                   brandName: "Brand 1"
+ *                   productIds: ["product1", "product2"]
+ *                   offerTitle: "Offer 1"
+ *                   offerDescription: "Description of Offer 1"
+ *                   offerMedia: ["media1.jpg", "media2.jpg"]
+ *                   offerPriceType: "Fixed"
+ *                   offerPriceAmount: 10.99
+ *                   paymentType: "Credit Card"
+ *                   installmentTimePeriod: "Monthly"
+ *                   installmentDuration: 12
+ *                   minAccessBalance: 50.0
+ *                   maxOAccess: 100.0
+ *                   serviceUnitName: "Unit"
+ *                   totalServiceUnitType: "Hour"
+ *                   totalServiceUnitItems: 10
+ *                   durationUnitType: "Day"
+ *                   durationUnitItems: 30
+ *                   totalOffersAvailable: 100
+ *                   offerLimitPerCustomer: 2
+ *                   offerActivitiesAt: "Both"
+ *                   offerActivationStartTime: 1644931200
+ *                   offerActivationEndTime: 1645017600
+ *                   offerValidityStartDate: 1645099200
+ *                   offerValidityEndDate: 1645185600
+ *                   offerStatus: "live"
+ *                   offerThumbnailImage: "thumbnail.jpg"
+ *                   createdAt: 1644927600
+ *                   updateAt: 1644927600
+ *       401:
+ *         description: Unauthorized
+ */
+
+/**
+ * @swagger
+ * /offers/{id}:
+ *   get:
+ *     summary: Get an offer by checkpoint
+ *     tags: [Offers]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: offer id of the offer
+ *         schema:
+ *           type: number
+ *     responses:
+ *       200:
+ *         description: Successful operation
+ *         content:
+ *           application/json:
+ *             example:
+ *               checkpoint: 1
+ *               creatorId: "user1"
+ *               brandId: "brand1"
+ *               brandName: "Brand 1"
+ *               productIds: ["product1", "product2"]
+ *               offerTitle: "Offer 1"
+ *               offerDescription: "Description of Offer 1"
+ *               offerMedia: ["media1.jpg", "media2.jpg"]
+ *               offerPriceType: "Fixed"
+ *               offerPriceAmount: 10.99
+ *               paymentType: "Credit Card"
+ *               installmentTimePeriod: "Monthly"
+ *               installmentDuration: 12
+ *               minAccessBalance: 50.0
+ *               maxOAccess: 100.0
+ *               serviceUnitName: "Unit"
+ *               totalServiceUnitType: "Hour"
+ *               totalServiceUnitItems: 10
+ *               durationUnitType: "Day"
+ *               durationUnitItems: 30
+ *               totalOffersAvailable: 100
+ *               offerLimitPerCustomer: 2
+ *               offerActivitiesAt: "Both"
+ *               offerActivationStartTime: 1644931200
+ *               offerActivationEndTime: 1645017600
+ *               offerValidityStartDate: 1645099200
+ *               offerValidityEndDate: 1645185600
+ *               offerStatus: "live"
+ *               offerThumbnailImage: "thumbnail.jpg"
+ *               createdAt: 1644927600
+ *               updateAt: 1644927600
+ *       404:
+ *         description: Offer not found
+ *       401:
+ *         description: Unauthorized
+ */
+
+router.post("/offers", auth, offerDataValidateCheckPointA, addOffer);
+router.put("/offers/2", auth, offerDataValidateCheckPointB, updateOffer);
+router.put("/offers/3", auth, offerDataValidateCheckPointC, updateOffer);
+router.put("/offers/4", auth, offerDataValidateCheckPointD, updateOffer);
+router.put("/offers/5", auth, offerDataValidateCheckPointE, updateOffer);
+router.put("/offers/6", auth, offerDataValidateCheckPointF, updateOffer);
+
+router.get("/offers", auth, getOffers);
+router.get("/offers/:id", auth, getOffers);
 
 export default router;

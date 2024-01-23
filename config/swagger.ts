@@ -15,6 +15,16 @@ export const swaggerOptions = {
         email: "admin@weo.ai",
       },
     },
+    components: {
+      securitySchemes: {
+        Authorization: {
+          type: "http",
+          scheme: "bearer",
+          // bearerFormat: "JWT",
+          // value: "Bearer <JWT token here>",
+        },
+      },
+    },
     servers: [
       {
         url: "http://localhost:4000/api/v1",

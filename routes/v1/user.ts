@@ -301,7 +301,7 @@ const router = express.Router();
  *               kyc:
  *                 panCardImage: "updatedPan3.jpg"
  *                 govtIdFrontImage: "updatedGovtFront3.jpg"
- *                 govtIdBackImage
+ *                 govtIdBackImage: "updatedGovtBack3.jpg"
  */
 
 /**
@@ -422,9 +422,9 @@ const router = express.Router();
  *         description: Unauthorized
  */
 
-router.post("/user", userDataValidateCheckPointA, register);
-router.put("/user", auth, userDataValidateCheckPointB, updateUser);
-router.get("/user", auth, getUserProfile);
-router.delete("/user", auth, deleteUserProfile);
+router.post("/users", userDataValidateCheckPointA, register);
+router.put("/users/:id", auth, userDataValidateCheckPointB, updateUser);
+router.get("/users/:id", auth, getUserProfile);
+router.delete("/users/:id", auth, deleteUserProfile);
 
 export default router;

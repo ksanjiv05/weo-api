@@ -3,8 +3,9 @@ import { adminApp } from "../firebase";
 
 export const auth = (req: Request, res: Response, next: NextFunction) => {
   try {
-    const token: string | undefined = req.header("authorization");
-
+    const token: string | undefined = req
+      .header("authorization")
+      ?.split(" ")[1];
     if (!token)
       return res.status(403).json({ msg: "please provide valid auth token " });
     adminApp

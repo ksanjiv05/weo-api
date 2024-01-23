@@ -5,6 +5,7 @@ import { IUser } from "../../interfaces/IUser";
 import { responseObj } from "../../helper/response";
 import { HTTP_STATUS_CODES } from "../../config/statusCode";
 import { validationResult } from "express-validator";
+import { adminApp } from "../../firebase";
 
 export const register = async (req: Request, res: Response) => {
   try {
@@ -125,4 +126,50 @@ export const getUserProfile = async (req: Request, res: Response) => {
 
 export const deleteUserProfile = async (req: Request, res: Response) => {
   return res.status(201).send("Not implemented");
+};
+
+export const login = async (req: Request, res: Response) => {
+  try {
+    const { email = "", password = "" } = req.body;
+    if (email == "" || password == "")
+      return responseObj({
+        statusCode: HTTP_STATUS_CODES.BAD_REQUEST,
+        type: "error",
+        msg: "please provide a valid email and password",
+        error: null,
+        resObj: res,
+        data: null,
+      });
+    const user = await User.findOne({ email });
+
+    // adminApp.auth().generateSignInWithEmailLink(email);
+    // if (!user)
+    //   return responseObj({
+    //     statusCode: HTTP_STATUS_CODES.NOT_FOUND,
+    //     type: "error",
+    //     msg: "user not found",
+    //     error: null,
+    //     resObj: res,
+    //     data: null,
+    //   });
+
+    // return responseObj({
+    //   statusCode: HTTP_STATUS_CODES.SUCCESS,
+    //   type: "success",
+    //   msg: "successfully logged in",
+    //   error: null,
+    //   resObj: res,
+    //   data: token,
+    // });
+  } catch (error: any) {
+    logging.error("Login", "unable to login user", error);
+    return responseObj({
+      resObj: res,
+      type: "error",
+      statusCode: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR,
+      msg: "unable to login user",
+      error: error.message ? error.message : "internal server error",
+      data: null,
+    });
+  }
 };
