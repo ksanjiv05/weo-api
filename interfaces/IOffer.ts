@@ -34,6 +34,15 @@ export interface IOffer extends Document {
   updateAt?: number;
 }
 
+export enum OFFER_STATUS {
+  UNKNOWN = "unknown",
+  PENDING = "pending",
+  LIVE = "live",
+  ON_HOLD = "onhold",
+  DRAFT = "draft",
+  REJECTED = "rejected",
+}
+
 // Service unit name : String — [Quantity/Classes/Hours/Lessons/Miles/Sessions/Minutes/Movies]
 // Total Service unit type: String — [Fixed/Dynamic]
 // Duration unit type: String — [Minutes/Hours/Days/Weeks/Months/Years]

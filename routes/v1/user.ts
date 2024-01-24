@@ -8,6 +8,7 @@ import { auth } from "../../middelware/auth";
 import {
   deleteUserProfile,
   getUserProfile,
+  isExistingUser,
   register,
   updateUser,
 } from "../../controllers/authController/auth";
@@ -422,9 +423,10 @@ const router = express.Router();
  *         description: Unauthorized
  */
 
-router.post("/users", userDataValidateCheckPointA, register);
+router.post("/users", auth, userDataValidateCheckPointA, register);
 router.put("/users/:id", auth, userDataValidateCheckPointB, updateUser);
 router.get("/users/:id", auth, getUserProfile);
+router.get("/users/exist", isExistingUser);
 router.delete("/users/:id", auth, deleteUserProfile);
 
 export default router;

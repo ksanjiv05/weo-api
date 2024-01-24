@@ -42,6 +42,49 @@ export const register = async (req: Request, res: Response) => {
   }
 };
 
+export const isExistingUser = async (req: Request, res: Response) => {
+  try {
+    const { phone = "" } = req.query;
+    if (phone == "")
+      return responseObj({
+        statusCode: HTTP_STATUS_CODES.BAD_REQUEST,
+        type: "error",
+        msg: "please provide a valid phone",
+        error: null,
+        resObj: res,
+        data: null,
+      });
+    const user = await User.findOne({ phone });
+    if (!user)
+      return responseObj({
+        statusCode: HTTP_STATUS_CODES.NOT_FOUND,
+        type: "error",
+        msg: "user not found",
+        error: null,
+        resObj: res,
+        data: null,
+      });
+    return responseObj({
+      statusCode: HTTP_STATUS_CODES.SUCCESS,
+      type: "success",
+      msg: "user already exists",
+      error: null,
+      resObj: res,
+      data: null,
+    });
+  } catch (error: any) {
+    logging.error("Is Existing User", "unable to find user", error);
+    return responseObj({
+      resObj: res,
+      type: "error",
+      statusCode: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR,
+      msg: "unable to find user",
+      error: error.message ? error.message : "internal server error",
+      data: null,
+    });
+  }
+};
+
 export const updateUser = async (req: Request, res: Response) => {
   try {
     const { _id = "" } = req.body;

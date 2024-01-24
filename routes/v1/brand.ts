@@ -6,6 +6,7 @@ import {
   deleteBrand,
   getBrand,
   getBrands,
+  getBrandsByUid,
   updateBrand,
 } from "../../controllers/brandController/brand";
 import {
@@ -395,7 +396,8 @@ const router = express.Router();
  *         description: Brand not found
  */
 
-router.get("/brands", auth, getBrands);
+// router.get("/brands", auth, getBrands);
+router.get("/brands", auth, getBrandsByUid);
 router.get("/brands/:brandId", auth, getBrand);
 
 router.post("/brands/1", auth, brandDataValidateCheckPointA, addBrand);

@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import logging from "../../config/logging";
 import Brand from "../../models/Brand";
-import { IBrand } from "../../interfaces/IBrand";
+import { BRAND_STATUS, IBrand } from "../../interfaces/IBrand";
 import { responseObj } from "../../helper/response";
 import { HTTP_STATUS_CODES } from "../../config/statusCode";
 import { validationResult } from "express-validator";
@@ -102,6 +102,42 @@ export const getBrands = async (req: Request, res: Response) => {
       msg: "you are successfully get Brands",
       error: null,
       data: brands,
+    });
+  } catch (error: any) {
+    logging.error("Brand", "unable to get Brands", error);
+    return responseObj({
+      resObj: res,
+      type: "error",
+      statusCode: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR,
+      msg: "unable to get Brands",
+      error: error.message ? error.message : "internal server error",
+      data: null,
+    });
+  }
+};
+
+export const getBrandsByUid = async (req: Request, res: Response) => {
+  try {
+    const { page = 1, perPage = 10, status = BRAND_STATUS.UNKNOWN } = req.query;
+
+    const skip = (Number(page) - 1) * Number(perPage);
+    const filter = {
+      ...(status === BRAND_STATUS.UNKNOWN ? {} : { status }),
+      // ...(minAccessBalance === -1 ? {} : { minAccessBalance }),
+      uid: req.body.uid,
+    };
+    const brands = await Brand.find(filter)
+      .sort("-createdAt")
+      .skip(Number(skip))
+      .limit(Number(perPage));
+    const total = await Brand.find(filter).count();
+    return responseObj({
+      resObj: res,
+      type: "success",
+      statusCode: HTTP_STATUS_CODES.SUCCESS,
+      msg: "you are successfully get Brands",
+      error: null,
+      data: { brands, total },
     });
   } catch (error: any) {
     logging.error("Brand", "unable to get Brands", error);

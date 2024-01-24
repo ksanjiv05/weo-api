@@ -26,7 +26,7 @@ type bankAccountProps = {
 export interface IUser extends Document {
   uid: string;
   name: string;
-  description: string;
+  description?: string;
   profileImage?: string;
   phone: string;
   coverImg?: string;
@@ -35,20 +35,20 @@ export interface IUser extends Document {
   recoveryCode?: string;
   fcmToken?: string;
 
-  successRate: number;
-  earned: number;
+  successRate?: number;
+  earned?: number;
 
-  socialMedia: SocialMediaProps;
-  kyc: kycProps;
+  socialMedia?: SocialMediaProps;
+  kyc?: kycProps;
 
   addresses?: string[];
-  devices: string[];
-  wishLists: string[];
-  likes: string[];
+  devices?: string[];
+  wishLists?: string[];
+  likes?: string[];
 
-  bankAccounts: bankAccountProps[];
-  createdAt: number;
-  updateAt: number;
+  bankAccounts?: bankAccountProps[];
+  createdAt?: number;
+  updateAt?: number;
 }
 
 // import { Document } from "mongoose";

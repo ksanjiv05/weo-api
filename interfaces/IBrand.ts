@@ -36,3 +36,12 @@ export interface IBrand extends Document {
 // brand_name: string
 // brand_description: string
 // status: string/int — [pending/live/onhold]
+
+export enum BRAND_STATUS {
+  UNKNOWN = "unknown",
+  PENDING = "pending",
+  LIVE = "live",
+  ON_HOLD = "onhold",
+  DRAFT = "draft",
+  REJECTED = "rejected",
+}

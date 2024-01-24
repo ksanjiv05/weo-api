@@ -320,6 +320,7 @@ router.put("/offers/4", auth, offerDataValidateCheckPointD, updateOffer);
 router.put("/offers/5", auth, offerDataValidateCheckPointE, updateOffer);
 router.put("/offers/6", auth, offerDataValidateCheckPointF, updateOffer);
 
+router.get("/offers/all", auth, getOffers);
 router.get("/offers", auth, getOffers);
 router.get("/offers/:id", auth, getOffers);
 

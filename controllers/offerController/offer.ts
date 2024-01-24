@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import logging from "../../config/logging";
 import Offer from "../../models/Offer";
-import { IOffer } from "../../interfaces/IOffer";
+import { IOffer, OFFER_STATUS } from "../../interfaces/IOffer";
 import { responseObj } from "../../helper/response";
 import { HTTP_STATUS_CODES } from "../../config/statusCode";
 import { validationResult } from "express-validator";
@@ -133,6 +133,53 @@ export const getOffers = async (req: Request, res: Response) => {
       msg: "all offers",
       error: null,
       data: offers,
+    });
+  } catch (error: any) {
+    logging.error("Get Offers", "unable to get Offers", error);
+    return responseObj({
+      resObj: res,
+      type: "error",
+      statusCode: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR,
+      msg: "unable to get Offers",
+      error: error.message ? error.message : "internal server error",
+      data: null,
+    });
+  }
+};
+
+export const getOffersByUid = async (req: Request, res: Response) => {
+  try {
+    const {
+      page = 1,
+      perPage = 10,
+      offerStatus = OFFER_STATUS.UNKNOWN,
+      minAccessBalance = -1,
+      offerActivitiesAt = "",
+    } = req.query;
+
+    const skip = (Number(page) - 1) * Number(perPage);
+    const filter = {
+      ...(offerStatus === OFFER_STATUS.UNKNOWN ? {} : { offerStatus }),
+      // ...(minAccessBalance === -1 ? {} : { minAccessBalance }),
+      ...(offerActivitiesAt === "" ? {} : { offerActivitiesAt }),
+      // ...(tableId === "" ? {} : { tableIds: { $elemMatch: { tableId } } }),
+      creatorId: req.body.uid,
+    };
+    console.log("filter", filter);
+
+    const offers = await Offer.find(filter)
+      .sort("-createdAt")
+      .skip(Number(skip))
+      .limit(Number(perPage));
+    const total = await Offer.find(filter).count();
+
+    return responseObj({
+      resObj: res,
+      type: "success",
+      statusCode: HTTP_STATUS_CODES.SUCCESS,
+      msg: "all offers",
+      error: null,
+      data: { offers, total },
     });
   } catch (error: any) {
     logging.error("Get Offers", "unable to get Offers", error);
