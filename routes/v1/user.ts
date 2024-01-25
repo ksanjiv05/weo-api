@@ -424,9 +424,9 @@ const router = express.Router();
  */
 
 router.post("/users", auth, userDataValidateCheckPointA, register);
+router.get("/users/exist", isExistingUser);
 router.put("/users/:id", auth, userDataValidateCheckPointB, updateUser);
 router.get("/users/:id", auth, getUserProfile);
-router.get("/users/exist", isExistingUser);
 router.delete("/users/:id", auth, deleteUserProfile);
 
 export default router;
