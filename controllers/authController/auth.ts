@@ -57,7 +57,7 @@ export const isExistingUser = async (req: Request, res: Response) => {
     const user = await User.findOne({ phone });
     if (!user)
       return responseObj({
-        statusCode: HTTP_STATUS_CODES.NOT_FOUND,
+        statusCode: HTTP_STATUS_CODES.NO_CONTENT,
         type: "error",
         msg: "user not found",
         error: null,
