@@ -6,6 +6,52 @@ import { responseObj } from "../../helper/response";
 import { HTTP_STATUS_CODES } from "../../config/statusCode";
 import { validationResult } from "express-validator";
 
+export const isBrandNameExist = async (req: Request, res: Response) => {
+  try {
+    const { brandName = "" } = req.query;
+    const { uid = "" } = req.body;
+    if (brandName == "") {
+      return responseObj({
+        resObj: res,
+        type: "error",
+        statusCode: HTTP_STATUS_CODES.BAD_REQUEST,
+        msg: "please provide name",
+        error: "please provide name",
+        data: null,
+      });
+    }
+    const brand = await Brand.findOne({ brandName, uid });
+    if (brand) {
+      return responseObj({
+        resObj: res,
+        type: "success",
+        statusCode: HTTP_STATUS_CODES.SUCCESS,
+        msg: "Brand name already exist",
+        error: null,
+        data: null,
+      });
+    }
+    return responseObj({
+      resObj: res,
+      type: "success",
+      statusCode: HTTP_STATUS_CODES.SUCCESS,
+      msg: "Brand name not exist",
+      error: null,
+      data: null,
+    });
+  } catch (error: any) {
+    logging.error("Brand", "unable to get Brand", error);
+    return responseObj({
+      resObj: res,
+      type: "error",
+      statusCode: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR,
+      msg: "unable to get Brand",
+      error: error.message ? error.message : "internal server error",
+      data: null,
+    });
+  }
+};
+
 export const addBrand = async (req: Request, res: Response) => {
   try {
     console.log("req.body", req.body);
