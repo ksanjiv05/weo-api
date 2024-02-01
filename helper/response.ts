@@ -19,6 +19,7 @@ export const responseObj = ({
   data,
   code = null,
 }: IResponseObj) => {
+  // console.log("responseObj", resObj);
   return resObj.status(statusCode).json({
     type,
     msg,
