@@ -26,6 +26,7 @@ type bankAccountProps = {
 export interface IUser extends Document {
   uid: string;
   name: string;
+  creatorName?: string;
   description?: string;
   profileImage?: string;
   phone: string;

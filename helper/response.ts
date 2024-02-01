@@ -7,6 +7,7 @@ interface IResponseObj {
   msg: string | "";
   error: string | object | null;
   data: string | object | null;
+  code?: string | null;
 }
 
 export const responseObj = ({
@@ -16,11 +17,13 @@ export const responseObj = ({
   msg,
   error,
   data,
+  code = null,
 }: IResponseObj) => {
   return resObj.status(statusCode).json({
     type,
     msg,
     error,
     data,
+    code,
   });
 };

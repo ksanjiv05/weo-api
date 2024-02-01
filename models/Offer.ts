@@ -140,11 +140,6 @@ const OfferSchema: Schema = new Schema(
       required: true,
       default: Date.now,
     },
-    updateAt: {
-      type: Number,
-      required: true,
-      default: Date.now,
-    },
   },
   { timestamps: true }
 );

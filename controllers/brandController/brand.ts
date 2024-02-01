@@ -93,7 +93,25 @@ export const updateBrand = async (req: Request, res: Response) => {
 
 export const getBrands = async (req: Request, res: Response) => {
   try {
-    const brands = await Brand.find({});
+    const {
+      page = 0,
+      perPage = 10,
+      status = "",
+      categoriesIds = [],
+    } = req.query;
+
+    const skip = (Number(page) - 1) * Number(perPage);
+    const filter = {
+      ...(status === "" ? {} : { status }),
+      ...(categoriesIds.length === 0
+        ? {}
+        : { categoriesIds: { $in: categoriesIds } }),
+    };
+    const brands = await Brand.find(filter)
+      .sort("-createdAt")
+      .skip(Number(skip))
+      .limit(Number(perPage));
+    const total = await Brand.find(filter).count();
 
     return responseObj({
       resObj: res,
@@ -101,7 +119,7 @@ export const getBrands = async (req: Request, res: Response) => {
       statusCode: HTTP_STATUS_CODES.SUCCESS,
       msg: "you are successfully get Brands",
       error: null,
-      data: brands,
+      data: { brands, total },
     });
   } catch (error: any) {
     logging.error("Brand", "unable to get Brands", error);

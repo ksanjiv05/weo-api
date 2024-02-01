@@ -9,6 +9,7 @@ import {
   deleteUserProfile,
   getUserProfile,
   isExistingUser,
+  isUserNameAvailable,
   register,
   updateUser,
 } from "../../controllers/authController/auth";
@@ -425,8 +426,9 @@ const router = express.Router();
 
 router.post("/users", auth, userDataValidateCheckPointA, register);
 router.get("/users/exist", isExistingUser);
+router.get("/users/exist/:creatorName", auth, isUserNameAvailable);
 router.put("/users/:id", auth, userDataValidateCheckPointB, updateUser);
-router.get("/users/:id", auth, getUserProfile);
+router.get("/users", auth, getUserProfile);
 router.delete("/users/:id", auth, deleteUserProfile);
 
 export default router;

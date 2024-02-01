@@ -30,7 +30,7 @@ export interface IOffer extends Document {
   offerValidityEndDate: number; //date
   offerStatus: string; //[pending/live/onhold/draft]
   offerThumbnailImage: string;
-  cratededAt?: number;
+  createdAt?: number;
   updateAt?: number;
 }
 

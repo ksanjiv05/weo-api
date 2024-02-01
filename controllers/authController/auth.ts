@@ -18,6 +18,7 @@ export const register = async (req: Request, res: Response) => {
         errors: errors.array({}),
       });
     }
+    req.body.creatorName = req.body.phone;
     const newUser = new User(req.body);
     await newUser.save();
 
@@ -85,9 +86,52 @@ export const isExistingUser = async (req: Request, res: Response) => {
   }
 };
 
+export const isUserNameAvailable = async (req: Request, res: Response) => {
+  try {
+    const { creatorName = "" } = req.params;
+    if (creatorName == "")
+      return responseObj({
+        statusCode: HTTP_STATUS_CODES.BAD_REQUEST,
+        type: "error",
+        msg: "please provide a valid creator name",
+        error: null,
+        resObj: res,
+        data: null,
+      });
+    const user = await User.findOne({ creatorName });
+    if (!user)
+      return responseObj({
+        statusCode: HTTP_STATUS_CODES.SUCCESS,
+        type: "success",
+        msg: "user name is available",
+        error: null,
+        resObj: res,
+        data: null,
+      });
+    return responseObj({
+      statusCode: HTTP_STATUS_CODES.NO_CONTENT,
+      type: "error",
+      msg: "user name is not available",
+      error: null,
+      resObj: res,
+      data: null,
+    });
+  } catch (error: any) {
+    logging.error("Is User Name Available", "unable to find user", error);
+    return responseObj({
+      resObj: res,
+      type: "error",
+      statusCode: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR,
+      msg: "unable to find user",
+      error: error.message ? error.message : "internal server error",
+      data: null,
+    });
+  }
+};
+
 export const updateUser = async (req: Request, res: Response) => {
   try {
-    const { _id = "" } = req.body;
+    const { _id = "", uid = "" } = req.body;
     if (_id == "")
       return responseObj({
         statusCode: HTTP_STATUS_CODES.BAD_REQUEST,
@@ -105,6 +149,12 @@ export const updateUser = async (req: Request, res: Response) => {
         errors: errors.array({}),
       });
     }
+
+    await adminApp.auth().updateUser(uid, {
+      email: req.body.email,
+      phoneNumber: req.body.phone,
+      displayName: req.body.name,
+    });
 
     await User.updateOne(
       { _id },
@@ -136,6 +186,7 @@ export const updateUser = async (req: Request, res: Response) => {
 export const getUserProfile = async (req: Request, res: Response) => {
   try {
     const { uid = "" } = req.body;
+    const { initData = false } = req.query;
     if (uid == "")
       return responseObj({
         statusCode: HTTP_STATUS_CODES.BAD_REQUEST,
@@ -145,7 +196,12 @@ export const getUserProfile = async (req: Request, res: Response) => {
         resObj: res,
         data: null,
       });
-    const user = await User.findOne({ uid });
+    let user = null;
+    if (initData == "true") {
+      user = await User.findOne({ uid }).select("creatorName");
+    } else {
+      user = await User.findOne({ uid });
+    }
     return responseObj({
       statusCode: HTTP_STATUS_CODES.SUCCESS,
       type: "success",
