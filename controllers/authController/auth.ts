@@ -18,7 +18,7 @@ export const register = async (req: Request, res: Response) => {
         errors: errors.array({}),
       });
     }
-    req.body.creatorName = req.body.phone;
+    // req.body.creatorName = req.body.phone;
     const newUser = new User(req.body);
     await newUser.save();
 
@@ -111,7 +111,7 @@ export const isUserNameAvailable = async (req: Request, res: Response) => {
         data: null,
       });
     return responseObj({
-      statusCode: HTTP_STATUS_CODES.NO_CONTENT,
+      statusCode: HTTP_STATUS_CODES.ACCEPTED,
       type: "error",
       msg: "user name is not available",
       error: null,
@@ -133,7 +133,7 @@ export const isUserNameAvailable = async (req: Request, res: Response) => {
 
 export const updateUser = async (req: Request, res: Response) => {
   try {
-    const { _id = "", uid = "" } = req.body;
+    const { _id = "", uid = "", creatorNameUpdate = true } = req.body;
     if (_id == "")
       return responseObj({
         statusCode: HTTP_STATUS_CODES.BAD_REQUEST,
@@ -152,18 +152,42 @@ export const updateUser = async (req: Request, res: Response) => {
       });
     }
 
-    await adminApp.auth().updateUser(uid, {
-      email: req.body.email,
-      phoneNumber: req.body.phone,
-      displayName: req.body.name,
-    });
-
-    await User.updateOne(
-      { _id },
-      {
-        ...req.body,
+    if (creatorNameUpdate) {
+      const user = await User.findOne({ uid });
+      if (!user) {
+        return responseObj({
+          statusCode: HTTP_STATUS_CODES.BAD_REQUEST,
+          type: "error",
+          msg: "user not found",
+          error: null,
+          resObj: res,
+          data: null,
+        });
       }
-    );
+      const isUserNameAvailable = await User.findOne({
+        creatorName: req.body.creatorName,
+      });
+      if (!isUserNameAvailable) {
+        user.creatorName = req.body.creatorName;
+        user.description = req.body.description;
+        await user.save();
+      }
+
+      //creatorName: req.body.creatorName
+    } else {
+      await adminApp.auth().updateUser(uid, {
+        email: req.body.email,
+        phoneNumber: req.body.phone,
+        displayName: req.body.name,
+      });
+
+      await User.updateOne(
+        { _id },
+        {
+          ...req.body,
+        }
+      );
+    }
     return responseObj({
       statusCode: HTTP_STATUS_CODES.SUCCESS,
       type: "success",
@@ -199,6 +223,8 @@ export const getUserProfile = async (req: Request, res: Response) => {
         data: null,
       });
     let user = null;
+
+    console.log("initData", initData);
     if (initData == "true") {
       user = await User.findOne({ uid }).select("creatorName");
     } else {

@@ -11,8 +11,8 @@ const UserSchema: Schema = new Schema(
     },
     creatorName: {
       type: String,
-      required: true,
-      unique: true,
+      // required: true,
+      // unique: true,
     },
     name: {
       type: String,

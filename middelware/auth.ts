@@ -6,6 +6,7 @@ export const auth = (req: Request, res: Response, next: NextFunction) => {
     const token: string | undefined = req
       .header("authorization")
       ?.split(" ")[1];
+    // console.log("token", token);
     if (!token)
       return res.status(403).json({ msg: "please provide valid auth token " });
     adminApp

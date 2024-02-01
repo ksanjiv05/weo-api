@@ -9,7 +9,8 @@
     "swagger-autogen": "node ./docs/swagger.js",
     "prod": "NODE_ENV=prod rm -rf dist && npx tsc && node dist/index.js",
     "win-dev": "SET NODE_ENV=dev concurrently \"npx tsc --watch\" \"nodemon -q dist/index.js\"",
-    "dev": "NODE_ENV=dev concurrently \"npx tsc --watch\" \"nodemon -q dist/index.js\""
+    "dev": "NODE_ENV=dev concurrently \"npx tsc --watch\" \"nodemon -q dist/index.js\"",
+    "dev-prod": "NODE_ENV=prod concurrently \"npx tsc --watch\" \"nodemon -q dist/index.js\""
   },
   "author": "sanjiv",
   "license": "ISC",
