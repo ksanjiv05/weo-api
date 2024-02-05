@@ -3,6 +3,7 @@ import express from "express";
 import {
   userDataValidateCheckPointA,
   userDataValidateCheckPointB,
+  userDataValidateCheckPointForCreatorName,
 } from "../../middelware/validator/userValidator";
 import { auth } from "../../middelware/auth";
 import {
@@ -11,6 +12,7 @@ import {
   isExistingUser,
   isUserNameAvailable,
   register,
+  updateCreatorName,
   updateUser,
 } from "../../controllers/authController/auth";
 
@@ -427,6 +429,12 @@ const router = express.Router();
 router.post("/users", auth, userDataValidateCheckPointA, register);
 router.get("/users/exist", isExistingUser);
 router.get("/users/exist/:creatorName", auth, isUserNameAvailable);
+router.put(
+  "/users/creatorName",
+  auth,
+  userDataValidateCheckPointForCreatorName,
+  updateCreatorName
+);
 router.put("/users/:id", auth, userDataValidateCheckPointB, updateUser);
 router.get("/users", auth, getUserProfile);
 router.delete("/users/:id", auth, deleteUserProfile);

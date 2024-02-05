@@ -10,7 +10,7 @@
 //   W013: "duplication/Already exist issue with field name (The field name has already exist. Please add a different field name to proceed)",
 
 //   W020: "No result found",
-const ERROR_CODES = {
+export const ERROR_CODES = {
   SUCCESS: "W000",
   AUTH_ERR: "W001",
   MULTI_SESSION: "W002",

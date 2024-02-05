@@ -6,6 +6,7 @@ import { responseObj } from "../../helper/response";
 import { HTTP_STATUS_CODES } from "../../config/statusCode";
 import { validationResult } from "express-validator";
 import { adminApp } from "../../firebase";
+import { ERROR_CODES } from "../../config/errorCode";
 
 export const register = async (req: Request, res: Response) => {
   try {
@@ -13,9 +14,18 @@ export const register = async (req: Request, res: Response) => {
     const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
-      return res.status(400).json({
-        success: false,
-        errors: errors.array({}),
+      // return res.status(400).json({
+      //   success: false,
+      //   errors: errors.array({}),
+      // });
+      return responseObj({
+        resObj: res,
+        type: "error",
+        statusCode: HTTP_STATUS_CODES.BAD_REQUEST,
+        msg: "fields are required",
+        error: errors.array({}),
+        data: null,
+        code: ERROR_CODES.FIELD_VALIDATION_REQUIRED_ERR,
       });
     }
     // req.body.creatorName = req.body.phone;
@@ -29,6 +39,7 @@ export const register = async (req: Request, res: Response) => {
       msg: "successfully registered",
       error: null,
       data: newUser,
+      code: ERROR_CODES.SUCCESS,
     });
   } catch (error: any) {
     logging.error("Register", "unable to register user", error);
@@ -39,6 +50,7 @@ export const register = async (req: Request, res: Response) => {
       msg: "unable to register user",
       error: error.message ? error.message : "internal server error",
       data: null,
+      code: ERROR_CODES.SERVER_ERR,
     });
   }
 };
@@ -55,6 +67,7 @@ export const isExistingUser = async (req: Request, response: Response) => {
         error: null,
         resObj: response,
         data: null,
+        code: ERROR_CODES.FIELD_VALIDATION_REQUIRED_ERR,
       });
     const user = await User.findOne({ phone });
     if (!user) {
@@ -65,6 +78,7 @@ export const isExistingUser = async (req: Request, response: Response) => {
         error: null,
         resObj: response,
         data: null,
+        code: ERROR_CODES.NOT_FOUND,
       });
     }
     return responseObj({
@@ -74,6 +88,7 @@ export const isExistingUser = async (req: Request, response: Response) => {
       error: null,
       resObj: response,
       data: null,
+      code: ERROR_CODES.DUPLICATE,
     });
   } catch (error: any) {
     logging.error("Is Existing User", "unable to find user", error);
@@ -99,24 +114,27 @@ export const isUserNameAvailable = async (req: Request, res: Response) => {
         error: null,
         resObj: res,
         data: null,
+        code: ERROR_CODES.FIELD_VALIDATION_REQUIRED_ERR,
       });
     const user = await User.findOne({ creatorName });
     if (!user)
       return responseObj({
         statusCode: HTTP_STATUS_CODES.SUCCESS,
         type: "success",
-        msg: "user name is available",
+        msg: "creator name is available",
         error: null,
         resObj: res,
         data: null,
+        code: ERROR_CODES.NOT_FOUND,
       });
     return responseObj({
       statusCode: HTTP_STATUS_CODES.ACCEPTED,
       type: "error",
-      msg: "user name is not available",
+      msg: "creator name is not available",
       error: null,
       resObj: res,
       data: null,
+      code: ERROR_CODES.DUPLICATE,
     });
   } catch (error: any) {
     logging.error("Is User Name Available", "unable to find user", error);
@@ -127,67 +145,64 @@ export const isUserNameAvailable = async (req: Request, res: Response) => {
       msg: "unable to find user",
       error: error.message ? error.message : "internal server error",
       data: null,
+      code: ERROR_CODES.SERVER_ERR,
     });
   }
 };
 
-export const updateUser = async (req: Request, res: Response) => {
+export const updateCreatorName = async (req: Request, res: Response) => {
   try {
-    const { _id = "", uid = "", creatorNameUpdate = true } = req.body;
-    if (_id == "")
+    const { uid = "", creatorName = "", description = "" } = req.body;
+    if (uid == "" || creatorName == "")
       return responseObj({
         statusCode: HTTP_STATUS_CODES.BAD_REQUEST,
         type: "error",
-        msg: "please provide a valid mongo user ID",
+        msg: "please provide a valid  user ID and creator name",
         error: null,
         resObj: res,
         data: null,
+        code: ERROR_CODES.FIELD_VALIDATION_REQUIRED_ERR,
       });
-    const errors = validationResult(req);
+    // const errors = validationResult(req);
 
-    if (!errors.isEmpty()) {
-      return res.status(400).json({
-        success: false,
-        errors: errors.array({}),
+    // if (!errors.isEmpty()) {
+    //   return res.status(400).json({
+    //     success: false,
+    //     errors: errors.array({}),
+    //   });
+    // }
+
+    const user = await User.findOne({ uid });
+    if (!user) {
+      return responseObj({
+        statusCode: HTTP_STATUS_CODES.BAD_REQUEST,
+        type: "error",
+        msg: "user not found",
+        error: null,
+        resObj: res,
+        data: null,
+        code: ERROR_CODES.NOT_FOUND,
       });
     }
-
-    if (creatorNameUpdate) {
-      const user = await User.findOne({ uid });
-      if (!user) {
-        return responseObj({
-          statusCode: HTTP_STATUS_CODES.BAD_REQUEST,
-          type: "error",
-          msg: "user not found",
-          error: null,
-          resObj: res,
-          data: null,
-        });
-      }
-      const isUserNameAvailable = await User.findOne({
-        creatorName: req.body.creatorName,
-      });
-      if (!isUserNameAvailable) {
-        user.creatorName = req.body.creatorName;
-        user.description = req.body.description;
-        await user.save();
-      }
-
-      //creatorName: req.body.creatorName
+    const isUserNameAvailable = await User.findOne({
+      creatorName: req.body.creatorName,
+    });
+    if (!isUserNameAvailable) {
+      user.creatorName = creatorName;
+      user.description = description === "" ? user.description : description;
+      await user.save();
     } else {
-      await adminApp.auth().updateUser(uid, {
-        email: req.body.email,
-        phoneNumber: req.body.phone,
-        displayName: req.body.name,
+      return responseObj({
+        statusCode: HTTP_STATUS_CODES.ACCEPTED,
+        type: "error",
+        msg: "duplicate user name",
+        error: null,
+        resObj: res,
+        data: null,
+        code: ERROR_CODES.DUPLICATE,
       });
-
-      await User.updateOne(
-        { _id },
-        {
-          ...req.body,
-        }
-      );
     }
+
     return responseObj({
       statusCode: HTTP_STATUS_CODES.SUCCESS,
       type: "success",
@@ -195,6 +210,7 @@ export const updateUser = async (req: Request, res: Response) => {
       error: null,
       resObj: res,
       data: null,
+      code: ERROR_CODES.SUCCESS,
     });
   } catch (error: any) {
     logging.error("Update User", "unable to update user profile", error);
@@ -205,6 +221,102 @@ export const updateUser = async (req: Request, res: Response) => {
       msg: "unable to update user profile",
       error: error.message ? error.message : "internal server error",
       data: null,
+      code: ERROR_CODES.SERVER_ERR,
+    });
+  }
+};
+
+export const updateUser = async (req: Request, res: Response) => {
+  try {
+    const { _id = "", uid = "" } = req.body;
+    if (_id == "")
+      return responseObj({
+        statusCode: HTTP_STATUS_CODES.BAD_REQUEST,
+        type: "error",
+        msg: "please provide a valid mongo user ID",
+        error: null,
+        resObj: res,
+        data: null,
+        code: ERROR_CODES.FIELD_VALIDATION_REQUIRED_ERR,
+      });
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+      return responseObj({
+        resObj: res,
+        type: "error",
+        statusCode: HTTP_STATUS_CODES.BAD_REQUEST,
+        msg: "fields are required",
+        error: errors.array({}),
+        data: null,
+        code: ERROR_CODES.FIELD_VALIDATION_REQUIRED_ERR,
+      });
+    }
+
+    if (req.body.creatorName != "") {
+      const user = await User.findOne({ uid });
+      if (!user) {
+        return responseObj({
+          statusCode: HTTP_STATUS_CODES.BAD_REQUEST,
+          type: "error",
+          msg: "user not found",
+          error: null,
+          resObj: res,
+          data: null,
+          code: ERROR_CODES.NOT_FOUND,
+        });
+      }
+      if (user.creatorName !== req.body.creatorName) {
+        const isUserNameAvailable = await User.findOne({
+          creatorName: req.body.creatorName,
+        });
+        if (isUserNameAvailable) {
+          return responseObj({
+            statusCode: HTTP_STATUS_CODES.ACCEPTED,
+            type: "error",
+            msg: "creator name is not available",
+            error: null,
+            resObj: res,
+            data: null,
+            code: ERROR_CODES.DUPLICATE,
+          });
+        }
+      }
+
+      //creatorName: req.body.creatorName
+    }
+    await adminApp.auth().updateUser(uid, {
+      email: req.body.email,
+      phoneNumber: req.body.phone,
+      displayName: req.body.name,
+    });
+
+    await User.updateOne(
+      { _id },
+      {
+        ...req.body,
+      }
+    );
+
+    return responseObj({
+      statusCode: HTTP_STATUS_CODES.SUCCESS,
+      type: "success",
+      msg: "your profile has been updated",
+      error: null,
+      resObj: res,
+      data: null,
+      code: ERROR_CODES.SUCCESS,
+    });
+  } catch (error: any) {
+    logging.error("Update User", "unable to update user profile", error);
+    return responseObj({
+      resObj: res,
+      type: "error",
+      statusCode: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR,
+      msg: "unable to update user profile",
+      error: error.message ? error.message : "internal server error",
+      data: null,
+      code: ERROR_CODES.SERVER_ERR,
     });
   }
 };
@@ -221,6 +333,7 @@ export const getUserProfile = async (req: Request, res: Response) => {
         error: null,
         resObj: res,
         data: null,
+        code: ERROR_CODES.FIELD_VALIDATION_REQUIRED_ERR,
       });
     let user = null;
 
@@ -237,6 +350,7 @@ export const getUserProfile = async (req: Request, res: Response) => {
       error: null,
       resObj: res,
       data: user,
+      code: ERROR_CODES.SUCCESS,
     });
   } catch (error: any) {
     logging.error("Get User", "unable to get user profile", error);
@@ -247,6 +361,7 @@ export const getUserProfile = async (req: Request, res: Response) => {
       msg: "unable to get user profile",
       error: error.message ? error.message : "internal server error",
       data: null,
+      code: ERROR_CODES.SERVER_ERR,
     });
   }
 };

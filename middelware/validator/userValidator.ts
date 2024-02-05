@@ -7,6 +7,10 @@ export const userDataValidateCheckPointA = [
   //   body("fcmToken").isString().notEmpty().withMessage("fcmToken is required"),
 ];
 
+export const userDataValidateCheckPointForCreatorName = [
+  body("creatorName").isString().notEmpty().withMessage("uid is required"),
+];
+
 export const userDataValidateCheckPointB = [
   ...userDataValidateCheckPointA,
   body("email").isString().notEmpty().withMessage("email is required"),
