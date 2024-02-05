@@ -34,34 +34,34 @@ const category: ICategory | any = {
 
 const categories = [
   {
-    categoryTitle: "Wellbeing",
+    name: "Wellbeing",
     categoryPic: "WellBingSvg",
   },
   {
-    categoryTitle: "Learning",
+    name: "Learning",
     categoryPic: "LearningSvg",
   },
   {
-    categoryTitle: "Going",
+    name: "Going",
     categoryPic: "GoingSvg",
   },
   {
-    categoryTitle: "Showing",
+    name: "Showing",
     categoryPic: "ShowingSvg",
   },
   {
-    categoryTitle: " Wearing",
+    name: " Wearing",
     categoryPic: "WearingSvg",
   },
   {
-    categoryTitle: "Helping",
+    name: "Helping",
     categoryPic: "HelpingSvg",
   },
 ];
 
 const runMethods = async () => {
   // const status = await pupulateOrUpdateCategory(category);
-  // const c = await await Category.find({});
+  // const c = await Category.insertMany(categories);
   // console.log(c);
 };
 

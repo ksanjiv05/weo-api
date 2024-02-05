@@ -11,7 +11,7 @@ export const pupulateOrUpdateCategory = async (category: ICategory) => {
   delete category.categories;
   try {
     await Category.updateOne(
-      { categoryTitle: category.categoryTitle },
+      { categoryTitle: category.name },
       {
         ...category,
         $addToSet: {

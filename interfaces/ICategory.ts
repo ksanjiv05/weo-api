@@ -6,7 +6,7 @@ import { Document } from "mongoose";
 // }
 
 export interface ICategory extends Document {
-  categoryTitle: string;
+  name: string;
   categories?: string[];
   categoryPic: string;
   activeCategoryPic: string;

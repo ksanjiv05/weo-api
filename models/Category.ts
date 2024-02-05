@@ -5,7 +5,7 @@ import { boolean } from "joi";
 
 const CategorySchema: Schema = new Schema(
   {
-    categoryTitle: {
+    name: {
       type: String,
       required: true,
       lowercase: true,
@@ -29,6 +29,8 @@ const CategorySchema: Schema = new Schema(
   },
   { timestamps: true }
 );
+
+CategorySchema.index({ name: "text" });
 
 CategorySchema.post<ICategory>("save", function () {
   logging.info("Mongo", "Category just saved: ");

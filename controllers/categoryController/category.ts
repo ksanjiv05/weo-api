@@ -9,14 +9,14 @@ import { ERROR_CODES } from "../../config/errorCode";
 
 export const addCategory = async (req: Request, res: Response) => {
   try {
-    const { categoryTitle = "", categoryPic = "" }: ICategory = req.body;
+    const { name = "", categoryPic = "" }: ICategory = req.body;
 
-    if (categoryTitle === "" || categoryTitle === "")
+    if (name === "")
       return responseObj({
         resObj: res,
         type: "error",
         statusCode: HTTP_STATUS_CODES.BAD_REQUEST,
-        msg: "Please provide category title and ",
+        msg: "Please provide category name and ",
         error: null,
         data: null,
       });
@@ -121,14 +121,35 @@ export const getCategory = async (req: Request, res: Response) => {
 
 export const getCategories = async (req: Request, res: Response) => {
   try {
-    const categories = await Category.find();
+    const { page = 1, perPage = 10, name = "" } = req.query;
+
+    const skip = (Number(page) - 1) * Number(perPage);
+
+    const filter = {
+      ...(name === ""
+        ? {}
+        : {
+            name: { $regex: new RegExp(name.toString(), "i") },
+          }),
+      // {
+      //     $text: {
+      //       $search: name + "",
+      //     },
+      //   }),
+    };
+    const categories = await Category.find(filter)
+      .sort("-createdAt")
+      .skip(Number(skip))
+      .limit(Number(perPage));
+    const total = await Category.find(filter).count();
+
     return responseObj({
       statusCode: HTTP_STATUS_CODES.SUCCESS,
       type: "success",
       msg: "your Categories",
       error: null,
       resObj: res,
-      data: categories,
+      data: { categories, total },
       code: ERROR_CODES.SUCCESS,
     });
   } catch (error: any) {
