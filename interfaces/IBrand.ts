@@ -1,14 +1,17 @@
 import { Document } from "mongoose";
 
 type LocationProps = {
-  location: string;
-  latitude: number;
-  longitude: number;
+  address: string;
+  location: {
+    type: string;
+    coordinates: number[];
+  };
 };
 type OfflineLocationProps = {
-  location: string;
-  latitude: number;
-  longitude: number;
+  location: {
+    type: string;
+    coordinates: number[];
+  };
   address: string;
   postcode: string;
   landmark: string;

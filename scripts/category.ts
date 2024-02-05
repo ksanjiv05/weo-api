@@ -12,6 +12,7 @@
 
 import { pupulateOrUpdateCategory } from "../helper/methods_for_controller_script/category";
 import { ICategory } from "../interfaces/ICategory";
+import Category from "../models/Category";
 
 // categoryTitle: string;
 // categories: string[];
@@ -31,9 +32,37 @@ const category: ICategory | any = {
   // updateAt: 0,
 };
 
+const categories = [
+  {
+    categoryTitle: "Wellbeing",
+    categoryPic: "WellBingSvg",
+  },
+  {
+    categoryTitle: "Learning",
+    categoryPic: "LearningSvg",
+  },
+  {
+    categoryTitle: "Going",
+    categoryPic: "GoingSvg",
+  },
+  {
+    categoryTitle: "Showing",
+    categoryPic: "ShowingSvg",
+  },
+  {
+    categoryTitle: " Wearing",
+    categoryPic: "WearingSvg",
+  },
+  {
+    categoryTitle: "Helping",
+    categoryPic: "HelpingSvg",
+  },
+];
+
 const runMethods = async () => {
-  const status = await pupulateOrUpdateCategory(category);
-  console.log(status);
+  // const status = await pupulateOrUpdateCategory(category);
+  // const c = await await Category.find({});
+  // console.log(c);
 };
 
 runMethods();

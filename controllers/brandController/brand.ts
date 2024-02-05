@@ -5,6 +5,7 @@ import { BRAND_STATUS, IBrand } from "../../interfaces/IBrand";
 import { responseObj } from "../../helper/response";
 import { HTTP_STATUS_CODES } from "../../config/statusCode";
 import { validationResult } from "express-validator";
+import { ERROR_CODES } from "../../config/errorCode";
 
 export const isBrandNameExist = async (req: Request, res: Response) => {
   try {
@@ -18,6 +19,7 @@ export const isBrandNameExist = async (req: Request, res: Response) => {
         msg: "please provide name",
         error: "please provide name",
         data: null,
+        code: ERROR_CODES.FIELD_VALIDATION_REQUIRED_ERR,
       });
     }
     const brand = await Brand.findOne({ brandName, uid });
@@ -29,6 +31,7 @@ export const isBrandNameExist = async (req: Request, res: Response) => {
         msg: "Brand name already exist",
         error: null,
         data: null,
+        code: ERROR_CODES.DUPLICATE,
       });
     }
     return responseObj({
@@ -38,6 +41,7 @@ export const isBrandNameExist = async (req: Request, res: Response) => {
       msg: "Brand name not exist",
       error: null,
       data: null,
+      code: ERROR_CODES.NOT_FOUND,
     });
   } catch (error: any) {
     logging.error("Brand", "unable to get Brand", error);
@@ -48,6 +52,7 @@ export const isBrandNameExist = async (req: Request, res: Response) => {
       msg: "unable to get Brand",
       error: error.message ? error.message : "internal server error",
       data: null,
+      code: ERROR_CODES.SERVER_ERR,
     });
   }
 };
@@ -58,9 +63,18 @@ export const addBrand = async (req: Request, res: Response) => {
     const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
-      return res.status(400).json({
-        success: false,
-        errors: errors.array({}),
+      // return res.status(400).json({
+      //   success: false,
+      //   errors: errors.array({}),
+      // });
+      return responseObj({
+        resObj: res,
+        type: "error",
+        statusCode: HTTP_STATUS_CODES.BAD_REQUEST,
+        msg: "fields are required",
+        error: errors.array({}),
+        data: null,
+        code: ERROR_CODES.FIELD_VALIDATION_REQUIRED_ERR,
       });
     }
     // const { uid = "" } = req.body;
@@ -76,6 +90,7 @@ export const addBrand = async (req: Request, res: Response) => {
       msg: "you are successfully added Brand",
       error: null,
       data: newBrand,
+      code: ERROR_CODES.SUCCESS,
     });
   } catch (error: any) {
     logging.error("Brand", "unable to add Brand", error);
@@ -86,6 +101,7 @@ export const addBrand = async (req: Request, res: Response) => {
       msg: "unable to add Brand",
       error: error.message ? error.message : "internal server error",
       data: null,
+      code: ERROR_CODES.SERVER_ERR,
     });
   }
 };
@@ -95,9 +111,18 @@ export const updateBrand = async (req: Request, res: Response) => {
     const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
-      return res.status(400).json({
-        success: false,
-        errors: errors.array({}),
+      // return res.status(400).json({
+      //   success: false,
+      //   errors: errors.array({}),
+      // });
+      return responseObj({
+        resObj: res,
+        type: "error",
+        statusCode: HTTP_STATUS_CODES.BAD_REQUEST,
+        msg: "fields are required",
+        error: errors.array({}),
+        data: null,
+        code: ERROR_CODES.FIELD_VALIDATION_REQUIRED_ERR,
       });
     }
     const { _id = "", checkpoint = 1 } = req.body;
@@ -112,6 +137,7 @@ export const updateBrand = async (req: Request, res: Response) => {
         msg: "you are successfully added Offer",
         error: null,
         data: newBrand,
+        code: ERROR_CODES.SUCCESS,
       });
     }
     await Brand.updateOne({ _id }, { ...req.body });
@@ -123,6 +149,7 @@ export const updateBrand = async (req: Request, res: Response) => {
       msg: "you are successfully added Brand",
       error: null,
       data: null,
+      code: ERROR_CODES.SUCCESS,
     });
   } catch (error: any) {
     logging.error("Brand", "unable to add Brand", error);
@@ -133,6 +160,7 @@ export const updateBrand = async (req: Request, res: Response) => {
       msg: "unable to add Brand",
       error: error.message ? error.message : "internal server error",
       data: null,
+      code: ERROR_CODES.SERVER_ERR,
     });
   }
 };
@@ -166,6 +194,7 @@ export const getBrands = async (req: Request, res: Response) => {
       msg: "you are successfully get Brands",
       error: null,
       data: { brands, total },
+      code: ERROR_CODES.SUCCESS,
     });
   } catch (error: any) {
     logging.error("Brand", "unable to get Brands", error);
@@ -176,6 +205,7 @@ export const getBrands = async (req: Request, res: Response) => {
       msg: "unable to get Brands",
       error: error.message ? error.message : "internal server error",
       data: null,
+      code: ERROR_CODES.SERVER_ERR,
     });
   }
 };
@@ -202,6 +232,7 @@ export const getBrandsByUid = async (req: Request, res: Response) => {
       msg: "you are successfully get Brands",
       error: null,
       data: { brands, total },
+      code: ERROR_CODES.SUCCESS,
     });
   } catch (error: any) {
     logging.error("Brand", "unable to get Brands", error);
@@ -212,6 +243,7 @@ export const getBrandsByUid = async (req: Request, res: Response) => {
       msg: "unable to get Brands",
       error: error.message ? error.message : "internal server error",
       data: null,
+      code: ERROR_CODES.SERVER_ERR,
     });
   }
 };
@@ -227,6 +259,7 @@ export const getBrand = async (req: Request, res: Response) => {
         msg: "please provide brandId",
         error: "please provide brandId",
         data: null,
+        code: ERROR_CODES.FIELD_VALIDATION_REQUIRED_ERR,
       });
     }
     const brand = await Brand.findOne({ _id: brandId });
@@ -238,6 +271,7 @@ export const getBrand = async (req: Request, res: Response) => {
       msg: "you are successfully get Brand",
       error: null,
       data: brand,
+      code: ERROR_CODES.SUCCESS,
     });
   } catch (error: any) {
     logging.error("Brand", "unable to get Brand", error);
@@ -248,6 +282,7 @@ export const getBrand = async (req: Request, res: Response) => {
       msg: "unable to get Brand",
       error: error.message ? error.message : "internal server error",
       data: null,
+      code: ERROR_CODES.SERVER_ERR,
     });
   }
 };
@@ -263,6 +298,7 @@ export const deleteBrand = async (req: Request, res: Response) => {
         msg: "please provide brandId",
         error: "please provide brandId",
         data: null,
+        code: ERROR_CODES.FIELD_VALIDATION_REQUIRED_ERR,
       });
     }
     await Brand.deleteOne({ _id: brandId });
@@ -274,6 +310,7 @@ export const deleteBrand = async (req: Request, res: Response) => {
       msg: "you are successfully deleted Brand",
       error: null,
       data: null,
+      code: ERROR_CODES.SUCCESS,
     });
   } catch (error: any) {
     logging.error("Brand", "unable to delete Brand", error);
@@ -284,6 +321,7 @@ export const deleteBrand = async (req: Request, res: Response) => {
       msg: "unable to delete Brand",
       error: error.message ? error.message : "internal server error",
       data: null,
+      code: ERROR_CODES.SERVER_ERR,
     });
   }
 };

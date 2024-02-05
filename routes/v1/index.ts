@@ -23,6 +23,7 @@ const router = express.Router();
 import userRoute from "./user";
 import brandRoute from "./brand";
 import offerRoute from "./offer";
+import categoryRoute from "./category";
 
 //user profile routes
 router.use(userRoute);
@@ -33,15 +34,15 @@ router.use(brandRoute);
 //offer routes
 router.use(offerRoute);
 
+//category routes
+router.use(categoryRoute);
+
 //static no need to we use aws s3
 // router.post("/static", upload.single("file"), uploadStaticFile);
 // router.post("/static/bulk", upload.array("files"), uploadStaticFiles);
 
 router.post("/avatars", auth, getAiGeneratedImg);
 router.post("/weo/chat", auth, getAiGeneratedChatResponse);
-
-//category routes
-router.get("/category/all", getCategories);
 
 //offer routes
 

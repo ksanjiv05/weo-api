@@ -1,6 +1,7 @@
 import mongoose, { Schema } from "mongoose";
 import logging from "../config/logging";
 import { ICategory } from "../interfaces/ICategory";
+import { boolean } from "joi";
 
 const CategorySchema: Schema = new Schema(
   {
@@ -21,6 +22,7 @@ const CategorySchema: Schema = new Schema(
     activeCategoryPic: {
       type: String,
     },
+    isActive: { type: Boolean, default: false },
     description: {
       type: String,
     },

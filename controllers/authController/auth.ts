@@ -70,6 +70,8 @@ export const isExistingUser = async (req: Request, response: Response) => {
         code: ERROR_CODES.FIELD_VALIDATION_REQUIRED_ERR,
       });
     const user = await User.findOne({ phone });
+
+    // console.log("user", phone, user);
     if (!user) {
       return responseObj({
         statusCode: HTTP_STATUS_CODES.ACCEPTED,

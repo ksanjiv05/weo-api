@@ -33,17 +33,17 @@ const BrandSchema: Schema = new Schema(
     },
     onlineLocations: [
       {
-        location: String,
+        address: String,
         // latitude: String,
         // longitude: String,
-        locationCoordinate: pointSchema,
+        location: pointSchema,
       },
     ],
     offlineLocations: [
       {
         // latitude: Number,
         // longitude: Number,
-        locationCoordinate: pointSchema,
+        location: pointSchema,
         address: String,
         postcode: String,
         landmark: String,

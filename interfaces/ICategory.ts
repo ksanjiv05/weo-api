@@ -11,6 +11,7 @@ export interface ICategory extends Document {
   categoryPic: string;
   activeCategoryPic: string;
   description?: string;
+  isActive?: boolean;
   createdAt?: Date;
   updateAt?: Date;
 }

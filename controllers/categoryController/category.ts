@@ -5,6 +5,7 @@ import { ICategory } from "../../interfaces/ICategory";
 import { responseObj } from "../../helper/response";
 import { HTTP_STATUS_CODES } from "../../config/statusCode";
 import User from "../../models/User";
+import { ERROR_CODES } from "../../config/errorCode";
 
 export const addCategory = async (req: Request, res: Response) => {
   try {
@@ -128,6 +129,7 @@ export const getCategories = async (req: Request, res: Response) => {
       error: null,
       resObj: res,
       data: categories,
+      code: ERROR_CODES.SUCCESS,
     });
   } catch (error: any) {
     logging.error("Get Categories", "unable to get Categories", error);
@@ -138,6 +140,7 @@ export const getCategories = async (req: Request, res: Response) => {
       msg: "unable to get Categories",
       error: error.message ? error.message : "internal server error",
       data: null,
+      code: ERROR_CODES.SERVER_ERR,
     });
   }
 };
