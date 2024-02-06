@@ -7,6 +7,7 @@ import {
   getBrand,
   getBrands,
   getBrandsByUid,
+  isBrandNameExist,
   updateBrand,
 } from "../../controllers/brandController/brand";
 import {
@@ -398,6 +399,7 @@ const router = express.Router();
 
 // router.get("/brands", auth, getBrands);
 router.get("/brands", auth, getBrandsByUid);
+router.get("/brands/exist", auth, isBrandNameExist);
 router.get("/brands/:brandId", auth, getBrand);
 
 router.post("/brands/1", auth, brandDataValidateCheckPointA, addBrand);

@@ -38,10 +38,10 @@ export const isBrandNameExist = async (req: Request, res: Response) => {
       resObj: res,
       type: "success",
       statusCode: HTTP_STATUS_CODES.SUCCESS,
-      msg: "Brand name not exist",
+      msg: "Brand name is available",
       error: null,
       data: null,
-      code: ERROR_CODES.NOT_FOUND,
+      code: ERROR_CODES.SUCCESS,
     });
   } catch (error: any) {
     logging.error("Brand", "unable to get Brand", error);
@@ -79,6 +79,19 @@ export const addBrand = async (req: Request, res: Response) => {
     }
     // const { uid = "" } = req.body;
     // req.body.creatorId = uid;
+    const { brandName = "", uid = "" } = req.body;
+    const brand = await Brand.findOne({ brandName, uid });
+    if (brand) {
+      return responseObj({
+        resObj: res,
+        type: "success",
+        statusCode: HTTP_STATUS_CODES.SUCCESS,
+        msg: "Brand name already exist",
+        error: null,
+        data: null,
+        code: ERROR_CODES.DUPLICATE,
+      });
+    }
 
     const newBrand = new Brand(req.body);
     await newBrand.save();

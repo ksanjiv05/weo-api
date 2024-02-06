@@ -3,13 +3,11 @@ import { Document } from "mongoose";
 type LocationProps = {
   address: string;
   location: {
-    type: string;
     coordinates: number[];
   };
 };
 type OfflineLocationProps = {
   location: {
-    type: string;
     coordinates: number[];
   };
   address: string;
@@ -19,6 +17,7 @@ type OfflineLocationProps = {
 
 export interface IBrand extends Document {
   uid: string; //user_Id
+  creatorName: string;
   brandName: string; //brand_name
   brandDescription: string; //brand_description
   status: string | number;

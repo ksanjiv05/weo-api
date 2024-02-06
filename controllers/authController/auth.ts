@@ -14,10 +14,6 @@ export const register = async (req: Request, res: Response) => {
     const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
-      // return res.status(400).json({
-      //   success: false,
-      //   errors: errors.array({}),
-      // });
       return responseObj({
         resObj: res,
         type: "error",
@@ -118,7 +114,9 @@ export const isUserNameAvailable = async (req: Request, res: Response) => {
         data: null,
         code: ERROR_CODES.FIELD_VALIDATION_REQUIRED_ERR,
       });
+
     const user = await User.findOne({ creatorName });
+
     if (!user)
       return responseObj({
         statusCode: HTTP_STATUS_CODES.SUCCESS,
@@ -127,7 +125,7 @@ export const isUserNameAvailable = async (req: Request, res: Response) => {
         error: null,
         resObj: res,
         data: null,
-        code: ERROR_CODES.NOT_FOUND,
+        code: ERROR_CODES.SUCCESS,
       });
     return responseObj({
       statusCode: HTTP_STATUS_CODES.ACCEPTED,
@@ -175,6 +173,7 @@ export const updateCreatorName = async (req: Request, res: Response) => {
     // }
 
     const user = await User.findOne({ uid });
+    console.log("uid", uid, creatorName, user);
     if (!user) {
       return responseObj({
         statusCode: HTTP_STATUS_CODES.BAD_REQUEST,

@@ -2,6 +2,10 @@ import { body } from "express-validator";
 
 export const brandDataValidateCheckPointA = [
   body("uid").isString().notEmpty().withMessage("uid is required"),
+  body("creatorName")
+    .isString()
+    .notEmpty()
+    .withMessage("creatorName is required"),
   body("brandName").isString().notEmpty().withMessage("brandName is required"),
   body("brandDescription")
     .isString()
@@ -40,10 +44,28 @@ export const brandDataValidateCheckPointC = [
     .isArray()
     .notEmpty()
     .withMessage("at least one onlineLocations is required"),
+  body("onlineLocations.*.address")
+    .isString()
+    .notEmpty()
+    .withMessage("address is required"),
+  body("onlineLocations.*.location")
+    .notEmpty()
+    .isArray()
+    .withMessage("location is required"),
+
   body("offlineLocations")
     .isArray()
     .notEmpty()
     .withMessage("at least one offlineLocations is required"),
+  body("offlineLocations.*.address")
+    .isString()
+    .notEmpty()
+    .withMessage("address is required"),
+
+  body("offlineLocations.*.location")
+    .notEmpty()
+    .isArray()
+    .withMessage("location is required"),
 ];
 
 export const brandDataValidateCheckPointD = [
