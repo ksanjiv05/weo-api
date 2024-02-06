@@ -42,11 +42,11 @@ app.listen(port, () => {
   console.log(`⚡️[server]: Server is running at https://localhost:${port}`);
 });
 
-// const {publicKey,privateKey} = generateKeyPair()
+//const {publicKey,privateKey} = generateKeyPair()
 //const data = encryptData("hii sanjiv", __dirname + "/public.pem");
-// console.log("data ", data);
-// const dec = decryptText(data, __dirname + "/private.pem");
-// console.log("data ", dec.toString("utf-8"));
+//console.log("data ", data);
+//const dec = decryptText(data, __dirname + "/private.pem");
+//console.log("data ", dec.toString("utf-8"));
 //Transaction
 
 // import "./helper/oCalculator/index";
