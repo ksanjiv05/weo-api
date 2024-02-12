@@ -1,3 +1,4 @@
+import { NextFunction, Request, Response } from "express";
 import { body } from "express-validator";
 
 export const brandDataValidateCheckPointA = [
@@ -40,18 +41,18 @@ export const brandDataValidateCheckPointC = [
     .isString()
     .notEmpty()
     .withMessage("onlineServiceLocationType is required"),
-  body("onlineLocations")
-    .isArray()
-    .notEmpty()
-    .withMessage("at least one onlineLocations is required"),
-  body("onlineLocations.*.address")
-    .isString()
-    .notEmpty()
-    .withMessage("address is required"),
-  body("onlineLocations.*.location")
-    .notEmpty()
-    .isArray()
-    .withMessage("location is required"),
+  // body("onlineLocations")
+  //   .isArray()
+  //   .notEmpty()
+  //   .withMessage("at least one onlineLocations is required"),
+  // body("onlineLocations.*.address")
+  //   .isString()
+  //   .notEmpty()
+  //   .withMessage("address is required"),
+  // body("onlineLocations.*.location")
+  //   .notEmpty()
+  //   .isArray()
+  //   .withMessage("location is required"),
 
   body("offlineLocations")
     .isArray()
@@ -68,6 +69,8 @@ export const brandDataValidateCheckPointC = [
     .withMessage("location is required"),
 ];
 
+// business goals to be added later after finalise
+
 export const brandDataValidateCheckPointD = [
   ...brandDataValidateCheckPointC,
   body("coverImage")
@@ -79,3 +82,26 @@ export const brandDataValidateCheckPointD = [
     .notEmpty()
     .withMessage("profileImage is required"),
 ];
+
+export const brandDataValidateCheckPoint = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const { checkpoint = 1 } = req.body;
+  if (checkpoint === 1) {
+    return brandDataValidateCheckPointA;
+  }
+  if (checkpoint === 2) {
+    return brandDataValidateCheckPointB;
+  }
+  if (checkpoint === 3) {
+    return brandDataValidateCheckPointC;
+  }
+  if (checkpoint === 4) {
+    return brandDataValidateCheckPointD;
+  }
+  if (checkpoint === 5) {
+    return brandDataValidateCheckPointD;
+  }
+};
