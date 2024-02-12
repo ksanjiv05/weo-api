@@ -89,6 +89,7 @@ export const brandDataValidateCheckPoint = (
   next: NextFunction
 ) => {
   const { checkpoint = 1 } = req.body;
+  console.log("requset", checkpoint);
   if (checkpoint === 1) {
     return brandDataValidateCheckPointA;
   }
@@ -102,6 +103,7 @@ export const brandDataValidateCheckPoint = (
     return brandDataValidateCheckPointD;
   }
   if (checkpoint === 5) {
-    return brandDataValidateCheckPointD;
+    console.log("--");
+    brandDataValidateCheckPointD;
   }
 };

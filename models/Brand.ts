@@ -9,10 +9,10 @@ const BrandSchema: Schema = new Schema(
       type: String,
       required: true,
     },
-    creatorName: {
-      type: String,
-      required: true,
-    },
+    // creatorName: {
+    //   type: String,
+    //   required: true,
+    // },
     brandName: {
       type: String,
       required: true,

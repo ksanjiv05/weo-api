@@ -17,7 +17,7 @@ type OfflineLocationProps = {
 
 export interface IBrand extends Document {
   uid: string; //user_Id
-  creatorName: string;
+  // creatorName: string;
   brandName: string; //brand_name
   brandDescription: string; //brand_description
   status: string | number;

@@ -403,7 +403,15 @@ router.get("/brands", auth, getBrandsByUid);
 router.get("/brands/exist", auth, isBrandNameExist);
 router.get("/brands/:brandId", auth, getBrand);
 
-router.post("/brands", auth, brandDataValidateCheckPoint, addBrand);
+router.post(
+  "/brands",
+  auth,
+  // brandDataValidateCheckPoint,
+  // (req, res) => {
+  //   console.log("i amm");
+  // },
+  addBrand
+);
 router.put("/brands/1", auth, brandDataValidateCheckPointA, addBrand);
 router.put("/brands/2", auth, brandDataValidateCheckPointB, updateBrand);
 router.put("/brands/3", auth, brandDataValidateCheckPointC, updateBrand);

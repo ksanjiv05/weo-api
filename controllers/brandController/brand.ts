@@ -59,7 +59,7 @@ export const isBrandNameExist = async (req: Request, res: Response) => {
 
 export const addBrand = async (req: Request, res: Response) => {
   try {
-    console.log("req.body", req.body);
+    // console.log("req.body", req.body);
     const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
