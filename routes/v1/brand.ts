@@ -16,6 +16,7 @@ import {
   brandDataValidateCheckPointB,
   brandDataValidateCheckPointC,
   brandDataValidateCheckPointD,
+  validateBrand,
 } from "../../middelware/validator/brandValidator";
 
 const router = express.Router();
@@ -403,15 +404,7 @@ router.get("/brands", auth, getBrandsByUid);
 router.get("/brands/exist", auth, isBrandNameExist);
 router.get("/brands/:brandId", auth, getBrand);
 
-router.post(
-  "/brands",
-  auth,
-  // brandDataValidateCheckPoint,
-  // (req, res) => {
-  //   console.log("i amm");
-  // },
-  addBrand
-);
+router.post("/brands", validateBrand([]), addBrand);
 router.put("/brands/1", auth, brandDataValidateCheckPointA, addBrand);
 router.put("/brands/2", auth, brandDataValidateCheckPointB, updateBrand);
 router.put("/brands/3", auth, brandDataValidateCheckPointC, updateBrand);
