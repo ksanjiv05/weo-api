@@ -36,36 +36,96 @@ const categories = [
   {
     name: "Wellbeing",
     categoryPic: "WellBingSvg",
+    categories: [
+      "Wellness",
+      "Self Care",
+      "Nutrition",
+      "Mental Health",
+      "Beauty",
+      "Health",
+    ],
   },
   {
     name: "Learning",
     categoryPic: "LearningSvg",
+    categories: [
+      "Courses",
+      "Mentoring",
+      "Books",
+      "Podcasts",
+      "Workshops",
+      "Webinars",
+      "Upskilling",
+      "Tutorials",
+      "Art & Craft",
+      "Sports",
+    ],
   },
   {
     name: "Going",
     categoryPic: "GoingSvg",
+    categories: [
+      "Riding",
+      "Driving",
+      "Walking",
+      "Delerving",
+      "Travelling",
+      "Camping",
+      "Renting",
+    ],
   },
   {
     name: "Showing",
     categoryPic: "ShowingSvg",
+    categories: [
+      "Concerts",
+      "Exhibitions",
+      "Performances",
+      "Sports Events",
+      "Festivals",
+      "Shows",
+      "Performers",
+    ],
   },
   {
     name: " Wearing",
     categoryPic: "WearingSvg",
+    categories: [
+      "Womenwear",
+      "Menwear",
+      "Kidswear",
+      "Footwear",
+      "Wardrobs",
+      "Clothing",
+      "Shoes",
+    ],
   },
   {
     name: "Helping",
     categoryPic: "HelpingSvg",
+    categories: [
+      "Volunteering",
+      "Donating",
+      "Fundraising",
+      "Advising",
+      "Caregiving",
+      "Housekeeping",
+      "Cleaning",
+      "Repairing",
+      "Maintaining",
+    ],
   },
 ];
 
 const runMethods = async () => {
   // const status = await pupulateOrUpdateCategory(category);
-  // const c = await Category.insertMany(categories);
-  // console.log(c);
+  // Category.deleteMany({});
+
+  const c = await Category.insertMany(categories);
+  console.log(c);
 };
 
-runMethods();
+// runMethods();
 
 // Checkpoint: 6
 // Creator id: int

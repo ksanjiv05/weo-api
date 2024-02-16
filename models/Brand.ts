@@ -25,7 +25,7 @@ const BrandSchema: Schema = new Schema(
     checkpoint: {
       type: Number,
     },
-    categoriesId: [String],
+    categoriesIds: [mongoose.Types.ObjectId],
     serviceLocationType: {
       type: String,
     },
