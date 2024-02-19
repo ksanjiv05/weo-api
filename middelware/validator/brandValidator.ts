@@ -68,7 +68,6 @@ export const brandDataValidateCheckPointC = [
 
   body("offlineLocations.*.location")
     .notEmpty()
-    .isArray()
     .withMessage("location is required"),
 ];
 

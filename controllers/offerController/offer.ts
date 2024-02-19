@@ -5,16 +5,74 @@ import { IOffer, OFFER_STATUS } from "../../interfaces/IOffer";
 import { responseObj } from "../../helper/response";
 import { HTTP_STATUS_CODES } from "../../config/statusCode";
 import { validationResult } from "express-validator";
+import { ERROR_CODES } from "../../config/errorCode";
 
+// this function is used to check if the offer name is already exist or not
+export const isBrandNameExist = async (req: Request, res: Response) => {
+  try {
+    const { offerTitle = "", brandId = "" } = req.query;
+    const { uid = "" } = req.body;
+    if (brandId == "" || offerTitle == null) {
+      return responseObj({
+        resObj: res,
+        type: "error",
+        statusCode: HTTP_STATUS_CODES.BAD_REQUEST,
+        msg: "please provide offer name and brandId",
+        error: "please provide offer name and brandId",
+        data: null,
+        code: ERROR_CODES.FIELD_VALIDATION_REQUIRED_ERR,
+      });
+    }
+    const offer = await Offer.findOne({ brandId, offerTitle });
+    if (offer) {
+      return responseObj({
+        resObj: res,
+        type: "success",
+        statusCode: HTTP_STATUS_CODES.SUCCESS,
+        msg: "Offer name already exist",
+        error: null,
+        data: null,
+        code: ERROR_CODES.DUPLICATE,
+      });
+    }
+    return responseObj({
+      resObj: res,
+      type: "success",
+      statusCode: HTTP_STATUS_CODES.SUCCESS,
+      msg: "Offer name is available",
+      error: null,
+      data: null,
+      code: ERROR_CODES.SUCCESS,
+    });
+  } catch (error: any) {
+    logging.error("Offer Exist", "unable to check offer exist or not", error);
+    return responseObj({
+      resObj: res,
+      type: "error",
+      statusCode: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR,
+      msg: "unable to check offer exist or not",
+      error: error.message ? error.message : "internal server error",
+      data: null,
+      code: ERROR_CODES.SERVER_ERR,
+    });
+  }
+};
+
+// this function is used to add new offer
 export const addOffer = async (req: Request, res: Response) => {
   try {
     console.log("req.body", req.body);
     const errors = validationResult(req);
     // if there is error then return Error
     if (!errors.isEmpty()) {
-      return res.status(400).json({
-        success: false,
-        errors: errors.array({}),
+      return responseObj({
+        resObj: res,
+        type: "error",
+        statusCode: HTTP_STATUS_CODES.BAD_REQUEST,
+        msg: "fields are required",
+        error: errors.array({}),
+        data: null,
+        code: ERROR_CODES.FIELD_VALIDATION_REQUIRED_ERR,
       });
     }
     // const { uid = "" } = req.body;
@@ -31,6 +89,7 @@ export const addOffer = async (req: Request, res: Response) => {
       msg: "you are successfully added Offer",
       error: null,
       data: newOffer,
+      code: ERROR_CODES.SUCCESS,
     });
   } catch (error: any) {
     logging.error("Offer", "unable to add Offer", error);
@@ -41,19 +100,26 @@ export const addOffer = async (req: Request, res: Response) => {
       msg: "unable to add Offer",
       error: error.message ? error.message : "internal server error",
       data: null,
+      code: ERROR_CODES.SERVER_ERR,
     });
   }
 };
 
+// this function is used to update offer
 export const updateOffer = async (req: Request, res: Response) => {
   try {
     const errors = validationResult(req);
     // console.log("errors", req.body);
     // if there is error then return Error
     if (!errors.isEmpty()) {
-      return res.status(400).json({
-        success: false,
-        errors: errors.array({}),
+      return responseObj({
+        resObj: res,
+        type: "error",
+        statusCode: HTTP_STATUS_CODES.BAD_REQUEST,
+        msg: "fields are required",
+        error: errors.array({}),
+        data: null,
+        code: ERROR_CODES.FIELD_VALIDATION_REQUIRED_ERR,
       });
     }
     const { _id = "", checkpoint = 1 } = req.body;
@@ -70,6 +136,7 @@ export const updateOffer = async (req: Request, res: Response) => {
         msg: "you are successfully added Offer",
         error: null,
         data: newOffer,
+        code: ERROR_CODES.SUCCESS,
       });
     }
 
@@ -86,6 +153,7 @@ export const updateOffer = async (req: Request, res: Response) => {
       data: {
         ...req.body,
       },
+      code: ERROR_CODES.SUCCESS,
     });
   } catch (error: any) {
     logging.error("Offer", "unable to add Offer", error);
@@ -96,10 +164,12 @@ export const updateOffer = async (req: Request, res: Response) => {
       msg: "unable to add Offer",
       error: error.message ? error.message : "internal server error",
       data: null,
+      code: ERROR_CODES.SERVER_ERR,
     });
   }
 };
 
+// this function is used to get all offers
 export const getOffers = async (req: Request, res: Response) => {
   try {
     const {
@@ -133,6 +203,7 @@ export const getOffers = async (req: Request, res: Response) => {
       msg: "all offers",
       error: null,
       data: offers,
+      code: ERROR_CODES.SUCCESS,
     });
   } catch (error: any) {
     logging.error("Get Offers", "unable to get Offers", error);
@@ -143,10 +214,12 @@ export const getOffers = async (req: Request, res: Response) => {
       msg: "unable to get Offers",
       error: error.message ? error.message : "internal server error",
       data: null,
+      code: ERROR_CODES.SERVER_ERR,
     });
   }
 };
 
+// this function is used to get all offers by uid
 export const getOffersByUid = async (req: Request, res: Response) => {
   try {
     const {
@@ -180,6 +253,7 @@ export const getOffersByUid = async (req: Request, res: Response) => {
       msg: "all offers",
       error: null,
       data: { offers, total },
+      code: ERROR_CODES.SUCCESS,
     });
   } catch (error: any) {
     logging.error("Get Offers", "unable to get Offers", error);
@@ -190,10 +264,12 @@ export const getOffersByUid = async (req: Request, res: Response) => {
       msg: "unable to get Offers",
       error: error.message ? error.message : "internal server error",
       data: null,
+      code: ERROR_CODES.SERVER_ERR,
     });
   }
 };
 
+// this function is used to get offer by id
 export const getOffer = async (req: Request, res: Response) => {
   try {
     const { id = "" } = req.params;
@@ -207,6 +283,7 @@ export const getOffer = async (req: Request, res: Response) => {
       msg: "your offer",
       error: null,
       data: offer,
+      code: ERROR_CODES.SUCCESS,
     });
   } catch (error: any) {
     logging.error("Get Offer", "unable to get Offers", error);
@@ -217,10 +294,12 @@ export const getOffer = async (req: Request, res: Response) => {
       msg: "unable to get Offer",
       error: error.message ? error.message : "internal server error",
       data: null,
+      code: ERROR_CODES.SERVER_ERR,
     });
   }
 };
 
+// this function is used to delete offer by id
 export const deleteOffer = async (req: Request, res: Response) => {
   try {
     const { id = "" } = req.params;
@@ -234,6 +313,7 @@ export const deleteOffer = async (req: Request, res: Response) => {
       msg: "your offer deleted successfully",
       error: null,
       data: null,
+      code: ERROR_CODES.SUCCESS,
     });
   } catch (error: any) {
     logging.error("Delete Offer", "unable to get Offers", error);
@@ -244,6 +324,7 @@ export const deleteOffer = async (req: Request, res: Response) => {
       msg: "unable to delete Offer",
       error: error.message ? error.message : "internal server error",
       data: null,
+      code: ERROR_CODES.SERVER_ERR,
     });
   }
 };

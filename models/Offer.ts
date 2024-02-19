@@ -26,7 +26,7 @@ const OfferSchema: Schema = new Schema(
       type: String,
       required: true,
     },
-    productIds: {
+    subCategoryIds: {
       type: [String],
       // required: true,
     },
@@ -142,6 +142,11 @@ const OfferSchema: Schema = new Schema(
     },
   },
   { timestamps: true }
+);
+
+OfferSchema.index(
+  { creatorId: 1, brandId: 1, offerTitle: 1 },
+  { unique: true }
 );
 
 OfferSchema.post<IOffer>("save", function () {

@@ -41,8 +41,8 @@ router.use(categoryRoute);
 // router.post("/static", upload.single("file"), uploadStaticFile);
 // router.post("/static/bulk", upload.array("files"), uploadStaticFiles);
 
-router.post("/avatars", auth, getAiGeneratedImg);
-router.post("/weo/chat", auth, getAiGeneratedChatResponse);
+router.post("/ai/images", auth, getAiGeneratedImg);
+router.post("/ai/weo/chat", auth, getAiGeneratedChatResponse);
 
 //offer routes
 
