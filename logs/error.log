@@ -1,0 +1,3 @@
+{"level":"error","message":"POST /api/v1/brands 403 3ms","timestamp":"2024-02-19T10:50:18.347Z"}
+{"level":"error","message":"POST /api/v1/brands 400 8ms","timestamp":"2024-02-19T10:51:24.872Z"}
+error: POST /api/v1/brands 400 7ms

@@ -37,3 +37,59 @@ export const logging = ({
 
 //     // rest of request handling code
 // }
+
+import winston from "winston";
+
+const enumerateErrorFormat = winston.format((info) => {
+  if (info instanceof Error) {
+    Object.assign(info, { message: info.stack });
+  }
+  return info;
+});
+
+// export const logger = winston.createLogger({
+//   level: process.env.NODE_ENV == "dev" ? "debug" : "info",
+//   format: winston.format.combine(
+//     enumerateErrorFormat(),
+//     process.env.NODE_ENV == "dev"
+//       ? winston.format.colorize()
+//       : winston.format.uncolorize(),
+//     winston.format.splat(),
+//     winston.format.printf(({ level, message }) => `${level}: ${message}`)
+//   ),
+//   transports: [
+//     new winston.transports.Console({
+//       stderrLevels: ["error"],
+//     }),
+//   ],
+// });
+
+//
+
+const logger = winston.createLogger({
+  level: process.env.LOG_LEVEL || "info",
+  format: winston.format.combine(
+    winston.format.timestamp(),
+    enumerateErrorFormat(),
+    process.env.NODE_ENV == "dev"
+      ? winston.format.colorize()
+      : winston.format.uncolorize(),
+    winston.format.splat(),
+    winston.format.printf(({ level, message }) => `${level}: ${message}`)
+    // winston.format.json()
+  ),
+  transports: [
+    new winston.transports.File({ filename: "logs/error.log", level: "error" }),
+    new winston.transports.File({ filename: "logs/combined.log" }),
+  ],
+});
+
+if (process.env.NODE_ENV !== "production") {
+  logger.add(
+    new winston.transports.Console({
+      format: winston.format.simple(),
+    })
+  );
+}
+
+export default logger;

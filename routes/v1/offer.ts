@@ -2,6 +2,7 @@ import express from "express";
 import {
   addOffer,
   getOffers,
+  isOfferNameExist,
   updateOffer,
 } from "../../controllers/offerController/offer";
 import {
@@ -313,6 +314,7 @@ const router = express.Router();
  *         description: Unauthorized
  */
 
+router.get("/offers/exist", auth, isOfferNameExist);
 router.post("/offers", auth, offerDataValidateCheckPointA, addOffer);
 router.put("/offers/2", auth, offerDataValidateCheckPointB, updateOffer);
 router.put("/offers/3", auth, offerDataValidateCheckPointC, updateOffer);

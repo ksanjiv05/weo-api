@@ -8,7 +8,7 @@ import { validationResult } from "express-validator";
 import { ERROR_CODES } from "../../config/errorCode";
 
 // this function is used to check if the offer name is already exist or not
-export const isBrandNameExist = async (req: Request, res: Response) => {
+export const isOfferNameExist = async (req: Request, res: Response) => {
   try {
     const { offerTitle = "", brandId = "" } = req.query;
     const { uid = "" } = req.body;

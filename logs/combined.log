@@ -1,0 +1,9 @@
+{"level":"info","message":"GET /api/v1/categories 200 33ms","timestamp":"2024-02-19T10:45:30.389Z"}
+{"level":"info","message":"GET /api/v1/categories 200 543ms","timestamp":"2024-02-19T10:47:29.197Z"}
+{"level":"info","message":"POST /api/v1/brands 200 668ms","timestamp":"2024-02-19T10:49:44.566Z"}
+{"level":"error","message":"POST /api/v1/brands 403 3ms","timestamp":"2024-02-19T10:50:18.347Z"}
+{"level":"error","message":"POST /api/v1/brands 400 8ms","timestamp":"2024-02-19T10:51:24.872Z"}
+error: POST /api/v1/brands 400 7ms
+info: POST /api/v1/brands 200 331ms
+info: POST /api/v1/brands 200 2176ms
+info: POST /api/v1/brands 200 295ms

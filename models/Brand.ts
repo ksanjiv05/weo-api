@@ -63,6 +63,8 @@ const BrandSchema: Schema = new Schema(
   { timestamps: true }
 );
 
+BrandSchema.index({ brandName: 1, uid: 1 }, { unique: true });
+
 BrandSchema.post<IBrand>("save", function () {
   logging.info("Mongo", "Brand just saved: ");
 });

@@ -4,6 +4,8 @@ import cors from "cors";
 import express, { Express, Request, Response } from "express";
 import swaggerUI from "swagger-ui-express";
 import swaggerJsdoc from "swagger-jsdoc";
+import morgan from "morgan";
+import { createStream } from "rotating-file-stream";
 import "./db";
 import router from "./routes/v1";
 import helmet from "helmet";
@@ -12,12 +14,21 @@ import "./scripts/category";
 import rateLimiterMiddleware from "./middelware/rateLimiter";
 import path from "path";
 import { swaggerOptions } from "./config/swagger";
+import loggingMiddleware from "./middelware/logger";
 
 //end scripts
 
 globalThis.__dirname = __dirname;
 const app: Express = express();
 const port = 4000;
+
+//for http logging
+const accessLogStream = createStream("api_request.log", {
+  interval: "1d", // rotate daily
+  path: path.join(__dirname, "logs"),
+});
+app.use(morgan("combined", { stream: accessLogStream }));
+
 app.use(helmet());
 app.disable("x-powered-by");
 app.disable("etag");
@@ -26,9 +37,14 @@ app.use(helmet.noSniff()); // set X-Content-Type-Options header
 app.use(helmet.frameguard()); // set X-Frame-Options header
 app.use(helmet.xssFilter()); // set X-XSS-Protection header
 app.use(cors());
+
 app.use(express.json({ limit: "100mb" }));
 app.use(express.urlencoded({ extended: true }));
 
+//logger
+app.use(loggingMiddleware);
+
+//rate limiter
 app.use(rateLimiterMiddleware);
 
 app.use("/static", express.static(path.join(__dirname, "uploads")));
