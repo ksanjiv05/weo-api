@@ -30,4 +30,6 @@ const LikedSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+LikedSchema.index({ uid: 1, id: 1 }, { unique: true });
+
 export default mongoose.model("Liked", LikedSchema);

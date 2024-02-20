@@ -71,12 +71,12 @@ const logger = winston.createLogger({
   format: winston.format.combine(
     winston.format.timestamp(),
     enumerateErrorFormat(),
-    process.env.NODE_ENV == "dev"
-      ? winston.format.colorize()
-      : winston.format.uncolorize(),
-    winston.format.splat(),
-    winston.format.printf(({ level, message }) => `${level}: ${message}`)
-    // winston.format.json()
+    // process.env.NODE_ENV == "dev"
+    //   ? winston.format.colorize()
+    //   : winston.format.uncolorize(),
+    // winston.format.splat(),
+    // winston.format.printf(({ level, message }) => `${level}: ${message}`)
+    winston.format.json()
   ),
   transports: [
     new winston.transports.File({ filename: "logs/error.log", level: "error" }),

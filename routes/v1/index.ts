@@ -24,6 +24,7 @@ import userRoute from "./user";
 import brandRoute from "./brand";
 import offerRoute from "./offer";
 import categoryRoute from "./category";
+import constantRoute from "./constant";
 
 //user profile routes
 router.use(userRoute);
@@ -36,6 +37,9 @@ router.use(offerRoute);
 
 //category routes
 router.use(categoryRoute);
+
+//constant routes
+router.use(constantRoute);
 
 //static no need to we use aws s3
 // router.post("/static", upload.single("file"), uploadStaticFile);

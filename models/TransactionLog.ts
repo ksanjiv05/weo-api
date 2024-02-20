@@ -11,6 +11,7 @@ const TransactionLogSchema: Schema = new Schema(
     transactionId: {
       type: String,
       required: true,
+      unique: true,
     },
     transactionType: {
       type: String,

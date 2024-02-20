@@ -253,7 +253,7 @@ export const getBrandSubCategories = async (req: Request, res: Response) => {
       {
         $lookup: {
           from: "categories",
-          localField: "categoriesId",
+          localField: "categoriesIds",
           foreignField: "_id",
           //////////////////
           // let: {
