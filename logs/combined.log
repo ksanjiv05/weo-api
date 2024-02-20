@@ -43,3 +43,6 @@ info: POST /api/v1/brands 200 295ms
 {"level":"error","message":"GET /api/v1/constants/service_units 404 2ms","timestamp":"2024-02-20T09:59:50.483Z"}
 {"level":"info","message":"GET /api/v1/constants/service_units 200 8ms","timestamp":"2024-02-20T10:00:21.287Z"}
 {"level":"error","message":"GET /favicon.ico 404 2ms","timestamp":"2024-02-20T10:00:21.434Z"}
+{"level":"info","message":"GET /api/v1/constants/service_units 200 7ms","timestamp":"2024-02-20T10:11:33.046Z"}
+{"level":"info","message":"GET /api/v1/constants/service_units 200 9ms","timestamp":"2024-02-20T10:12:03.156Z"}
+{"level":"info","message":"GET /api/v1/constants/service_units 200 2ms","timestamp":"2024-02-20T10:12:17.499Z"}
