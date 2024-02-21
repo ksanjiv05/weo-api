@@ -1,13 +1,18 @@
 import { body } from "express-validator";
 
 export const offerDataValidateCheckPointA = [
-  body("creatorId").isString().notEmpty().withMessage("creatorId is required"),
+  // body("creatorId").isString().notEmpty().withMessage("creatorId is required"),
   body("brandId").isString().notEmpty().withMessage("brandId is required"),
   body("brandName").isString().notEmpty().withMessage("brandName is required"),
+  body("checkpoint")
+    .isNumeric()
+    .notEmpty()
+    .withMessage("checkpoint is required"),
 ];
 
 export const offerDataValidateCheckPointB = [
   ...offerDataValidateCheckPointA,
+  body("creatorId").isString().notEmpty().withMessage("creatorId is required"),
   body("productIds")
     .isArray()
     .notEmpty()

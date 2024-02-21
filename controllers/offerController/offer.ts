@@ -76,7 +76,7 @@ export const addOffer = async (req: Request, res: Response) => {
       });
     }
     // const { uid = "" } = req.body;
-    // req.body.creatorId = uid;
+    req.body.creatorId = req.body.uid;
 
     const newOffer = new Offer(req.body);
 
