@@ -5,17 +5,20 @@ export interface IOffer extends Document {
   creatorId: string;
   brandId: string;
   brandName: string;
-  productIds: string[];
+  subCategories: string[];
   offerTitle: string;
   offerDescription: string;
-  offerMedia: string[];
+  offerMedia: {
+    type: string;
+    source: string;
+  }[];
   offerPriceType: string;
   offerPriceAmount: number;
   paymentType: string;
-  installmentTimePeriod: string;
+  installmentTimePeriod: number;
   installmentDuration: number;
-  minAccessBalance: number;
-  maxOAccess: number;
+  minAccessBalance?: number;
+  maxOAccess?: number;
   serviceUnitName: string;
   totalServiceUnitType: string;
   totalServiceUnitItems: number;

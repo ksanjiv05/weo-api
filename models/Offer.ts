@@ -26,7 +26,7 @@ const OfferSchema: Schema = new Schema(
       type: String,
       required: true,
     },
-    subCategoryIds: {
+    subCategories: {
       type: [String],
       // required: true,
     },
@@ -39,8 +39,12 @@ const OfferSchema: Schema = new Schema(
       // required: true,
     },
     offerMedia: {
-      type: [String],
-      // required: true,
+      type: [
+        {
+          type: String,
+          source: String,
+        },
+      ],
     },
     offerPriceType: {
       type: String,
@@ -62,7 +66,7 @@ const OfferSchema: Schema = new Schema(
       // required: true,
     },
     installmentTimePeriod: {
-      type: String,
+      type: Number,
       lowercase: true,
       // required: true,
     },
