@@ -1,6 +1,6 @@
 import express from "express";
 
-import { auth } from "../../middelware/auth";
+import { auth } from "../../middleware/auth";
 import {
   addBrand,
   deleteBrand,
@@ -17,7 +17,7 @@ import {
   brandDataValidateCheckPointC,
   brandDataValidateCheckPointD,
   validateBrand,
-} from "../../middelware/validator/brandValidator";
+} from "../../middleware/validator/brandValidator";
 
 const router = express.Router();
 

@@ -63,9 +63,13 @@ const BrandSchema: Schema = new Schema(
   { timestamps: true }
 );
 
+BrandSchema.index({ brandName: 1, uid: 1 }, { unique: true });
 BrandSchema.index(
-  { brandName: 1, uid: 1, brandDescription: "text" },
-  { unique: true }
+  { brandName: 1, brandDescription: 1 },
+  {
+    weights: { brandName: 1000, brandDescription: 1 },
+    background: true,
+  }
 );
 
 BrandSchema.post<IBrand>("save", function () {

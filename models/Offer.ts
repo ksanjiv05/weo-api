@@ -149,8 +149,15 @@ const OfferSchema: Schema = new Schema(
 );
 
 OfferSchema.index(
-  { creatorId: 1, brandId: 1, offerTitle: 1 },
-  { unique: true }
+  { brandId: 1, offerTitle: 1 },
+  { unique: true, background: true }
+);
+OfferSchema.index(
+  { offerTitle: "text", offerDescription: "text", brandName: "text" },
+  {
+    weights: { offerTitle: 1000, offerDescription: 100, brandName: 1 },
+    background: true,
+  }
 );
 
 OfferSchema.post<IOffer>("save", function () {

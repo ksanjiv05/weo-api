@@ -4,8 +4,8 @@ import {
   userDataValidateCheckPointA,
   userDataValidateCheckPointB,
   userDataValidateCheckPointForCreatorName,
-} from "../../middelware/validator/userValidator";
-import { auth } from "../../middelware/auth";
+} from "../../middleware/validator/userValidator";
+import { auth } from "../../middleware/auth";
 import {
   deleteUserProfile,
   getUserProfile,

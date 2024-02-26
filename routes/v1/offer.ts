@@ -12,8 +12,8 @@ import {
   offerDataValidateCheckPointD,
   offerDataValidateCheckPointE,
   offerDataValidateCheckPointF,
-} from "../../middelware/validator/offerValidtor";
-import { auth } from "../../middelware/auth";
+} from "../../middleware/validator/offerValidtor";
+import { auth } from "../../middleware/auth";
 
 const router = express.Router();
 

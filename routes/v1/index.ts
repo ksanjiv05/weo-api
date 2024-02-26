@@ -4,19 +4,18 @@
  */
 
 import express from "express";
-import { auth } from "../../middelware/auth";
+import { auth } from "../../middleware/auth";
 
 import {
   getAiGeneratedChatResponse,
   getAiGeneratedImg,
 } from "../../controllers/aiController/ai";
-import { getCategories } from "../../controllers/categoryController/category";
 
 import {
   createOfferOrder,
   createSellerAccount,
 } from "../../controllers/paymentController/razorpay";
-import { addressDataValidate } from "../../middelware/validator/address";
+import { addressDataValidate } from "../../middleware/validator/address";
 import { addAddress } from "../../controllers/addressController/address";
 const router = express.Router();
 
@@ -60,5 +59,11 @@ router.post("/user/account", createSellerAccount);
 //webhook routes
 router.post("/webhook/payment", async (req, res) => {});
 router.post("/webhook/transfer", async (req, res) => {});
+
+router.all("*", (req, res) => {
+  res.status(404).json({
+    message: "invalid route",
+  });
+});
 
 export default router;

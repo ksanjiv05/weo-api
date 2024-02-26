@@ -11,10 +11,10 @@ import router from "./routes/v1";
 import helmet from "helmet";
 //initial scripts
 import "./scripts/category";
-import rateLimiterMiddleware from "./middelware/rateLimiter";
+import rateLimiterMiddleware from "./middleware/rateLimiter";
 import path from "path";
 import { swaggerOptions } from "./config/swagger";
-import loggingMiddleware from "./middelware/logger";
+import loggingMiddleware from "./middleware/logger";
 
 //end scripts
 

@@ -13,11 +13,11 @@ export const offerDataValidateCheckPointA = [
 export const offerDataValidateCheckPointB = [
   ...offerDataValidateCheckPointA,
   body("creatorId").isString().notEmpty().withMessage("creatorId is required"),
-  body("productIds")
-    .isArray()
-    .notEmpty()
-    // .length({ min: 1 })
-    .withMessage("at least one productId is required"),
+  // body("productIds")
+  //   .isArray()
+  //   .notEmpty()
+  //   // .length({ min: 1 })
+  //   .withMessage("at least one productId is required"),
 ];
 
 export const offerDataValidateCheckPointC = [

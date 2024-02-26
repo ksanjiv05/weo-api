@@ -29,10 +29,6 @@ const AddressSchema: Schema = new Schema(
       type: String,
       required: true,
     },
-    // coordinates: {
-    //   lat: Number,
-    //   lng: Number,
-    // },
     location: {
       type: {
         type: String,
