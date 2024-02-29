@@ -55,4 +55,38 @@ function str_chop(text, number = undefined) {
   return choppedString;
 }
 
-console.log("String has been chopped:\n" + str_chop("W3resource", 3));
+// console.log("String has been chopped:\n" + str_chop("W3resource", 3));
+
+let str3 = "w3resource sps 45 ddshh sushd";
+let stArr = str3.split(" ");
+
+let st = "";
+// for (let i = 0; i < stArr.length; i++) {
+//   for (let j = 0; j < stArr[i].length; j++) {
+//     if (stArr[i][0] == "s" || stArr[i][stArr[i].length - 1] == "s") {
+//       st = st + stArr[i][j];
+//     } else if (stArr[i][j] == "s") {
+//       st = st + stArr[i][j].toUpperCase();
+//     } else st = st + stArr[i][j];
+//   }
+//   st = st + " ";
+// }
+
+for (let i = 0; i < stArr.length; i++) {
+  for (let j = 0; j < stArr[i].length; j++) {
+    if (j == 0 || j == stArr[i].length - 1) {
+      st = st + stArr[i][j];
+    } else if (stArr[i][j] == "s") {
+      st = st + stArr[i][j].toUpperCase();
+    } else st = st + stArr[i][j];
+  }
+  st = st + " ";
+}
+
+// console.log(st);
+for (let i = 0; i < stArr.length; i++) {
+  // console.log(parseInt(stArr[i]), parseInt(stArr[i]) == "NaN");
+  if (isNaN(parseInt(stArr[i]))) {
+    console.log(stArr[i]);
+  }
+}

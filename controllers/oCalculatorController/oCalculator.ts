@@ -14,3 +14,7 @@ import { responseObj } from "../../helper/response";
 //     responseObj({});
 //   }
 // };
+
+for (let i = 0; i < 10; i++) {
+  console.log(i);
+}

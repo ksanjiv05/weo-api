@@ -1,7 +1,9 @@
 import express from "express";
 import {
   addOffer,
+  getOffer,
   getOffers,
+  getOffersByUid,
   isOfferNameExist,
   updateOffer,
 } from "../../controllers/offerController/offer";
@@ -323,7 +325,7 @@ router.put("/offers/5", auth, offerDataValidateCheckPointE, updateOffer);
 router.put("/offers/6", auth, offerDataValidateCheckPointF, updateOffer);
 
 router.get("/offers/all", auth, getOffers);
-router.get("/offers", auth, getOffers);
-router.get("/offers/:id", auth, getOffers);
+router.get("/offers", auth, getOffersByUid);
+router.get("/offers/:id", auth, getOffer);
 
 export default router;

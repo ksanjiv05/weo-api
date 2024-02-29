@@ -9,17 +9,19 @@ export interface IOffer extends Document {
   offerTitle: string;
   offerDescription: string;
   offerMedia: {
-    type: string;
+    mediaType: string;
     source: string;
   }[];
-  offerPriceType: string;
+  // offerPriceType: string;
   offerPriceAmount: number;
   paymentType: string;
+  installmentPeriod: string;
   installmentTimePeriod: number;
   installmentDuration: number;
   minAccessBalance?: number;
   maxOAccess?: number;
   serviceUnitName: string;
+  totalOffersSold: number;
   totalServiceUnitType: string;
   totalServiceUnitItems: number;
   durationUnitType: string;

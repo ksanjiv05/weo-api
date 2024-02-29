@@ -140,6 +140,9 @@ export const updateOffer = async (req: Request, res: Response) => {
       });
     }
 
+    req.body.totalOffersSold =
+      req.body.totalOffersSold > 0 ? req.body.totalOffersSold : 0;
+
     const offerStatus = await Offer.updateOne({ _id }, { ...req.body });
 
     console.log("offerStatus", offerStatus);
@@ -173,9 +176,9 @@ export const updateOffer = async (req: Request, res: Response) => {
 export const getOffers = async (req: Request, res: Response) => {
   try {
     const {
-      page = 0,
+      page = 1,
       perPage = 10,
-      offerStatus = "",
+
       minAccessBalance = -1,
       offerActivitiesAt = "",
     } = req.query;
@@ -183,14 +186,32 @@ export const getOffers = async (req: Request, res: Response) => {
 
     const skip = (Number(page) - 1) * Number(perPage);
     const filter = {
-      ...(offerStatus === "DEPARTMENT.UNKNOWN" ? {} : { offerStatus }),
+      ...{ offerStatus: OFFER_STATUS.LIVE },
       // ...(minAccessBalance === -1 ? {} : { minAccessBalance }),
       ...(offerActivitiesAt === "" ? {} : { offerActivitiesAt }),
-
       // ...(tableId === "" ? {} : { tableIds: { $elemMatch: { tableId } } }),
     };
 
-    const offers = await Offer.find({})
+    const offers = await Offer.find(
+      {
+        ...filter,
+        offerValidityStartDate: { $lte: new Date() },
+        offerValidityEndDate: { $gte: new Date() },
+      },
+      {
+        creatorId: 1,
+        offerTitle: 1,
+        offerStatus: 1,
+        createdAt: 1,
+        updatedAt: 1,
+        brandName: 1,
+        brandId: 1,
+        offerThumbnailImage: 1,
+        offerPriceAmount: 1,
+        totalOffersSold: 1,
+        totalOffersAvailable: 1,
+      }
+    )
       .sort("-createdAt")
       .skip(Number(skip))
       .limit(Number(perPage));
@@ -202,7 +223,7 @@ export const getOffers = async (req: Request, res: Response) => {
       statusCode: HTTP_STATUS_CODES.SUCCESS,
       msg: "all offers",
       error: null,
-      data: offers,
+      data: { offers, total },
       code: ERROR_CODES.SUCCESS,
     });
   } catch (error: any) {
@@ -238,13 +259,28 @@ export const getOffersByUid = async (req: Request, res: Response) => {
       // ...(tableId === "" ? {} : { tableIds: { $elemMatch: { tableId } } }),
       creatorId: req.body.uid,
     };
-    console.log("filter", filter);
+    console.log("filter--", filter);
 
-    const offers = await Offer.find(filter)
+    const offers = await Offer.find(filter, {
+      creatorId: 1,
+      offerTitle: 1,
+      offerStatus: 1,
+      createdAt: 1,
+      updatedAt: 1,
+      brandName: 1,
+      brandId: 1,
+      offerThumbnailImage: 1,
+      offerPriceAmount: 1,
+      totalOffersSold: 1,
+      totalOffersAvailable: 1,
+    })
       .sort("-createdAt")
       .skip(Number(skip))
       .limit(Number(perPage));
-    const total = await Offer.find(filter).count();
+    const total = await Offer.find({
+      creatorId: req.body.uid,
+      offerStatus,
+    }).count();
 
     return responseObj({
       resObj: res,

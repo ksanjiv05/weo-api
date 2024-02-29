@@ -1,6 +1,6 @@
 import mongoose, { Schema } from "mongoose";
 import logging from "../config/logging";
-import { IOffer } from "../interfaces/IOffer";
+import { IOffer, OFFER_STATUS } from "../interfaces/IOffer";
 
 // checkpoint: 1
 // Creator id: int
@@ -38,19 +38,28 @@ const OfferSchema: Schema = new Schema(
       type: String,
       // required: true,
     },
-    offerMedia: {
-      type: [
-        {
-          type: String,
-          source: String,
-        },
-      ],
-    },
-    offerPriceType: {
-      type: String,
-      // required: true,
-    },
+    offerMedia: [
+      {
+        mediaType: String,
+        source: String,
+      },
+    ],
+
+    // offerPriceType: {
+    //   type: String,
+    //   // required: true,
+    // },
     offerPriceAmount: {
+      type: Number,
+      // validate: {
+      //   validator: function (v: number) {
+      //     return v > 0;
+      //   },
+      //   message: () => `offerPriceAmount id is required!`,
+      // },
+      default: 0,
+    },
+    offerPriceMinAmount: {
       type: Number,
       // validate: {
       //   validator: function (v: number) {
@@ -64,6 +73,10 @@ const OfferSchema: Schema = new Schema(
       type: String,
       lowercase: true,
       // required: true,
+    },
+    installmentPeriod: {
+      type: String,
+      lowercase: true,
     },
     installmentTimePeriod: {
       type: Number,
@@ -106,6 +119,11 @@ const OfferSchema: Schema = new Schema(
       type: Number,
       // required: true,
     },
+    totalOffersSold: {
+      type: Number,
+      default: 0,
+      // required: true,
+    },
     offerLimitPerCustomer: {
       type: Number,
       // required: true,
@@ -115,23 +133,24 @@ const OfferSchema: Schema = new Schema(
       // required: true,
     },
     offerActivationStartTime: {
-      type: Number,
+      type: String,
       // required: true,
     },
     offerActivationEndTime: {
-      type: Number,
+      type: String,
       // required: true,
     },
     offerValidityStartDate: {
-      type: Number,
+      type: Date,
       // required: true,
     },
     offerValidityEndDate: {
-      type: Number,
+      type: Date,
       // required: true,
     },
     offerStatus: {
       type: String,
+      default: OFFER_STATUS.DRAFT,
       // required: true,
     },
     offerThumbnailImage: {

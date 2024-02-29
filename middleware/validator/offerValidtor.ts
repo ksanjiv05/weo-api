@@ -43,11 +43,15 @@ export const offerDataValidateCheckPointD = [
 
 export const offerDataValidateCheckPointE = [
   ...offerDataValidateCheckPointD,
-  body("offerPriceType")
-    .isString()
-    .notEmpty()
-    .withMessage("offerPriceType is required"),
+  // body("offerPriceType")
+  //   .isString()
+  //   .notEmpty()
+  //   .withMessage("offerPriceType is required"),
   body("offerPriceAmount")
+    .isNumeric()
+    .notEmpty()
+    .withMessage("offerPriceAmount is required"),
+  body("offerPriceMinAmount")
     .isNumeric()
     .notEmpty()
     .withMessage("offerPriceAmount is required"),
@@ -55,22 +59,31 @@ export const offerDataValidateCheckPointE = [
     .isString()
     .notEmpty()
     .withMessage("paymentType is required"),
-  body("installmentTimePeriod")
+  body("installmentPeriod")
+    .if(body("paymentType").equals("installment"))
     .isString()
+    .notEmpty()
+    .withMessage("installmentPeriod is required"),
+
+  body("installmentTimePeriod")
+    .if(body("paymentType").equals("installment"))
+    .isNumeric()
     .notEmpty()
     .withMessage("installmentTimePeriod is required"),
   body("installmentDuration")
+    .if(body("paymentType").equals("installment"))
     .isNumeric()
     .notEmpty()
     .withMessage("installmentDuration is required"),
-  body("minAccessBalance")
-    .isNumeric()
-    .notEmpty()
-    .withMessage("minAccessBalance is required"),
-  body("maxOAccess")
-    .isNumeric()
-    .notEmpty()
-    .withMessage("maxOAccess is required"),
+  // body("minAccessBalance")
+  //   .isNumeric()
+  //   .notEmpty()
+  //   .withMessage("minAccessBalance is required"),
+  // body("maxOAccess")
+  //   .isNumeric()
+  //   .notEmpty()
+  //   .withMessage("maxOAccess is required"),
+
   body("serviceUnitName")
     .isString()
     .notEmpty()
@@ -104,19 +117,19 @@ export const offerDataValidateCheckPointE = [
     .notEmpty()
     .withMessage("offerActivitiesAt is required"),
   body("offerActivationStartTime")
-    .isNumeric()
+    .isString()
     .notEmpty()
     .withMessage("offerActivationStartTime is required"),
   body("offerActivationEndTime")
-    .isNumeric()
+    .isString()
     .notEmpty()
     .withMessage("offerActivationEndTime is required"),
   body("offerValidityStartDate")
-    .isNumeric()
+    .isString()
     .notEmpty()
     .withMessage("offerValidityStartDate is required"),
   body("offerValidityEndDate")
-    .isNumeric()
+    .isString()
     .notEmpty()
     .withMessage("offerValidityEndDate is required"),
   body("offerStatus")
