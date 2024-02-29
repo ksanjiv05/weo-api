@@ -210,6 +210,10 @@ export const getOffers = async (req: Request, res: Response) => {
         offerPriceAmount: 1,
         totalOffersSold: 1,
         totalOffersAvailable: 1,
+        serviceUnitName: 1,
+        totalServiceUnitItems: 1,
+        durationUnitItems: 1,
+        durationUnitType: 1,
       }
     )
       .sort("-createdAt")
@@ -259,7 +263,7 @@ export const getOffersByUid = async (req: Request, res: Response) => {
       // ...(tableId === "" ? {} : { tableIds: { $elemMatch: { tableId } } }),
       creatorId: req.body.uid,
     };
-    console.log("filter--", filter);
+    console.log("filter-- ", filter);
 
     const offers = await Offer.find(filter, {
       creatorId: 1,
