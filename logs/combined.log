@@ -120,3 +120,17 @@ info: POST /api/v1/brands 200 295ms
 {"level":"info","message":"GET /api/v1/offers/all 200 809ms","timestamp":"2024-02-29T06:44:56.132Z"}
 {"level":"info","message":"GET /api/v1/offers/all 200 707ms","timestamp":"2024-02-29T06:45:00.168Z"}
 {"level":"info","message":"GET /api/v1/offers/all 200 702ms","timestamp":"2024-02-29T07:00:17.156Z"}
+{"level":"error","message":"POST /login/ 404 2ms","timestamp":"2024-02-29T17:52:52.219Z"}
+{"level":"info","message":"GET /api/v1/offers/all?&page=1&perPage=10 200 116ms","timestamp":"2024-03-01T04:21:54.365Z"}
+{"level":"info","message":"GET /api/v1/offers/all?&page=1&perPage=10 200 30ms","timestamp":"2024-03-01T04:22:09.150Z"}
+{"level":"info","message":"GET /api/v1/offers/all?&page=1&perPage=10 200 741ms","timestamp":"2024-03-01T04:22:56.531Z"}
+{"level":"info","message":"GET /api/v1/offers/all?&page=1&perPage=10 200 3695ms","timestamp":"2024-03-01T04:23:21.452Z"}
+{"level":"info","message":"GET /api/v1/offers/all?&page=1&perPage=10 200 712ms","timestamp":"2024-03-01T04:25:32.655Z"}
+{"level":"info","message":"GET /api/v1/brands 200 1655ms","timestamp":"2024-03-01T04:26:04.929Z"}
+{"level":"info","message":"GET /api/v1/categories/brand/65d34281d8fa1e2128b11189 200 352ms","timestamp":"2024-03-01T04:26:11.641Z"}
+{"level":"info","message":"GET /api/v1/categories/brand/65d34281d8fa1e2128b11189 200 345ms","timestamp":"2024-03-01T04:26:22.811Z"}
+{"level":"info","message":"GET /api/v1/categories/brand/65d3431dd8fa1e2128b11198 200 345ms","timestamp":"2024-03-01T04:26:31.706Z"}
+{"level":"info","message":"GET /api/v1/offers/exist?offerTitle=Navtest3&brandId=65d3431dd8fa1e2128b11198 200 344ms","timestamp":"2024-03-01T04:26:56.082Z"}
+{"level":"info","message":"POST /api/v1/offers/ 200 374ms","timestamp":"2024-03-01T04:26:57.110Z"}
+{"level":"info","message":"PUT /api/v1/offers/6 200 368ms","timestamp":"2024-03-01T04:29:29.470Z"}
+{"level":"info","message":"PUT /api/v1/offers/6 200 357ms","timestamp":"2024-03-01T04:30:20.660Z"}

@@ -61,7 +61,7 @@ export const isOfferNameExist = async (req: Request, res: Response) => {
 // this function is used to add new offer
 export const addOffer = async (req: Request, res: Response) => {
   try {
-    console.log("req.body", req.body);
+    // console.log("req.body", req.body);
     const errors = validationResult(req);
     // if there is error then return Error
     if (!errors.isEmpty()) {
@@ -190,13 +190,13 @@ export const getOffers = async (req: Request, res: Response) => {
       // ...(minAccessBalance === -1 ? {} : { minAccessBalance }),
       ...(offerActivitiesAt === "" ? {} : { offerActivitiesAt }),
       // ...(tableId === "" ? {} : { tableIds: { $elemMatch: { tableId } } }),
+      offerValidityStartDate: { $lte: new Date() },
+      offerValidityEndDate: { $gte: new Date() },
     };
 
     const offers = await Offer.find(
       {
         ...filter,
-        offerValidityStartDate: { $lte: new Date() },
-        offerValidityEndDate: { $gte: new Date() },
       },
       {
         creatorId: 1,
@@ -206,6 +206,7 @@ export const getOffers = async (req: Request, res: Response) => {
         updatedAt: 1,
         brandName: 1,
         brandId: 1,
+        offerMedia: 1,
         offerThumbnailImage: 1,
         offerPriceAmount: 1,
         totalOffersSold: 1,

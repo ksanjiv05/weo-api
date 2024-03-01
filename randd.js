@@ -93,13 +93,5 @@ for (let i = 0; i < stArr.length; i++) {
 
 console.log(" ", new Date("2024-02-29T06:30:00.000+00:00").toTimeString());
 
-serviceUnitName;
-totalServiceUnitItems;
-
-durationUnitItems;
-12;
-durationUnitType;
-("fixed");
-
 // anagrame string test exmaple
 str = "this is string test for  palindrome level ana  ";
