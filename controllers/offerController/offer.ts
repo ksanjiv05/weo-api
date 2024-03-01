@@ -194,32 +194,74 @@ export const getOffers = async (req: Request, res: Response) => {
       offerValidityEndDate: { $gte: new Date() },
     };
 
-    const offers = await Offer.find(
+    // const offers = await Offer.find(
+    //   {
+    //     ...filter,
+    //   },
+    //   {
+    //     creatorId: 1,
+    //     offerTitle: 1,
+    //     offerStatus: 1,
+    //     createdAt: 1,
+    //     updatedAt: 1,
+    //     brandName: 1,
+    //     brandId: 1,
+    //     offerMedia: 1,
+    //     offerThumbnailImage: 1,
+    //     offerPriceAmount: 1,
+    //     totalOffersSold: 1,
+    //     totalOffersAvailable: 1,
+    //     serviceUnitName: 1,
+    //     totalServiceUnitItems: 1,
+    //     durationUnitItems: 1,
+    //     durationUnitType: 1,
+    //   }
+    // )
+    //   .sort("-createdAt")
+    //   .skip(Number(skip))
+    //   .limit(Number(perPage));
+
+    const offers = await Offer.aggregate([
       {
-        ...filter,
+        $match: {
+          ...filter,
+        },
       },
       {
-        creatorId: 1,
-        offerTitle: 1,
-        offerStatus: 1,
-        createdAt: 1,
-        updatedAt: 1,
-        brandName: 1,
-        brandId: 1,
-        offerMedia: 1,
-        offerThumbnailImage: 1,
-        offerPriceAmount: 1,
-        totalOffersSold: 1,
-        totalOffersAvailable: 1,
-        serviceUnitName: 1,
-        totalServiceUnitItems: 1,
-        durationUnitItems: 1,
-        durationUnitType: 1,
-      }
-    )
-      .sort("-createdAt")
-      .skip(Number(skip))
-      .limit(Number(perPage));
+        $lookup: {
+          from: "users",
+          localField: "creatorId",
+          foreignField: "uid",
+          as: "user",
+        },
+      },
+      {
+        $unwind: "$user",
+      },
+      {
+        $project: {
+          creatorId: 1,
+          offerTitle: 1,
+          offerStatus: 1,
+          createdAt: 1,
+          updatedAt: 1,
+          creatorName: "$user.creatorName",
+          brandId: 1,
+          offerMedia: 1,
+          offerThumbnailImage: 1,
+          offerPriceAmount: 1,
+          totalOffersSold: 1,
+          totalOffersAvailable: 1,
+          serviceUnitName: 1,
+          totalServiceUnitItems: 1,
+          durationUnitItems: 1,
+          durationUnitType: 1,
+        },
+      },
+    ]);
+
+    // console.log("offers", offer);
+
     const total = await Offer.find(filter).count();
 
     return responseObj({
@@ -369,3 +411,53 @@ export const deleteOffer = async (req: Request, res: Response) => {
     });
   }
 };
+
+// const offers = await Offer.aggregate([
+//   {
+//     $match: {
+//       ...filter,
+//     },
+//   },
+//   {
+//     $lookup: {
+//       from: "users",
+//       localField: "creatorId",
+//       foreignField: "uid",
+//       as: "user",
+//     },
+//   },
+//   {
+//     $unwind: "$user",
+//   },
+//   {
+//     $facet: {
+//       offers: [
+//         {
+//           $project: {
+//             creatorId: 1,
+//             offerTitle: 1,
+//             offerStatus: 1,
+//             createdAt: 1,
+//             updatedAt: 1,
+//             creatorName: "$user.creatorName",
+//             brandId: 1,
+//             offerMedia: 1,
+//             offerThumbnailImage: 1,
+//             offerPriceAmount: 1,
+//             totalOffersSold: 1,
+//             totalOffersAvailable: 1,
+//             serviceUnitName: 1,
+//             totalServiceUnitItems: 1,
+//             durationUnitItems: 1,
+//             durationUnitType: 1,
+//           },
+//         },
+//       ],
+//       total: [
+//         {
+//           $count: "count",
+//         },
+//       ],
+//     },
+//   },
+// ]);

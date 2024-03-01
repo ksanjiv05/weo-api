@@ -23,3 +23,5 @@ error: POST /api/v1/brands 400 7ms
 {"level":"error","message":"GET /api/v1/offers/all 403 1ms","timestamp":"2024-02-29T06:38:10.754Z"}
 {"level":"error","message":"GET /api/v1/offers/all 403 3ms","timestamp":"2024-02-29T06:38:19.223Z"}
 {"level":"error","message":"POST /login/ 404 2ms","timestamp":"2024-02-29T17:52:52.219Z"}
+{"level":"error","message":"PUT /api/v1/offers/6 400 822ms","timestamp":"2024-03-01T04:52:11.388Z"}
+{"level":"error","message":"GET /favicon.ico 404 2ms","timestamp":"2024-03-01T04:56:48.946Z"}
