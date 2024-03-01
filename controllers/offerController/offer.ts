@@ -178,7 +178,7 @@ export const getOffers = async (req: Request, res: Response) => {
     const {
       page = 1,
       perPage = 10,
-
+      subCategoryName = "",
       minAccessBalance = -1,
       offerActivitiesAt = "",
     } = req.query;
@@ -187,6 +187,10 @@ export const getOffers = async (req: Request, res: Response) => {
     const skip = (Number(page) - 1) * Number(perPage);
     const filter = {
       ...{ offerStatus: OFFER_STATUS.LIVE },
+      totalOffersAvailable: { $gt: 0 },
+      ...(subCategoryName === ""
+        ? {}
+        : { subCategories: { $elemMatch: { subCategoryName } } }),
       // ...(minAccessBalance === -1 ? {} : { minAccessBalance }),
       ...(offerActivitiesAt === "" ? {} : { offerActivitiesAt }),
       // ...(tableId === "" ? {} : { tableIds: { $elemMatch: { tableId } } }),
@@ -258,6 +262,8 @@ export const getOffers = async (req: Request, res: Response) => {
           durationUnitType: 1,
         },
       },
+      { $skip: Number(skip) }, // Skip documents for pagination
+      { $limit: Number(perPage) }, // Limit the number of documents for pagination
     ]);
 
     // console.log("offers", offer);

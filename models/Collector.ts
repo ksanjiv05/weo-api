@@ -11,6 +11,7 @@ const CollectorSchema: Schema = new Schema(
     offer: {
       type: Schema.Types.ObjectId,
       ref: "Offer",
+      required: [true, "offer id is required"],
     },
     createdAt: {
       type: Number,
