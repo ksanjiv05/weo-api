@@ -67,7 +67,7 @@ export const isExistingUser = async (req: Request, response: Response) => {
       });
     const user = await User.findOne({ phone });
 
-    // console.log("user", phone, user);
+    console.log("user check", phone, user);
     if (!user) {
       return responseObj({
         statusCode: HTTP_STATUS_CODES.ACCEPTED,
