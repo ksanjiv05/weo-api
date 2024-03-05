@@ -155,3 +155,9 @@ info: POST /api/v1/brands 200 295ms
 {"level":"info","message":"GET /api/v1/offers/all 200 346ms","timestamp":"2024-03-01T05:31:23.168Z"}
 {"level":"info","message":"GET /api/v1/offers/all 200 359ms","timestamp":"2024-03-01T05:35:07.738Z"}
 {"level":"info","message":"GET /api/v1/offers/all 200 373ms","timestamp":"2024-03-01T05:35:10.761Z"}
+{"level":"info","message":"GET /api/v1/users/exist?phone=+916205796058 203 557ms","timestamp":"2024-03-04T14:04:23.315Z"}
+{"level":"error","message":"GET /favicon.ico 404 2ms","timestamp":"2024-03-04T14:04:23.645Z"}
+{"level":"info","message":"GET /api/v1/users/exist?phone=++916205796058 203 553ms","timestamp":"2024-03-04T14:05:03.217Z"}
+{"level":"error","message":"GET /api/v1/users/exist?phone=+916205796058 500 10010ms","timestamp":"2024-03-04T14:05:41.164Z"}
+{"level":"info","message":"GET /api/v1/users/exist?phone=+916205796058 203 1417ms","timestamp":"2024-03-04T14:05:50.799Z"}
+{"level":"info","message":"GET /api/v1/users/exist?phone=916205796058 200 695ms","timestamp":"2024-03-04T14:08:24.026Z"}

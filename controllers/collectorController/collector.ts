@@ -5,12 +5,11 @@ import Offer from "../../models/Offer";
 import { IOffer, OFFER_STATUS } from "../../interfaces/IOffer";
 import { responseObj } from "../../helper/response";
 import { HTTP_STATUS_CODES } from "../../config/statusCode";
-import { validationResult } from "express-validator";
 import { ERROR_CODES } from "../../config/errorCode";
 import Collector from "../../models/Collector";
 import mongoose from "mongoose";
 
-export const collect = async (req: Request, res: Response) => {
+export const collectOffer = async (req: Request, res: Response) => {
   try {
     //{$in totalOffersAvailable}
     const session = await mongoose.startSession();
@@ -51,6 +50,47 @@ export const collect = async (req: Request, res: Response) => {
       type: "error",
       statusCode: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR,
       msg: "unable to collect Offer",
+      error: error.message ? error.message : "internal server error",
+      data: null,
+      code: ERROR_CODES.SERVER_ERR,
+    });
+  }
+};
+
+export const getCollectedOffers = async (req: Request, res: Response) => {
+  try {
+    const { page = 1, perPage = 10 } = req.query;
+    req.body.creatorId = req.body.uid;
+
+    const skip = (Number(page) - 1) * Number(perPage);
+
+    const offers = await Collector.find({ uid: req.body.uid })
+      .sort("-createdAt")
+      .skip(Number(skip))
+      .limit(Number(perPage));
+
+    const total = await Offer.find({ uid: req.body.uid }).count();
+
+    return responseObj({
+      resObj: res,
+      type: "success",
+      statusCode: HTTP_STATUS_CODES.SUCCESS,
+      msg: "all collected offers",
+      error: null,
+      data: { offers, total },
+      code: ERROR_CODES.SUCCESS,
+    });
+  } catch (error: any) {
+    logging.error(
+      "Get Collected Offers",
+      "unable to get collected Offers",
+      error
+    );
+    return responseObj({
+      resObj: res,
+      type: "error",
+      statusCode: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR,
+      msg: "unable to get collected Offers",
       error: error.message ? error.message : "internal server error",
       data: null,
       code: ERROR_CODES.SERVER_ERR,
