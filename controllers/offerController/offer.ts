@@ -260,6 +260,8 @@ export const getOffers = async (req: Request, res: Response) => {
           totalServiceUnitItems: 1,
           durationUnitItems: 1,
           durationUnitType: 1,
+          durationName: 1,
+          brandName: 1,
         },
       },
       { $skip: Number(skip) }, // Skip documents for pagination
@@ -326,6 +328,7 @@ export const getOffersByUid = async (req: Request, res: Response) => {
       offerPriceAmount: 1,
       totalOffersSold: 1,
       totalOffersAvailable: 1,
+      durationName: 1,
     })
       .sort("-createdAt")
       .skip(Number(skip))

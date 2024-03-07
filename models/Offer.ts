@@ -83,6 +83,9 @@ const OfferSchema: Schema = new Schema(
       lowercase: true,
       // required: true,
     },
+    durationName: {
+      type: String,
+    },
     installmentDuration: {
       type: Number,
       // required: true,

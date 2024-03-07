@@ -24,6 +24,7 @@ export interface IOffer extends Document {
   totalOffersSold: number;
   totalServiceUnitType: string;
   totalServiceUnitItems: number;
+  durationName: string;
   durationUnitType: string;
   durationUnitItems: number;
   totalOffersAvailable: number;
