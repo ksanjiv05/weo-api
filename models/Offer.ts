@@ -85,6 +85,7 @@ const OfferSchema: Schema = new Schema(
     },
     durationName: {
       type: String,
+      default: "",
     },
     installmentDuration: {
       type: Number,
