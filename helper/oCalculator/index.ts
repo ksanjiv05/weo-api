@@ -7,7 +7,7 @@
 // x%/$1 of Offer price = (x)O/$1
 
 // For example, let’s say an individual has done $1000 of business over 5 transactions, with each transaction earning
-// her 82.4 Os on average. Her individual O value would be :
+// her 82.4 Os on average. Her individual O value would be
 // 82.4/100 or 0.824 Os/$1 or $0.82/O
 
 // The WEO platform or the network O price (tradable, interoperable O price) is determined by the total aggregate individual O price average (My Os/$1)/Total $in Network =Network O value (rating/trust score)
@@ -45,7 +45,9 @@
 export const oValueCalc = (
   transactionValue: number,
   totalNumberOfTransactions: number
-) => {};
+) => {
+  return (transactionValue / totalNumberOfTransactions) * 100;
+};
 
 // For example, let’s say an individual has done $1000 of business over 5 transactions, with each transaction earning her 82.4 Os on average. Her individual O value would be :
 // 82.4/100 or 0.824 Os/$1 or $0.82/O

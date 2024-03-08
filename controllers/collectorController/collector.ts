@@ -15,18 +15,19 @@ export const collectOffer = async (req: Request, res: Response) => {
     const session = await mongoose.startSession();
     session.startTransaction();
 
-    await Offer.updateOne(
-      { _id: req.body._id },
-      { $set: { $inc: { totalOffersSold: 1, totalOffersAvailable: -1 } } },
+    const test = await Offer.updateOne(
+      { _id: req.body.offer },
+      { $inc: { totalOffersSold: 1, totalOffersAvailable: -1 } },
       { session }
     );
+    console.log("test", test);
 
     await Collector.create(
-      {
-        ...req.body,
-        createdAt: Date.now(),
-        updateAt: Date.now(),
-      },
+      [
+        {
+          ...req.body,
+        },
+      ],
       { session: session }
     );
 
@@ -66,9 +67,10 @@ export const getCollectedOffers = async (req: Request, res: Response) => {
 
     const offers = await Collector.find({ uid: req.body.uid })
       .sort("-createdAt")
+      .populate("offer")
       .skip(Number(skip))
-      .limit(Number(perPage));
-
+      .limit(Number(perPage))
+      .exec();
     const total = await Offer.find({ uid: req.body.uid }).count();
 
     return responseObj({

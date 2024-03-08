@@ -13,13 +13,41 @@ const CollectorSchema: Schema = new Schema(
       ref: "Offer",
       required: [true, "offer id is required"],
     },
-    createdAt: {
-      type: Number,
-      required: true,
+    lastPaid: {
+      paymentAmount: Number,
+      paymentDate: Number,
+      paymentStatus: String,
+      paymentDueDate: Number,
     },
-    updateAt: {
+    paymentDueDate: {
+      paymentAmount: Number,
+      paymentDate: Number,
+      paymentStatus: String,
+      paymentDueDate: Number,
+    },
+    oEarned: {
       type: Number,
-      required: true,
+    },
+    oSpent: {
+      type: Number,
+    },
+    paymentDue: {
+      type: Number,
+    },
+    installments: {
+      type: Number, //it will be ho much installment user want to pay
+    },
+    paymentType: {
+      type: String, //payment type
+      lowercase: true,
+      required: [true, "amount is required"],
+    },
+    amount: {
+      type: Number, //amount
+      required: [true, "amount is required"],
+    },
+    paymentIds: {
+      type: [String], //payment ids
     },
   },
   { timestamps: true }

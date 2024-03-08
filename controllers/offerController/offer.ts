@@ -6,6 +6,7 @@ import { responseObj } from "../../helper/response";
 import { HTTP_STATUS_CODES } from "../../config/statusCode";
 import { validationResult } from "express-validator";
 import { ERROR_CODES } from "../../config/errorCode";
+import mongoose from "mongoose";
 
 // this function is used to check if the offer name is already exist or not
 export const isOfferNameExist = async (req: Request, res: Response) => {
@@ -246,6 +247,7 @@ export const getOffers = async (req: Request, res: Response) => {
         $project: {
           creatorId: 1,
           offerTitle: 1,
+          offerDescription: 1,
           offerStatus: 1,
           createdAt: 1,
           updatedAt: 1,
@@ -314,11 +316,11 @@ export const getOffersByUid = async (req: Request, res: Response) => {
       // ...(tableId === "" ? {} : { tableIds: { $elemMatch: { tableId } } }),
       creatorId: req.body.uid,
     };
-    console.log("filter-- ", filter);
 
     const offers = await Offer.find(filter, {
       creatorId: 1,
       offerTitle: 1,
+      offerDescription: 1,
       offerStatus: 1,
       createdAt: 1,
       updatedAt: 1,
@@ -365,8 +367,62 @@ export const getOffersByUid = async (req: Request, res: Response) => {
 export const getOffer = async (req: Request, res: Response) => {
   try {
     const { id = "" } = req.params;
+    const { location = false } = req.query;
+    if (id == "") {
+      return responseObj({
+        resObj: res,
+        type: "error",
+        statusCode: HTTP_STATUS_CODES.BAD_REQUEST,
+        msg: "please provide offer id",
+        error: "please provide offer id",
+        data: null,
+        code: ERROR_CODES.FIELD_VALIDATION_REQUIRED_ERR,
+      });
+    }
 
-    const offer = await Offer.findOne({ _id: id });
+    let offer = null;
+    if (location || location === "true") {
+      const offers = await Offer.aggregate([
+        {
+          $match: {
+            _id: new mongoose.Types.ObjectId(id),
+          },
+        },
+        // {
+        //   $project: {
+        //     brandId: {
+        //       $toObjectId: "$brandId",
+        //     },
+        //   },
+        // },
+        { $addFields: { brandIdObi: { $toObjectId: "$brandId" } } },
+
+        {
+          $lookup: {
+            from: "brands",
+            localField: "brandIdObi",
+            foreignField: "_id",
+            as: "brand",
+          },
+        },
+        {
+          $unwind: "$brand",
+        },
+        // {
+        //   $project: {
+        //     offerData: "$$ROOT",
+        //     offerBrandlocation: {
+        //       onlineStore: "$brand.onlineLocations",
+        //       offlineStore: "$brand.offlineLocations",
+        //     },
+        //   },
+        // },
+      ]);
+      // console.log("offers", offers);
+      offer = offers[0] || null;
+    } else {
+      offer = await Offer.findOne({ _id: id });
+    }
 
     return responseObj({
       resObj: res,
@@ -420,53 +476,3 @@ export const deleteOffer = async (req: Request, res: Response) => {
     });
   }
 };
-
-// const offers = await Offer.aggregate([
-//   {
-//     $match: {
-//       ...filter,
-//     },
-//   },
-//   {
-//     $lookup: {
-//       from: "users",
-//       localField: "creatorId",
-//       foreignField: "uid",
-//       as: "user",
-//     },
-//   },
-//   {
-//     $unwind: "$user",
-//   },
-//   {
-//     $facet: {
-//       offers: [
-//         {
-//           $project: {
-//             creatorId: 1,
-//             offerTitle: 1,
-//             offerStatus: 1,
-//             createdAt: 1,
-//             updatedAt: 1,
-//             creatorName: "$user.creatorName",
-//             brandId: 1,
-//             offerMedia: 1,
-//             offerThumbnailImage: 1,
-//             offerPriceAmount: 1,
-//             totalOffersSold: 1,
-//             totalOffersAvailable: 1,
-//             serviceUnitName: 1,
-//             totalServiceUnitItems: 1,
-//             durationUnitItems: 1,
-//             durationUnitType: 1,
-//           },
-//         },
-//       ],
-//       total: [
-//         {
-//           $count: "count",
-//         },
-//       ],
-//     },
-//   },
-// ]);

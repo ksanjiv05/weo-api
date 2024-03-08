@@ -27,3 +27,15 @@ error: POST /api/v1/brands 400 7ms
 {"level":"error","message":"GET /favicon.ico 404 2ms","timestamp":"2024-03-01T04:56:48.946Z"}
 {"level":"error","message":"GET /favicon.ico 404 2ms","timestamp":"2024-03-04T14:04:23.645Z"}
 {"level":"error","message":"GET /api/v1/users/exist?phone=+916205796058 500 10010ms","timestamp":"2024-03-04T14:05:41.164Z"}
+{"level":"error","message":"GET /api/v1/users?initData=true 403 2ms","timestamp":"2024-03-08T07:09:55.662Z"}
+{"level":"error","message":"POST /api/v1/collect/offers 404 1ms","timestamp":"2024-03-08T07:10:38.222Z"}
+{"level":"error","message":"GET /api/v1/offers/all?&page=1&perPage=10 500 10018ms","timestamp":"2024-03-08T07:36:49.583Z"}
+{"level":"error","message":"GET /api/v1/offers/65e83fede9a0df5f0ef0e3ed 500 10449ms","timestamp":"2024-03-08T07:36:52.649Z"}
+{"level":"error","message":"POST /api/v1/collect/offers 404 6ms","timestamp":"2024-03-08T07:37:26.151Z"}
+{"level":"error","message":"POST /api/v1/collect/offers 500 363ms","timestamp":"2024-03-08T07:46:53.874Z"}
+{"level":"error","message":"POST /api/v1/collect/offers 500 354ms","timestamp":"2024-03-08T07:50:23.619Z"}
+{"level":"error","message":"POST /api/v1/collect/offers 500 748ms","timestamp":"2024-03-08T07:51:27.744Z"}
+{"level":"error","message":"POST /api/v1/collect/offers 500 359ms","timestamp":"2024-03-08T07:53:21.309Z"}
+{"level":"error","message":"POST /api/v1/collect/offers 500 396ms","timestamp":"2024-03-08T07:54:35.161Z"}
+{"level":"error","message":"GET /api/v1/offers/65e83fede9a0df5f0ef0e3ed?location=true 500 622ms","timestamp":"2024-03-08T12:02:59.926Z"}
+{"level":"error","message":"GET /api/v1/offers/65e83fede9a0df5f0ef0e3ed?location=true 500 3884ms","timestamp":"2024-03-08T12:03:24.368Z"}
