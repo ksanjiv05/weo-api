@@ -272,3 +272,7 @@ info: POST /api/v1/brands 200 295ms
 {"level":"error","message":"GET /api/v1/offers/65e83fede9a0df5f0ef0e3ed?location=true 500 3884ms","timestamp":"2024-03-08T12:03:24.368Z"}
 {"level":"info","message":"GET /api/v1/offers/65e83fede9a0df5f0ef0e3ed?location=true 200 2610ms","timestamp":"2024-03-08T12:18:22.939Z"}
 {"level":"info","message":"GET /api/v1/offers/65e83fede9a0df5f0ef0e3ed?location=true 200 1655ms","timestamp":"2024-03-08T12:23:08.389Z"}
+{"level":"error","message":"POST /api/v1/user/fcm/token 404 32ms","timestamp":"2024-03-09T16:23:11.026Z"}
+{"level":"error","message":"GET /api/v1/user 404 3ms","timestamp":"2024-03-09T16:23:11.034Z"}
+{"level":"error","message":"POST /api/v1/user/fcm/token 404 2ms","timestamp":"2024-03-09T16:23:51.555Z"}
+{"level":"error","message":"GET /api/v1/user 404 2ms","timestamp":"2024-03-09T16:23:54.900Z"}
