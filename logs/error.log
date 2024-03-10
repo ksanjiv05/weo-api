@@ -43,3 +43,5 @@ error: POST /api/v1/brands 400 7ms
 {"level":"error","message":"GET /api/v1/user 404 3ms","timestamp":"2024-03-09T16:23:11.034Z"}
 {"level":"error","message":"POST /api/v1/user/fcm/token 404 2ms","timestamp":"2024-03-09T16:23:51.555Z"}
 {"level":"error","message":"GET /api/v1/user 404 2ms","timestamp":"2024-03-09T16:23:54.900Z"}
+{"level":"error","message":"GET /favicon.ico 404 1ms","timestamp":"2024-03-10T09:13:14.969Z"}
+{"level":"error","message":"GET /api/v1/offers/65e83fede9a0df5f0ef0e3ed?location=true 500 3373ms","timestamp":"2024-03-10T09:14:08.214Z"}

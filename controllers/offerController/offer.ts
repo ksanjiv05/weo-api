@@ -408,17 +408,20 @@ export const getOffer = async (req: Request, res: Response) => {
         {
           $unwind: "$brand",
         },
-        // {
-        //   $project: {
-        //     offerData: "$$ROOT",
-        //     offerBrandlocation: {
-        //       onlineStore: "$brand.onlineLocations",
-        //       offlineStore: "$brand.offlineLocations",
-        //     },
-        //   },
-        // },
+        {
+          $addFields: {
+            onlineStore: "$brand.onlineLocations",
+            offlineStore: "$brand.offlineLocations",
+          },
+        },
+
+        {
+          $project: {
+            brand: 0,
+            // offerData: "$$ROOT",
+          },
+        },
       ]);
-      // console.log("offers", offers);
       offer = offers[0] || null;
     } else {
       offer = await Offer.findOne({ _id: id });
