@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
-import logging from "../../config/logging";
-import { responseObj } from "../../helper/response";
-import { HTTP_STATUS_CODES } from "../../config/statusCode";
+import logging from "../../../config/logging";
+import { responseObj } from "../../../helper/response";
+import { HTTP_STATUS_CODES } from "../../../config/statusCode";
 
 export const uploadStaticFile = async (req: Request, res: Response) => {
   try {

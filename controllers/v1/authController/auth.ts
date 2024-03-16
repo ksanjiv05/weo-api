@@ -1,12 +1,12 @@
 import { Request, Response } from "express";
-import logging from "../../config/logging";
-import User from "../../models/User";
-import { IUser } from "../../interfaces/IUser";
-import { responseObj } from "../../helper/response";
-import { HTTP_STATUS_CODES } from "../../config/statusCode";
+import logging from "../../../config/logging";
+import User from "../../../models/User";
+import { IUser } from "../../../interfaces/IUser";
+import { responseObj } from "../../../helper/response";
+import { HTTP_STATUS_CODES } from "../../../config/statusCode";
 import { validationResult } from "express-validator";
-import { adminApp } from "../../firebase";
-import { ERROR_CODES } from "../../config/errorCode";
+import { adminApp } from "../../../firebase";
+import { ERROR_CODES } from "../../../config/errorCode";
 
 export const register = async (req: Request, res: Response) => {
   try {

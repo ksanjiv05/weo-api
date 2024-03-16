@@ -1,11 +1,11 @@
 import { Request, Response } from "express";
-import logging from "../../config/logging";
-import Brand from "../../models/Brand";
-import { BRAND_STATUS, IBrand } from "../../interfaces/IBrand";
-import { responseObj } from "../../helper/response";
-import { HTTP_STATUS_CODES } from "../../config/statusCode";
+import logging from "../../../config/logging";
+import Brand from "../../../models/Brand";
+import { BRAND_STATUS, IBrand } from "../../../interfaces/IBrand";
+import { responseObj } from "../../../helper/response";
+import { HTTP_STATUS_CODES } from "../../../config/statusCode";
 import { validationResult } from "express-validator";
-import { ERROR_CODES } from "../../config/errorCode";
+import { ERROR_CODES } from "../../../config/errorCode";
 
 export const isBrandNameExist = async (req: Request, res: Response) => {
   try {

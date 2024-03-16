@@ -45,3 +45,16 @@ error: POST /api/v1/brands 400 7ms
 {"level":"error","message":"GET /api/v1/user 404 2ms","timestamp":"2024-03-09T16:23:54.900Z"}
 {"level":"error","message":"GET /favicon.ico 404 1ms","timestamp":"2024-03-10T09:13:14.969Z"}
 {"level":"error","message":"GET /api/v1/offers/65e83fede9a0df5f0ef0e3ed?location=true 500 3373ms","timestamp":"2024-03-10T09:14:08.214Z"}
+{"level":"error","message":"GET /api/v1/test 404 7ms","timestamp":"2024-03-13T10:15:27.199Z"}
+{"level":"error","message":"GET /favicon.ico 404 1ms","timestamp":"2024-03-13T10:15:27.544Z"}
+{"level":"error","message":"POST /api/v2/categories 404 4ms","timestamp":"2024-03-16T07:50:16.884Z"}
+{"level":"error","message":"POST /api/v2/categories 404 9ms","timestamp":"2024-03-16T07:52:29.175Z"}
+{"level":"error","message":"POST /api/v2/categories 404 3ms","timestamp":"2024-03-16T07:52:44.902Z"}
+{"level":"error","message":"POST /api/v2/categories 400 8ms","timestamp":"2024-03-16T07:53:25.350Z"}
+{"level":"error","message":"POST /api/v2/categories 400 9ms","timestamp":"2024-03-16T07:56:42.288Z"}
+{"level":"error","message":"POST /api/v2/categories 400 8ms","timestamp":"2024-03-16T07:57:15.783Z"}
+{"level":"error","message":"POST /api/v2/categories 400 8ms","timestamp":"2024-03-16T07:57:48.928Z"}
+{"level":"error","message":"POST /api/v2/categories 500 60ms","timestamp":"2024-03-16T07:58:06.804Z"}
+{"level":"error","message":"GET /static/fd78bd1c-c5b2-4189-98c3-e5c87c917f45-img1_.jpg 404 4ms","timestamp":"2024-03-16T08:01:19.522Z"}
+{"level":"error","message":"GET /favicon.ico 404 2ms","timestamp":"2024-03-16T08:01:27.673Z"}
+{"level":"error","message":"GET /static/fd78bd1c-c5b2-4189-98c3-e5c87c917f45-img1_.jpg 404 4ms","timestamp":"2024-03-16T08:29:20.286Z"}

@@ -14,28 +14,32 @@ const CollectorSchema: Schema = new Schema(
       required: [true, "offer id is required"],
     },
     lastPaid: {
-      paymentAmount: Number,
-      paymentDate: Number,
-      paymentStatus: String,
-      paymentDueDate: Number,
+      paymentAmount: { type: Number, default: -1 },
+      paymentDate: { type: Number, default: null },
+      paymentStatus: { type: String, default: "pending" },
+      paymentDueDate: { type: Number, default: null },
     },
     paymentDueDate: {
-      paymentAmount: Number,
-      paymentDate: Number,
-      paymentStatus: String,
-      paymentDueDate: Number,
+      paymentAmount: { type: Number, default: -1 },
+      paymentDate: { type: Number, default: null },
+      paymentStatus: { type: String, default: "pending" },
+      paymentDueDate: { type: Number, default: null },
     },
     oEarned: {
       type: Number,
+      default: 0,
     },
     oSpent: {
       type: Number,
+      default: 0,
     },
     paymentDue: {
       type: Number,
+      default: null,
     },
     installments: {
       type: Number, //it will be ho much installment user want to pay
+      default: 1,
     },
     paymentType: {
       type: String, //payment type
@@ -48,6 +52,7 @@ const CollectorSchema: Schema = new Schema(
     },
     paymentIds: {
       type: [String], //payment ids
+      default: [null],
     },
   },
   { timestamps: true }

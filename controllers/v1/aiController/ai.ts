@@ -1,9 +1,9 @@
 import { Request, Response } from "express";
-import { openai } from "../../config/config";
-import logging from "../../config/logging";
-import { HTTP_STATUS_CODES } from "../../config/statusCode";
-import { responseObj } from "../../helper/response";
-import { getQueryResponse } from "../../helper/chatGptPoweredChatBot";
+import { openai } from "../../../config/config";
+import logging from "../../../config/logging";
+import { HTTP_STATUS_CODES } from "../../../config/statusCode";
+import { responseObj } from "../../../helper/response";
+import { getQueryResponse } from "../../../helper/chatGptPoweredChatBot";
 
 export const getAiGeneratedImg = async (req: Request, res: Response) => {
   try {

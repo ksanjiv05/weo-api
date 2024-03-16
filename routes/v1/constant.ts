@@ -1,5 +1,5 @@
 import express from "express";
-import { getServiceUnits } from "../../controllers/constantController/constant";
+import { getServiceUnits } from "../../controllers/v1/constantController/constant";
 
 const router = express.Router();
 

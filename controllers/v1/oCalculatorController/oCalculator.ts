@@ -1,5 +1,5 @@
 import { Response, Request } from "express";
-import { responseObj } from "../../helper/response";
+import { responseObj } from "../../../helper/response";
 
 // const getOPrice = (req: Request, res: Response) => {
 //   try {

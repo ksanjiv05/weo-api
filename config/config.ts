@@ -18,3 +18,8 @@ export const openai = new OpenAIApi(configuration);
 export const RAZORPAY_KEY_ID: string = process.env.RAZORPAY_KEY_ID as string;
 export const RAZORPAY_KEY_SECRET: string = process.env
   .RAZORPAY_KEY_SECRET as string;
+
+export const STATIC_FILE_PATH: string =
+  process.env.NODE_ENV == "dev"
+    ? "http://localhost:4000/static/"
+    : "https://weo.ai/static/";

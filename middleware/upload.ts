@@ -5,8 +5,8 @@ import { v4 } from "uuid";
 
 const storage = multer.diskStorage({
   destination: function (req: Request, file, cb) {
-    mkdirp.sync(globalThis.__dirname + "/uploads/offers");
-    cb(null, globalThis.__dirname + "/uploads/offers");
+    mkdirp.sync(globalThis.__dirname + "/uploads/category");
+    cb(null, globalThis.__dirname + "/uploads/category");
   },
   filename: function (req, file, cb) {
     const uniqueSuffix = v4();

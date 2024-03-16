@@ -1,9 +1,9 @@
 import { Request, Response } from "express";
-import { ERROR_CODES } from "../../config/errorCode";
-import logging from "../../config/logging";
-import { HTTP_STATUS_CODES } from "../../config/statusCode";
-import { SERVICE_UNITS } from "../../constants";
-import { responseObj } from "../../helper/response";
+import { ERROR_CODES } from "../../../config/errorCode";
+import logging from "../../../config/logging";
+import { HTTP_STATUS_CODES } from "../../../config/statusCode";
+import { SERVICE_UNITS } from "../../../constants";
+import { responseObj } from "../../../helper/response";
 
 export const getServiceUnits = async (req: Request, res: Response) => {
   try {

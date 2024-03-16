@@ -15,3 +15,14 @@ export interface ICategory extends Document {
   createdAt?: Date;
   updateAt?: Date;
 }
+
+export interface ICategoryV2 extends Document {
+  _id: string;
+  parentCategoryId: string | null;
+  name: string;
+  categoryPic: string;
+  description?: string;
+  isActive?: boolean;
+  createdAt?: Date;
+  updateAt?: Date;
+}

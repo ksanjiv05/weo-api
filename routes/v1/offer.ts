@@ -6,7 +6,7 @@ import {
   getOffersByUid,
   isOfferNameExist,
   updateOffer,
-} from "../../controllers/offerController/offer";
+} from "../../controllers/v1/offerController/offer";
 import {
   offerDataValidateCheckPointA,
   offerDataValidateCheckPointB,
@@ -326,6 +326,6 @@ router.put("/offers/6", auth, offerDataValidateCheckPointF, updateOffer);
 
 router.get("/offers/all", getOffers);
 router.get("/offers", auth, getOffersByUid);
-router.get("/offers/:id", getOffer);
+router.get("/offers/:id", auth, getOffer);
 
 export default router;

@@ -1,11 +1,11 @@
 import { Request, Response } from "express";
-import logging from "../../config/logging";
-import Offer from "../../models/Offer";
-import { IOffer, OFFER_STATUS } from "../../interfaces/IOffer";
-import { responseObj } from "../../helper/response";
-import { HTTP_STATUS_CODES } from "../../config/statusCode";
+import logging from "../../../config/logging";
+import Offer from "../../../models/Offer";
+import { IOffer, OFFER_STATUS } from "../../../interfaces/IOffer";
+import { responseObj } from "../../../helper/response";
+import { HTTP_STATUS_CODES } from "../../../config/statusCode";
 import { validationResult } from "express-validator";
-import { ERROR_CODES } from "../../config/errorCode";
+import { ERROR_CODES } from "../../../config/errorCode";
 import mongoose from "mongoose";
 
 // this function is used to check if the offer name is already exist or not

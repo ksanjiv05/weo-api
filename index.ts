@@ -15,6 +15,7 @@ import rateLimiterMiddleware from "./middleware/rateLimiter";
 import path from "path";
 import { swaggerOptions } from "./config/swagger";
 import loggingMiddleware from "./middleware/logger";
+import routerV2 from "./routes/v2";
 
 //end scripts
 
@@ -49,6 +50,7 @@ app.use(rateLimiterMiddleware);
 
 app.use("/static", express.static(path.join(__dirname, "uploads")));
 app.use("/api/v1", router);
+app.use("/api/v2", routerV2);
 
 app.get("/", (req: Request, res: Response) => {
   res.send("server is running");

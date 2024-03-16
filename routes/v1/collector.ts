@@ -3,7 +3,7 @@ import { auth } from "../../middleware/auth";
 import {
   collectOffer,
   getCollectedOffers,
-} from "../../controllers/collectorController/collector";
+} from "../../controllers/v1/collectorController/collector";
 import { collectorDataValidate } from "../../middleware/validator/collectorValidator";
 
 const router = express.Router();

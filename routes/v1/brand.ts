@@ -9,7 +9,7 @@ import {
   getBrandsByUid,
   isBrandNameExist,
   updateBrand,
-} from "../../controllers/brandController/brand";
+} from "../../controllers/v1/brandController/brand";
 import {
   brandDataValidateCheckPoint,
   brandDataValidateCheckPointA,

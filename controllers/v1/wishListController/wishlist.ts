@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
-import { responseObj } from "../../helper/response";
-import { HTTP_STATUS_CODES } from "../../config/statusCode";
-import logging from "../../config/logging";
-import User from "../../models/User";
+import { responseObj } from "../../../helper/response";
+import { HTTP_STATUS_CODES } from "../../../config/statusCode";
+import logging from "../../../config/logging";
+import User from "../../../models/User";
 
 export const addWishList = async (req: Request, res: Response) => {
   try {

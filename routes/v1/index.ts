@@ -9,14 +9,14 @@ import { auth } from "../../middleware/auth";
 import {
   getAiGeneratedChatResponse,
   getAiGeneratedImg,
-} from "../../controllers/aiController/ai";
+} from "../../controllers/v1/aiController/ai";
 
 import {
   createOfferOrder,
   createSellerAccount,
-} from "../../controllers/paymentController/razorpay";
+} from "../../controllers/v1/paymentController/razorpay";
 import { addressDataValidate } from "../../middleware/validator/address";
-import { addAddress } from "../../controllers/addressController/address";
+import { addAddress } from "../../controllers/v1/addressController/address";
 const router = express.Router();
 
 import userRoute from "./user";
@@ -25,6 +25,7 @@ import offerRoute from "./offer";
 import categoryRoute from "./category";
 import constantRoute from "./constant";
 import collectRoute from "./collector";
+import { exportCsv } from "../../helper/csvUtils";
 //user profile routes
 router.use(userRoute);
 
@@ -62,6 +63,10 @@ router.post("/user/account", createSellerAccount);
 //webhook routes
 router.post("/webhook/payment", async (req, res) => {});
 router.post("/webhook/transfer", async (req, res) => {});
+
+router.get("/test", (req, res) => {
+  exportCsv({}, "test", res);
+});
 
 router.all("*", (req, res) => {
   res.status(404).json({
