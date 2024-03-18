@@ -320,3 +320,9 @@ info: POST /api/v1/brands 200 295ms
 {"level":"error","message":"GET /static/fd78bd1c-c5b2-4189-98c3-e5c87c917f45-img1_.jpg 404 4ms","timestamp":"2024-03-16T08:29:20.286Z"}
 {"level":"info","message":"GET /api/v2/categories 200 266ms","timestamp":"2024-03-16T08:30:01.438Z"}
 {"level":"info","message":"GET /static/category/fd78bd1c-c5b2-4189-98c3-e5c87c917f45-img1_.jpg 304 3ms","timestamp":"2024-03-16T08:30:11.067Z"}
+{"level":"info","message":"GET /api/v1/categories 200 662ms","timestamp":"2024-03-18T04:46:07.111Z"}
+{"level":"error","message":"GET /favicon.ico 404 2ms","timestamp":"2024-03-18T04:46:07.459Z"}
+{"level":"info","message":"GET /api/v1/categories?page=1&perPage=2 200 629ms","timestamp":"2024-03-18T04:46:21.641Z"}
+{"level":"info","message":"GET / 200 45ms","timestamp":"2024-03-18T07:20:19.487Z"}
+{"level":"info","message":"GET /api/v1/categories?page=1&perPage=2 200 725ms","timestamp":"2024-03-18T07:21:44.376Z"}
+{"level":"error","message":"GET /favicon.ico 404 5ms","timestamp":"2024-03-18T07:21:44.506Z"}

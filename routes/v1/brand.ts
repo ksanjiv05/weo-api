@@ -5,6 +5,7 @@ import {
   addBrand,
   deleteBrand,
   getBrand,
+  getBrandCsv,
   getBrands,
   getBrandsByUid,
   isBrandNameExist,
@@ -399,7 +400,7 @@ const router = express.Router();
  *         description: Brand not found
  */
 
-// router.get("/brands", auth, getBrands);
+router.get("/brands", auth, getBrands);
 router.get("/brands", auth, getBrandsByUid);
 router.get("/brands/exist", auth, isBrandNameExist);
 router.get("/brands/:brandId", auth, getBrand);
@@ -412,5 +413,7 @@ router.put("/brands/4", auth, brandDataValidateCheckPointD, updateBrand);
 router.put("/brands/5", auth, brandDataValidateCheckPointD, updateBrand);
 
 router.delete("/brands/:brandId", auth, deleteBrand);
+
+router.get("/brands/csv", auth, getBrandCsv);
 
 export default router;

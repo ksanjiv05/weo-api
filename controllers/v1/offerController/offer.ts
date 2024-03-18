@@ -7,6 +7,7 @@ import { HTTP_STATUS_CODES } from "../../../config/statusCode";
 import { validationResult } from "express-validator";
 import { ERROR_CODES } from "../../../config/errorCode";
 import mongoose from "mongoose";
+import { exportCsv } from "../../../helper/csvUtils";
 
 // this function is used to check if the offer name is already exist or not
 export const isOfferNameExist = async (req: Request, res: Response) => {
@@ -182,6 +183,7 @@ export const getOffers = async (req: Request, res: Response) => {
       subCategoryName = "",
       minAccessBalance = -1,
       offerActivitiesAt = "",
+      offerStatus = OFFER_STATUS.LIVE,
     } = req.query;
     req.body.creatorId = req.body.uid;
 
@@ -473,6 +475,24 @@ export const deleteOffer = async (req: Request, res: Response) => {
       type: "error",
       statusCode: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR,
       msg: "unable to delete Offer",
+      error: error.message ? error.message : "internal server error",
+      data: null,
+      code: ERROR_CODES.SERVER_ERR,
+    });
+  }
+};
+
+export const getOfferCsv = async (req: Request, res: Response) => {
+  try {
+    const offers = await Offer.find({}).lean();
+    exportCsv(offers, "offers", res);
+  } catch (error: any) {
+    logging.error("Get CSV Offer", "unable to get Offers", error);
+    return responseObj({
+      resObj: res,
+      type: "error",
+      statusCode: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR,
+      msg: "unable to get csv file",
       error: error.message ? error.message : "internal server error",
       data: null,
       code: ERROR_CODES.SERVER_ERR,

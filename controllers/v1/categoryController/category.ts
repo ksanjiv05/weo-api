@@ -123,9 +123,8 @@ export const getCategory = async (req: Request, res: Response) => {
 
 export const getCategories = async (req: Request, res: Response) => {
   try {
-    console.log("req.query", req.query);
     const { page = 1, perPage = 10, name = "" } = req.query;
-
+    console.log("req.query", req.body);
     const skip = (Number(page) - 1) * Number(perPage);
 
     const filter = {
@@ -140,6 +139,7 @@ export const getCategories = async (req: Request, res: Response) => {
       //     },
       //   }),
     };
+
     const categories = await Category.find(filter)
       .sort("-createdAt")
       .skip(Number(skip))

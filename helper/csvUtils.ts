@@ -10,13 +10,13 @@ export const exportCsv = async (
   collectionName: string,
   response: Response
 ) => {
-  collectionName = "collector";
-  const user = await Collector.find({}).lean();
-  console.log(user);
+  // collectionName = "collector";
+  // const user = await Collector.find({}).lean();
+  // console.log(user);
   const parser = new Parser({});
-  const csv = parser.parse(user);
+  const csv = parser.parse(data);
 
-  const filename = `${collectionName}-${new Date("2024-03-13T05:25:23.914Z")
+  const filename = `${collectionName}-${new Date()
     .toString()
     .split(" ")
     .slice(0, 6)

@@ -16,6 +16,7 @@ import path from "path";
 import { swaggerOptions } from "./config/swagger";
 import loggingMiddleware from "./middleware/logger";
 import routerV2 from "./routes/v2";
+import { createSuperAdmin } from "./scripts/createAdmin";
 
 //end scripts
 
@@ -75,3 +76,5 @@ app.use(
   swaggerUI.serve,
   swaggerUI.setup(specs, { explorer: true })
 );
+
+// createSuperAdmin();

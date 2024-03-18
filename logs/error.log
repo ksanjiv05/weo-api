@@ -58,3 +58,5 @@ error: POST /api/v1/brands 400 7ms
 {"level":"error","message":"GET /static/fd78bd1c-c5b2-4189-98c3-e5c87c917f45-img1_.jpg 404 4ms","timestamp":"2024-03-16T08:01:19.522Z"}
 {"level":"error","message":"GET /favicon.ico 404 2ms","timestamp":"2024-03-16T08:01:27.673Z"}
 {"level":"error","message":"GET /static/fd78bd1c-c5b2-4189-98c3-e5c87c917f45-img1_.jpg 404 4ms","timestamp":"2024-03-16T08:29:20.286Z"}
+{"level":"error","message":"GET /favicon.ico 404 2ms","timestamp":"2024-03-18T04:46:07.459Z"}
+{"level":"error","message":"GET /favicon.ico 404 5ms","timestamp":"2024-03-18T07:21:44.506Z"}

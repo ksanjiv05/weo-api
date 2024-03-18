@@ -6,6 +6,7 @@ import { responseObj } from "../../../helper/response";
 import { HTTP_STATUS_CODES } from "../../../config/statusCode";
 import { validationResult } from "express-validator";
 import { ERROR_CODES } from "../../../config/errorCode";
+import { exportCsv } from "../../../helper/csvUtils";
 
 export const isBrandNameExist = async (req: Request, res: Response) => {
   try {
@@ -184,6 +185,51 @@ export const getBrands = async (req: Request, res: Response) => {
       page = 0,
       perPage = 10,
       status = "",
+      // categoriesIds = [],
+    } = req.query;
+
+    const skip = (Number(page) - 1) * Number(perPage);
+    const filter = {
+      ...(status === "" ? {} : { status }),
+      // ...(categoriesIds.length === 0
+      //   ? {}
+      //   : { categoriesIds: { $in: categoriesIds } }),
+    };
+    const brands = await Brand.find(filter)
+      .sort("-createdAt")
+      .skip(Number(skip))
+      .limit(Number(perPage));
+    const total = await Brand.find(filter).count();
+
+    return responseObj({
+      resObj: res,
+      type: "success",
+      statusCode: HTTP_STATUS_CODES.SUCCESS,
+      msg: "you are successfully get Brands",
+      error: null,
+      data: { brands, total },
+      code: ERROR_CODES.SUCCESS,
+    });
+  } catch (error: any) {
+    logging.error("Brand", "unable to get Brands", error);
+    return responseObj({
+      resObj: res,
+      type: "error",
+      statusCode: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR,
+      msg: "unable to get Brands",
+      error: error.message ? error.message : "internal server error",
+      data: null,
+      code: ERROR_CODES.SERVER_ERR,
+    });
+  }
+};
+
+export const getBrandsBycategoriesIds = async (req: Request, res: Response) => {
+  try {
+    const {
+      page = 0,
+      perPage = 10,
+      status = "",
       categoriesIds = [],
     } = req.query;
 
@@ -332,6 +378,24 @@ export const deleteBrand = async (req: Request, res: Response) => {
       type: "error",
       statusCode: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR,
       msg: "unable to delete Brand",
+      error: error.message ? error.message : "internal server error",
+      data: null,
+      code: ERROR_CODES.SERVER_ERR,
+    });
+  }
+};
+
+export const getBrandCsv = async (req: Request, res: Response) => {
+  try {
+    const brands = await Brand.find({}).lean();
+    exportCsv(brands, "brands", res);
+  } catch (error: any) {
+    logging.error("Get CSV Brand", "unable to get Brands", error);
+    return responseObj({
+      resObj: res,
+      type: "error",
+      statusCode: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR,
+      msg: "unable to get csv file",
       error: error.message ? error.message : "internal server error",
       data: null,
       code: ERROR_CODES.SERVER_ERR,

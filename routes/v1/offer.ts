@@ -2,6 +2,7 @@ import express from "express";
 import {
   addOffer,
   getOffer,
+  getOfferCsv,
   getOffers,
   getOffersByUid,
   isOfferNameExist,
@@ -327,5 +328,6 @@ router.put("/offers/6", auth, offerDataValidateCheckPointF, updateOffer);
 router.get("/offers/all", getOffers);
 router.get("/offers", auth, getOffersByUid);
 router.get("/offers/:id", auth, getOffer);
+router.get("/offers/csv", auth, getOfferCsv);
 
 export default router;
