@@ -188,6 +188,10 @@ export const getOffers = async (req: Request, res: Response) => {
     req.body.creatorId = req.body.uid;
 
     const skip = (Number(page) - 1) * Number(perPage);
+
+    if (req.body.admin) {
+    }
+
     const filter = {
       ...{ offerStatus: OFFER_STATUS.LIVE },
       totalOffersAvailable: { $gt: 0 },
@@ -196,9 +200,12 @@ export const getOffers = async (req: Request, res: Response) => {
         : { subCategories: { $elemMatch: { subCategoryName } } }),
       // ...(minAccessBalance === -1 ? {} : { minAccessBalance }),
       ...(offerActivitiesAt === "" ? {} : { offerActivitiesAt }),
-      // ...(tableId === "" ? {} : { tableIds: { $elemMatch: { tableId } } }),
-      offerValidityStartDate: { $lte: new Date() },
-      offerValidityEndDate: { $gte: new Date() },
+      ...(req.body.admin
+        ? {}
+        : {
+            offerValidityStartDate: { $lte: new Date() },
+            offerValidityEndDate: { $gte: new Date() },
+          }),
     };
 
     // const offers = await Offer.find(
