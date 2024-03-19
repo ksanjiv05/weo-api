@@ -233,7 +233,7 @@ export const getOffers = async (req: Request, res: Response) => {
     //   .skip(Number(skip))
     //   .limit(Number(perPage));
 
-    console.log("filter", admin, filter);
+    console.log("filter", admin, req.body, filter);
 
     const offers = await Offer.aggregate([
       {
