@@ -252,6 +252,7 @@ export const getOffers = async (req: Request, res: Response) => {
       {
         $unwind: "$user",
       },
+
       {
         $project: {
           creatorId: 1,
@@ -273,6 +274,7 @@ export const getOffers = async (req: Request, res: Response) => {
           durationUnitType: 1,
           durationName: 1,
           brandName: 1,
+          checkpoint: 1,
         },
       },
       { $skip: Number(skip) }, // Skip documents for pagination
