@@ -326,3 +326,4 @@ info: POST /api/v1/brands 200 295ms
 {"level":"info","message":"GET / 200 45ms","timestamp":"2024-03-18T07:20:19.487Z"}
 {"level":"info","message":"GET /api/v1/categories?page=1&perPage=2 200 725ms","timestamp":"2024-03-18T07:21:44.376Z"}
 {"level":"error","message":"GET /favicon.ico 404 5ms","timestamp":"2024-03-18T07:21:44.506Z"}
+{"level":"info","message":"GET / 200 5ms","timestamp":"2024-03-19T09:22:50.571Z"}

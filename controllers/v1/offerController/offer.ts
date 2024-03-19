@@ -233,6 +233,8 @@ export const getOffers = async (req: Request, res: Response) => {
     //   .skip(Number(skip))
     //   .limit(Number(perPage));
 
+    console.log("filter", admin, filter);
+
     const offers = await Offer.aggregate([
       {
         $match: {
