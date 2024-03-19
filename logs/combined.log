@@ -327,3 +327,13 @@ info: POST /api/v1/brands 200 295ms
 {"level":"info","message":"GET /api/v1/categories?page=1&perPage=2 200 725ms","timestamp":"2024-03-18T07:21:44.376Z"}
 {"level":"error","message":"GET /favicon.ico 404 5ms","timestamp":"2024-03-18T07:21:44.506Z"}
 {"level":"info","message":"GET / 200 5ms","timestamp":"2024-03-19T09:22:50.571Z"}
+{"level":"error","message":"GET /api/v1/offers/all?offerStatus=draft&page=1&perPage=10 403 11ms","timestamp":"2024-03-19T12:11:09.215Z"}
+{"level":"info","message":"GET /api/v1/offers/all?offerStatus=draft&page=1&perPage=10 200 4266ms","timestamp":"2024-03-19T12:12:51.243Z"}
+{"level":"info","message":"GET /api/v1/offers/all?offerStatus=live&page=1&perPage=10 200 679ms","timestamp":"2024-03-19T12:13:03.747Z"}
+{"level":"info","message":"GET /api/v1/offers/all?offerStatus=live&page=1&perPage=10 200 1000ms","timestamp":"2024-03-19T12:13:54.604Z"}
+{"level":"info","message":"GET /api/v1/offers/all?offerStatus=live&page=1&perPage=10 200 1444ms","timestamp":"2024-03-19T12:14:16.640Z"}
+{"level":"info","message":"GET /api/v1/offers/all?offerStatus=draft&page=1&perPage=10 200 658ms","timestamp":"2024-03-19T12:14:31.857Z"}
+{"level":"info","message":"GET /api/v1/offers/all?offerStatus=draft&page=1&perPage=10 200 5726ms","timestamp":"2024-03-19T12:15:34.844Z"}
+{"level":"info","message":"GET /api/v1/offers/all?offerStatus=draft&page=1&perPage=10 200 1362ms","timestamp":"2024-03-19T12:16:42.274Z"}
+{"level":"info","message":"GET /api/v1/offers/all?offerStatus=draft&page=1&perPage=10 200 2509ms","timestamp":"2024-03-19T12:20:59.972Z"}
+{"level":"info","message":"GET /api/v1/offers/all?offerStatus=draft&page=1&perPage=10 200 1345ms","timestamp":"2024-03-19T12:24:17.894Z"}

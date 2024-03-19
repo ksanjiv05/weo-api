@@ -192,7 +192,7 @@ export const getOffers = async (req: Request, res: Response) => {
 
     const filter = {
       ...{ offerStatus: admin ? offerStatus : OFFER_STATUS.LIVE },
-      totalOffersAvailable: { $gt: 0 },
+      ...(admin ? {} : { totalOffersAvailable: { $gt: 0 } }),
       ...(subCategoryName === ""
         ? {}
         : { subCategories: { $elemMatch: { subCategoryName } } }),
@@ -233,7 +233,7 @@ export const getOffers = async (req: Request, res: Response) => {
     //   .skip(Number(skip))
     //   .limit(Number(perPage));
 
-    console.log("filter", admin, req.body, filter);
+    // console.log("filter", admin, req.body, filter);
 
     const offers = await Offer.aggregate([
       {
@@ -278,8 +278,6 @@ export const getOffers = async (req: Request, res: Response) => {
       { $skip: Number(skip) }, // Skip documents for pagination
       { $limit: Number(perPage) }, // Limit the number of documents for pagination
     ]);
-
-    // console.log("offers", offer);
 
     const total = await Offer.find(filter).count();
 

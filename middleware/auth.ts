@@ -13,7 +13,7 @@ export const auth = (req: Request, res: Response, next: NextFunction) => {
       .auth()
       .verifyIdToken(token)
       .then((claims) => {
-        console.log("clams", claims);
+        // console.log("clams", claims);
         req.body = { ...req.body, ...claims };
         next();
       })
