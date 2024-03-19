@@ -387,7 +387,25 @@ export const deleteBrand = async (req: Request, res: Response) => {
 
 export const getBrandCsv = async (req: Request, res: Response) => {
   try {
-    const brands = await Brand.find({}).lean();
+    if (!req.body.admin) {
+      return responseObj({
+        resObj: res,
+        type: "error",
+        statusCode: HTTP_STATUS_CODES.UNAUTHORIZED,
+        msg: "you are not allowed to get csv file",
+        error: "you are not allowed to get csv file",
+        data: null,
+        code: ERROR_CODES.AUTH_ERR,
+      });
+    }
+    const { status = "" } = req.query;
+    const filter = {
+      ...(status === "" ? {} : { status }),
+      // ...(categoriesIds.length === 0
+      //   ? {}
+      //   : { categoriesIds: { $in: categoriesIds } }),
+    };
+    const brands = await Brand.find(filter).lean();
     exportCsv(brands, "brands", res);
   } catch (error: any) {
     logging.error("Get CSV Brand", "unable to get Brands", error);

@@ -220,8 +220,6 @@ export const deleteCategory = async (req: Request, res: Response) => {
   return res.status(201).send("Not implemented");
 };
 
-//
-
 export const getBrandSubCategories = async (req: Request, res: Response) => {
   try {
     const { id = "" } = req.params;

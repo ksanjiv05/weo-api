@@ -62,15 +62,42 @@ class CustomStringMethod {
   getLowerCase() {
     return this.str.toLowerCase();
   }
-  getReverse() {
-    return this.str.split("").reverse().join("");
-  }
+  // getLowerCase(str) {
+  //   console.log("str ", str);
+  //   return str.toLowerCase();
+  // }
+  // getReverse() {
+  //   return this.str.split("").reverse().join("");
+  // }
 }
 
-const customStringMethod = new CustomStringMethod("sanjiv");
-const rev = customStringMethod.getReverse();
-console.log("rev ", rev);
+// const customStringMethod = new CustomStringMethod("sanjiv".length);
+// const rev = customStringMethod.getReverse();
+// // console.log("rev ", rev);
 
-const customStringMethod2 = new CustomStringMethod("Atiya Nigar");
-const rev2 = customStringMethod2.getReverse();
-console.log("rev2 ", rev2);
+// const customStringMethod2 = new CustomStringMethod("Atiya Nigar");
+// const rev2 = customStringMethod2.getReverse();
+// console.log("lower case  ", customStringMethod.getLowerCase());
+// console.log("lower case 2 ", customStringMethod.getLowerCase("testIIIIIII"));
+
+function findPlainDrom(str) {
+  let str3 = "";
+  for (i = str.length - 1; i >= 0; i--) {
+    str3 = str3 + str[i];
+  }
+  return str3;
+}
+
+function findPlainDrom2(str2) {
+  let str4 = str2.split(" ");
+  let plainDromWords = "";
+  for (let i = 0; i < str4.length; i++) {
+    let pld = findPlainDrom(str4[i]);
+    if (pld == str4[i]) {
+      plainDromWords = plainDromWords + str4[i] + " ";
+    }
+  }
+  return plainDromWords;
+}
+
+console.log(findPlainDrom2("a rececar radar madam"));

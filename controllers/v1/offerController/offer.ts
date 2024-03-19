@@ -189,9 +189,6 @@ export const getOffers = async (req: Request, res: Response) => {
 
     const skip = (Number(page) - 1) * Number(perPage);
 
-    if (req.body.admin) {
-    }
-
     const filter = {
       ...{ offerStatus: OFFER_STATUS.LIVE },
       totalOffersAvailable: { $gt: 0 },
@@ -491,7 +488,88 @@ export const deleteOffer = async (req: Request, res: Response) => {
 
 export const getOfferCsv = async (req: Request, res: Response) => {
   try {
-    const offers = await Offer.find({}).lean();
+    const {
+      offerStatus = OFFER_STATUS.UNKNOWN,
+      totalOffersAvailable = -1,
+      subCategoryName = "",
+      offerActivitiesAt = "",
+    } = req.query;
+    // const offers = await Offer.find({}).lean();
+    if (!req.body.admin) {
+      return responseObj({
+        resObj: res,
+        type: "error",
+        statusCode: HTTP_STATUS_CODES.UNAUTHORIZED,
+        msg: "you are not allowed to get csv file",
+        error: "you are not allowed to get csv file",
+        data: null,
+        code: ERROR_CODES.AUTH_ERR,
+      });
+    }
+    const filter = {
+      ...{ offerStatus: OFFER_STATUS.UNKNOWN ? {} : { offerStatus } },
+      ...(totalOffersAvailable != -1
+        ? {}
+        : {
+            $gt: totalOffersAvailable,
+          }),
+      ...(subCategoryName === ""
+        ? {}
+        : { subCategories: { $elemMatch: { subCategoryName } } }),
+      // ...(minAccessBalance === -1 ? {} : { minAccessBalance }),
+      ...(offerActivitiesAt === "" ? {} : { offerActivitiesAt }),
+      ...(req.body.admin
+        ? {}
+        : {
+            offerValidityStartDate: { $lte: new Date() },
+            offerValidityEndDate: { $gte: new Date() },
+          }),
+    };
+
+    // const offers = await Offer.aggregate([
+    //   {
+    //     $match: {
+    //       ...filter,
+    //     },
+    //   },
+    //   {
+    //     $lookup: {
+    //       from: "users",
+    //       localField: "creatorId",
+    //       foreignField: "uid",
+    //       as: "user",
+    //     },
+    //   },
+    //   {
+    //     $unwind: "$user",
+    //   },
+    //   {
+    //     $project: {
+    //       creatorId: 1,
+    //       offerTitle: 1,
+    //       offerDescription: 1,
+    //       offerStatus: 1,
+    //       createdAt: 1,
+    //       updatedAt: 1,
+    //       creatorName: "$user.creatorName",
+    //       brandId: 1,
+    //       offerMedia: 1,
+    //       offerThumbnailImage: 1,
+    //       offerPriceAmount: 1,
+    //       totalOffersSold: 1,
+    //       totalOffersAvailable: 1,
+    //       serviceUnitName: 1,
+    //       totalServiceUnitItems: 1,
+    //       durationUnitItems: 1,
+    //       durationUnitType: 1,
+    //       durationName: 1,
+    //       brandName: 1,
+    //     },
+    //   },
+    //   { $skip: Number(skip) }, // Skip documents for pagination
+    //   { $limit: Number(perPage) }, // Limit the number of documents for pagination
+    // ]);
+    const offers = await Offer.find(filter).lean();
     exportCsv(offers, "offers", res);
   } catch (error: any) {
     logging.error("Get CSV Offer", "unable to get Offers", error);
