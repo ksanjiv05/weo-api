@@ -400,8 +400,8 @@ const router = express.Router();
  *         description: Brand not found
  */
 
-router.get("/brands", auth, getBrands);
 router.get("/brands", auth, getBrandsByUid);
+router.get("/brands/all", auth, getBrands);
 router.get("/brands/exist", auth, isBrandNameExist);
 router.get("/brands/:brandId", auth, getBrand);
 

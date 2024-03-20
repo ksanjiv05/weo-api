@@ -187,7 +187,18 @@ export const getBrands = async (req: Request, res: Response) => {
       status = "",
       // categoriesIds = [],
     } = req.query;
-
+    const { admin = false } = req.body;
+    if (!admin) {
+      return responseObj({
+        resObj: res,
+        type: "error",
+        statusCode: HTTP_STATUS_CODES.UNAUTHORIZED,
+        msg: "you are not allowed to get Brands",
+        error: "you are not allowed to get Brands",
+        data: null,
+        code: ERROR_CODES.AUTH_ERR,
+      });
+    }
     const skip = (Number(page) - 1) * Number(perPage);
     const filter = {
       ...(status === "" ? {} : { status }),

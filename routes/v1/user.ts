@@ -9,6 +9,7 @@ import { auth } from "../../middleware/auth";
 import {
   deleteUserProfile,
   getUserProfile,
+  getUsers,
   isExistingUser,
   isUserNameAvailable,
   register,
@@ -438,5 +439,6 @@ router.put(
 router.put("/users/:id", auth, userDataValidateCheckPointB, updateUser);
 router.get("/users", auth, getUserProfile);
 router.delete("/users/:id", auth, deleteUserProfile);
+router.get("/users/all", auth, getUsers);
 
 export default router;

@@ -416,3 +416,39 @@ export const login = async (req: Request, res: Response) => {
     });
   }
 };
+
+export const getUsers = async (req: Request, res: Response) => {
+  try {
+    const { admin = false } = req.body;
+    if (!admin) {
+      return responseObj({
+        resObj: res,
+        type: "error",
+        statusCode: HTTP_STATUS_CODES.UNAUTHORIZED,
+        msg: "you are not allowed to get users",
+        error: "you are not allowed to get users",
+        data: null,
+        code: ERROR_CODES.AUTH_ERR,
+      });
+    }
+    const users = await User.find();
+    return responseObj({
+      statusCode: HTTP_STATUS_CODES.SUCCESS,
+      type: "success",
+      msg: "all users",
+      error: null,
+      resObj: res,
+      data: users,
+    });
+  } catch (error: any) {
+    logging.error("Get Users", "unable to get all users", error);
+    return responseObj({
+      resObj: res,
+      type: "error",
+      statusCode: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR,
+      msg: "unable to get all users",
+      error: error.message ? error.message : "internal server error",
+      data: null,
+    });
+  }
+};
