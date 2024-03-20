@@ -182,7 +182,7 @@ export const updateBrand = async (req: Request, res: Response) => {
 export const getBrands = async (req: Request, res: Response) => {
   try {
     const {
-      page = 0,
+      page = 1,
       perPage = 10,
       status = "",
       // categoriesIds = [],
@@ -202,14 +202,49 @@ export const getBrands = async (req: Request, res: Response) => {
     const skip = (Number(page) - 1) * Number(perPage);
     const filter = {
       ...(status === "" ? {} : { status }),
-      // ...(categoriesIds.length === 0
-      //   ? {}
-      //   : { categoriesIds: { $in: categoriesIds } }),
     };
-    const brands = await Brand.find(filter)
-      .sort("-createdAt")
-      .skip(Number(skip))
-      .limit(Number(perPage));
+
+    const brands = await Brand.aggregate([
+      {
+        $match: {
+          ...filter,
+        },
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "uid",
+          foreignField: "uid",
+          as: "user",
+        },
+      },
+      {
+        $unwind: "$user",
+      },
+
+      {
+        $project: {
+          brandName: 1,
+          brandDescription: 1,
+          status: 1,
+          checkpoint: 1,
+          categoriesIds: 1,
+          serviceLocationType: 1,
+          websiteLink: 1,
+          onlineServiceLocationType: 1,
+          onlineLocations: 1,
+          offlineLocations: 1,
+          coverImage: 1,
+          profileImage: 1,
+          createdAt: 1,
+          updatedAt: 1,
+          creatorName: "$user.creatorName",
+        },
+      },
+      { $skip: Number(skip) }, // Skip documents for pagination
+      { $limit: Number(perPage) }, // Limit the number of documents for pagination
+    ]);
+
     const total = await Brand.find(filter).count();
 
     return responseObj({
