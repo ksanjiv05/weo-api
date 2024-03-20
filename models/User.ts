@@ -53,6 +53,8 @@ const UserSchema: Schema = new Schema(
       },
     ],
     successRate: Number,
+    lastLogin: { type: Date, default: Date.now },
+    lastActive: { type: Date, default: Date.now },
   },
   { timestamps: true }
 );

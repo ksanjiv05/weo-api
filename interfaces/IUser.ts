@@ -46,7 +46,8 @@ export interface IUser extends Document {
   devices?: string[];
   wishLists?: string[];
   likes?: string[];
-
+  lastLogin: Date;
+  lastActive: Date;
   bankAccounts?: bankAccountProps[];
   createdAt?: number;
   updateAt?: number;

@@ -341,6 +341,7 @@ export const getUserProfile = async (req: Request, res: Response) => {
     console.log("initData", initData);
     if (initData == "true") {
       user = await User.findOne({ uid }).select("creatorName");
+      User.updateOne({ uid }, { $set: { lastActive: new Date() } });
     } else {
       user = await User.findOne({ uid });
     }
