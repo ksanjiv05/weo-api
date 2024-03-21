@@ -497,7 +497,7 @@ export const getOfferCsv = async (req: Request, res: Response) => {
       subCategoryName = "",
       offerActivitiesAt = "",
     } = req.query;
-    // const offers = await Offer.find({}).lean();
+
     if (!req.body.admin) {
       return responseObj({
         resObj: res,
@@ -510,12 +510,10 @@ export const getOfferCsv = async (req: Request, res: Response) => {
       });
     }
     const filter = {
-      ...{ offerStatus: OFFER_STATUS.UNKNOWN ? {} : { offerStatus } },
-      ...(totalOffersAvailable != -1
+      ...(OFFER_STATUS.UNKNOWN ? {} : { offerStatus }),
+      ...(totalOffersAvailable == -1
         ? {}
-        : {
-            $gt: totalOffersAvailable,
-          }),
+        : { totalOffersAvailable: { $gt: 0 } }),
       ...(subCategoryName === ""
         ? {}
         : { subCategories: { $elemMatch: { subCategoryName } } }),
@@ -524,8 +522,8 @@ export const getOfferCsv = async (req: Request, res: Response) => {
       ...(req.body.admin
         ? {}
         : {
-            offerValidityStartDate: { $lte: new Date() },
-            offerValidityEndDate: { $gte: new Date() },
+            // offerValidityStartDate: { $lte: new Date() },
+            // offerValidityEndDate: { $gte: new Date() },
           }),
     };
 

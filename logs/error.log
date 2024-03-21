@@ -65,3 +65,14 @@ error: POST /api/v1/brands 400 7ms
 {"level":"error","message":"GET /favicon.ico 404 3ms","timestamp":"2024-03-20T06:06:23.628Z"}
 {"level":"error","message":"GET /api/v1/brands/all 500 353ms","timestamp":"2024-03-20T06:07:57.983Z"}
 {"level":"error","message":"GET /api/v1/offers/all?offerStatus=draft&page=1&perPage=10 401 570ms","timestamp":"2024-03-20T06:59:00.096Z"}
+{"level":"error","message":"GET /api/v1/offers/csv 403 9ms","timestamp":"2024-03-21T14:30:12.518Z"}
+{"level":"error","message":"GET /favicon.ico 404 2ms","timestamp":"2024-03-21T14:30:12.973Z"}
+{"level":"error","message":"GET /api/v1/offers/csv 403 7ms","timestamp":"2024-03-21T14:30:31.935Z"}
+{"level":"error","message":"GET /api/v1/offers/csv 403 4ms","timestamp":"2024-03-21T14:30:35.139Z"}
+{"level":"error","message":"GET /api/v1/offers/csv 403 3ms","timestamp":"2024-03-21T14:30:37.207Z"}
+{"level":"error","message":"GET /api/v1/offers/csv 403 3ms","timestamp":"2024-03-21T14:30:55.186Z"}
+{"level":"error","message":"GET /api/v1/offers/csv 403 5ms","timestamp":"2024-03-21T14:31:42.161Z"}
+{"level":"error","message":"GET /api/v1/offers/csv 403 6ms","timestamp":"2024-03-21T14:31:47.408Z"}
+{"level":"error","message":"GET /api/v1/offers/csv 500 12ms","timestamp":"2024-03-21T14:32:17.970Z"}
+{"level":"error","message":"GET /api/v1/offers/csv 500 1282ms","timestamp":"2024-03-21T14:33:34.629Z"}
+{"level":"error","message":"GET /api/v1/brands/csv 403 5ms","timestamp":"2024-03-21T14:43:14.602Z"}

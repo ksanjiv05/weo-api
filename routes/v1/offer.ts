@@ -327,7 +327,7 @@ router.put("/offers/6", auth, offerDataValidateCheckPointF, updateOffer);
 
 router.get("/offers/all", auth, getOffers);
 router.get("/offers", auth, getOffersByUid);
-router.get("/offers/:id", auth, getOffer);
 router.get("/offers/csv", auth, getOfferCsv);
+router.get("/offers/:id", auth, getOffer);
 
 export default router;

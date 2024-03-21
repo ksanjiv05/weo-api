@@ -80,24 +80,25 @@ class CustomStringMethod {
 // console.log("lower case  ", customStringMethod.getLowerCase());
 // console.log("lower case 2 ", customStringMethod.getLowerCase("testIIIIIII"));
 
-function findPlainDrom(str) {
-  let str3 = "";
-  for (i = str.length - 1; i >= 0; i--) {
-    str3 = str3 + str[i];
+class Test {
+  static a;
+  static b = "test2";
+  static c = "test3";
+  constructor() {
+    console.log("Test constructor");
+    this.c = "test4";
   }
-  return str3;
-}
-
-function findPlainDrom2(str2) {
-  let str4 = str2.split(" ");
-  let plainDromWords = "";
-  for (let i = 0; i < str4.length; i++) {
-    let pld = findPlainDrom(str4[i]);
-    if (pld == str4[i]) {
-      plainDromWords = plainDromWords + str4[i] + " ";
-    }
+  testMethod() {
+    console.log("Test method test");
   }
-  return plainDromWords;
+  static testStaticMethod() {
+    console.log("Test static method test2");
+  }
 }
+const test = new Test();
 
-console.log(findPlainDrom2("a rececar radar madam"));
+console.log("Test.c ", test.c);
+console.log("Test.b ", Test.b);
+
+Test.testStaticMethod();
+test.testMethod();
