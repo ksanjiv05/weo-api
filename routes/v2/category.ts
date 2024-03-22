@@ -10,7 +10,7 @@ import { upload } from "../../middleware/upload";
 const router = express.Router();
 
 //category routes
-router.post("/categories", upload.single("categoryPic"), addCategory);
+router.post("/categories", addCategory);
 router.get("/categories", getCategories);
 router.get("/categories/brand/:id", getBrandSubCategories);
 router.get("/categories/:id", getSubCategories);

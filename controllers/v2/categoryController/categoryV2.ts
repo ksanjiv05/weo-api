@@ -17,17 +17,17 @@ export const addCategory = async (req: Request, res: Response) => {
       categoryPic = "",
       _id = "",
     }: ICategoryV2 = req.body;
-    const file = req.file;
-    console.log(
-      "file",
-      req.body,
-      file,
-      parentCategoryId,
-      parentCategoryId !== ""
-    );
-    if (file) {
-      req.body.categoryPic = file.filename;
-    }
+    // const file = req.file;
+    // console.log(
+    //   "file",
+    //   req.body,
+    //   file,
+    //   parentCategoryId,
+    //   parentCategoryId !== ""
+    // );
+    // if (file) {
+    //   req.body.categoryPic = file.filename;
+    // }
     if (name === "")
       return responseObj({
         resObj: res,
