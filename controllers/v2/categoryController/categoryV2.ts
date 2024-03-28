@@ -133,8 +133,8 @@ export const getCategory = async (req: Request, res: Response) => {
         resObj: res,
         data: null,
       });
-    category.categoryPic =
-      STATIC_FILE_PATH + "category/" + category.categoryPic;
+    // category.categoryPic =
+    //   STATIC_FILE_PATH + "category/" + category.categoryPic;
     return responseObj({
       statusCode: HTTP_STATUS_CODES.SUCCESS,
       type: "success",
@@ -180,10 +180,6 @@ export const getCategories = async (req: Request, res: Response) => {
       .limit(Number(perPage));
     const total = await Category.find(filter).count();
 
-    categories.map((category) => {
-      category.categoryPic =
-        STATIC_FILE_PATH + "category/" + category.categoryPic;
-    });
     return responseObj({
       statusCode: HTTP_STATUS_CODES.SUCCESS,
       type: "success",
