@@ -158,22 +158,24 @@ export const getCategory = async (req: Request, res: Response) => {
 
 export const getCategories = async (req: Request, res: Response) => {
   try {
-    const { page = 1, perPage = 10, name = "" } = req.query;
+    const { page = 1, perPage = 10, name = "", all = false } = req.query;
 
     const skip = (Number(page) - 1) * Number(perPage);
 
-    const filter = {
-      ...(name === ""
-        ? {}
-        : {
-            name: { $regex: new RegExp(name.toString(), "i") },
-          }),
-      // {
-      //     $text: {
-      //       $search: name + "",
-      //     },
-      //   }),
-    };
+    const filter = all
+      ? {}
+      : {
+          ...(name === ""
+            ? {}
+            : {
+                name: { $regex: new RegExp(name.toString(), "i") },
+              }),
+          // {
+          //     $text: {
+          //       $search: name + "",
+          //     },
+          //   }),
+        };
     let categories = await Category.find(filter)
       .sort("-createdAt")
       .skip(Number(skip))
