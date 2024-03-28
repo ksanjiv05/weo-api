@@ -37,16 +37,16 @@ export const addCategory = async (req: Request, res: Response) => {
         error: null,
         data: null,
       });
-    if (parentCategoryId !== "" && _id === "") {
-      return responseObj({
-        resObj: res,
-        type: "error",
-        statusCode: HTTP_STATUS_CODES.BAD_REQUEST,
-        msg: "Please provide category id for add subcategory",
-        error: null,
-        data: null,
-      });
-    }
+    // if (parentCategoryId !== "") {
+    //   return responseObj({
+    //     resObj: res,
+    //     type: "error",
+    //     statusCode: HTTP_STATUS_CODES.BAD_REQUEST,
+    //     msg: "Please provide category id for add subcategory",
+    //     error: null,
+    //     data: null,
+    //   });
+    // }
     const newCategory = new Category(req.body);
     await newCategory.save();
 
