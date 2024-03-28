@@ -17,6 +17,7 @@ export interface ICategory extends Document {
 }
 
 export interface ICategoryV2 extends Document {
+  uid: string;
   _id: string;
   parentCategoryId: string | null;
   name: string;

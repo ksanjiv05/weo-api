@@ -4,6 +4,7 @@ import logging from "../config/logging";
 
 const CategorySchemaV2: Schema = new Schema(
   {
+    uid: String,
     parentCategoryId: {
       type: String,
       default: null,

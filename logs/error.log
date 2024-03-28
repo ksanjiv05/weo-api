@@ -76,3 +76,4 @@ error: POST /api/v1/brands 400 7ms
 {"level":"error","message":"GET /api/v1/offers/csv 500 12ms","timestamp":"2024-03-21T14:32:17.970Z"}
 {"level":"error","message":"GET /api/v1/offers/csv 500 1282ms","timestamp":"2024-03-21T14:33:34.629Z"}
 {"level":"error","message":"GET /api/v1/brands/csv 403 5ms","timestamp":"2024-03-21T14:43:14.602Z"}
+{"level":"error","message":"GET /favicon.ico 404 5ms","timestamp":"2024-03-28T04:50:59.948Z"}

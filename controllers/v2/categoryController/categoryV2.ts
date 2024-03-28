@@ -254,6 +254,41 @@ export const getSubCategories = async (req: Request, res: Response) => {
     });
   }
 };
+export const getSubAllCategories = async (req: Request, res: Response) => {
+  try {
+    const { page = 1, perPage = 10 } = req.query;
+    const filter = {
+      parentCategoryId: { $ne: null },
+    };
+    const skip = (Number(page) - 1) * Number(perPage);
+    const categories = await Category.find(filter)
+      .sort("-createdAt")
+      .skip(Number(skip))
+      .limit(Number(perPage));
+    const total = await Category.find(filter).count();
+
+    return responseObj({
+      statusCode: HTTP_STATUS_CODES.SUCCESS,
+      type: "success",
+      msg: "your Categories",
+      error: null,
+      resObj: res,
+      data: { sub_categories: categories, total },
+      code: ERROR_CODES.SUCCESS,
+    });
+  } catch (error: any) {
+    logging.error("Get Categories", "unable to get Categories", error);
+    return responseObj({
+      resObj: res,
+      type: "error",
+      statusCode: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR,
+      msg: "unable to get Categories",
+      error: error.message ? error.message : "internal server error",
+      data: null,
+      code: ERROR_CODES.SERVER_ERR,
+    });
+  }
+};
 
 export const deleteCategory = async (req: Request, res: Response) => {
   return res.status(201).send("Not implemented");
