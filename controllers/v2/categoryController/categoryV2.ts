@@ -162,25 +162,31 @@ export const getCategories = async (req: Request, res: Response) => {
 
     const skip = (Number(page) - 1) * Number(perPage);
 
-    const filter = all
-      ? {}
-      : {
-          ...(name === ""
-            ? {}
-            : {
-                name: { $regex: new RegExp(name.toString(), "i") },
-              }),
-          // {
-          //     $text: {
-          //       $search: name + "",
-          //     },
-          //   }),
-        };
-    let categories = await Category.find(filter)
-      .sort("-createdAt")
-      .skip(Number(skip))
-      .limit(Number(perPage));
-    const total = await Category.find(filter).count();
+    const filter = {
+      ...(name === ""
+        ? {}
+        : {
+            name: { $regex: new RegExp(name.toString(), "i") },
+          }),
+      // {
+      //     $text: {
+      //       $search: name + "",
+      //     },
+      //   }),
+    };
+    let categories = null;
+    let total = 0;
+    if (all) {
+      // console.log("i am run");
+      categories = await Category.find(filter);
+      total = await Category.find(filter).count();
+    } else {
+      categories = await Category.find(filter)
+        .sort("-createdAt")
+        .skip(Number(skip))
+        .limit(Number(perPage));
+      total = await Category.find(filter).count();
+    }
 
     return responseObj({
       statusCode: HTTP_STATUS_CODES.SUCCESS,
