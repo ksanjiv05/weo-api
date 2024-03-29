@@ -4,6 +4,7 @@ import {
   getCategories,
   getSubAllCategories,
   getSubCategories,
+  updateCategory,
 } from "../../controllers/v2/categoryController/categoryV2";
 import { addCategory } from "../../controllers/v2/categoryController/categoryV2";
 import { auth } from "../../middleware/auth";
@@ -12,6 +13,7 @@ const router = express.Router();
 
 //category routes
 router.post("/categories", auth, addCategory);
+router.put("/categories", auth, updateCategory);
 router.get("/categories", getCategories);
 router.get("/categories/sub_categories", getSubAllCategories);
 
