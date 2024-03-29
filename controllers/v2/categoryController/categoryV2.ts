@@ -165,6 +165,7 @@ export const getCategories = async (req: Request, res: Response) => {
     const skip = (Number(page) - 1) * Number(perPage);
 
     const filter = {
+      parentCategoryId: null,
       ...(name === ""
         ? {}
         : {
