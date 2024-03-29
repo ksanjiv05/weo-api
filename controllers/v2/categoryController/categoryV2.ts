@@ -267,11 +267,45 @@ export const getSubAllCategories = async (req: Request, res: Response) => {
       parentCategoryId: { $ne: null },
     };
     const skip = (Number(page) - 1) * Number(perPage);
-    const categories = await Category.find(filter)
-      .sort("-createdAt")
-      .skip(Number(skip))
-      .limit(Number(perPage));
-    const total = await Category.find(filter).count();
+    // const categories = await Category.find(filter)
+    //   .sort("-createdAt")
+    //   .skip(Number(skip))
+    //   .limit(Number(perPage));
+    // const total = await Category.find(filter).count();
+
+    const categories = await Category.aggregate([
+      {
+        $match: { parentCategoryId: { $ne: null } },
+      },
+      {
+        $addFields: {
+          parentCategoryObjId: { $toObjectId: "$parentCategoryId" },
+        },
+      },
+      {
+        $lookup: {
+          from: "categoryv2", // same collection join
+          localField: "parentCategoryObjId", // field in the documents of the current collection
+          foreignField: "_id", // field in the documents of the from collection
+          as: "catInfo", // array field added to each input document; contains the matching documents from the from collection
+        },
+      },
+      {
+        $unwind: "$catInfo", // Optional: Flatten the catInfo if you're sure each user has only one category
+      },
+      {
+        $addFields: {
+          categoryName: "$catInfo.name", // Add category name field from the catInfo
+        },
+      },
+      {
+        $project: {
+          catInfo: 0, // Optionally remove the catInfo array from the output
+        },
+      },
+      { $skip: Number(skip) }, // Skip documents for pagination
+      { $limit: Number(perPage) }, // Limit the number of documents for pagination
+    ]);
 
     return responseObj({
       statusCode: HTTP_STATUS_CODES.SUCCESS,
@@ -279,7 +313,7 @@ export const getSubAllCategories = async (req: Request, res: Response) => {
       msg: "your Categories",
       error: null,
       resObj: res,
-      data: { sub_categories: categories, total },
+      data: { sub_categories: categories, total: 0 },
       code: ERROR_CODES.SUCCESS,
     });
   } catch (error: any) {
