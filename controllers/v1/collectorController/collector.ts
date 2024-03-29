@@ -61,17 +61,17 @@ export const collectOffer = async (req: Request, res: Response) => {
 export const getCollectedOffers = async (req: Request, res: Response) => {
   try {
     const { page = 1, perPage = 10 } = req.query;
-    req.body.creatorId = req.body.uid;
+    req.body.creatorId = req.body.user.uid;
 
     const skip = (Number(page) - 1) * Number(perPage);
 
-    const offers = await Collector.find({ uid: req.body.uid })
+    const offers = await Collector.find({ uid: req.body.user.uid })
       .sort("-createdAt")
       .populate("offer")
       .skip(Number(skip))
       .limit(Number(perPage))
       .exec();
-    const total = await Offer.find({ uid: req.body.uid }).count();
+    const total = await Offer.find({ uid: req.body.user.uid }).count();
 
     return responseObj({
       resObj: res,

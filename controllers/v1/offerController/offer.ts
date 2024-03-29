@@ -13,7 +13,7 @@ import { exportCsv } from "../../../helper/csvUtils";
 export const isOfferNameExist = async (req: Request, res: Response) => {
   try {
     const { offerTitle = "", brandId = "" } = req.query;
-    const { uid = "" } = req.body;
+    const { uid = "" } = req.body.user;
     if (brandId == "" || offerTitle == null) {
       return responseObj({
         resObj: res,
@@ -78,7 +78,7 @@ export const addOffer = async (req: Request, res: Response) => {
       });
     }
     // const { uid = "" } = req.body;
-    req.body.creatorId = req.body.uid;
+    req.body.creatorId = req.body.user.uid;
 
     const newOffer = new Offer(req.body);
 
@@ -185,7 +185,7 @@ export const getOffers = async (req: Request, res: Response) => {
       offerActivitiesAt = "",
       offerStatus = OFFER_STATUS.LIVE,
     } = req.query;
-    req.body.creatorId = req.body.uid;
+    req.body.creatorId = req.body.user.uid;
     const { admin = false } = req.body;
 
     const skip = (Number(page) - 1) * Number(perPage);
@@ -323,7 +323,7 @@ export const getOffersByUid = async (req: Request, res: Response) => {
       // ...(minAccessBalance === -1 ? {} : { minAccessBalance }),
       ...(offerActivitiesAt === "" ? {} : { offerActivitiesAt }),
       // ...(tableId === "" ? {} : { tableIds: { $elemMatch: { tableId } } }),
-      creatorId: req.body.uid,
+      creatorId: req.body.user.uid,
     };
 
     const offers = await Offer.find(filter, {
@@ -345,7 +345,7 @@ export const getOffersByUid = async (req: Request, res: Response) => {
       .skip(Number(skip))
       .limit(Number(perPage));
     const total = await Offer.find({
-      creatorId: req.body.uid,
+      creatorId: req.body.user.uid,
       offerStatus,
     }).count();
 
@@ -464,7 +464,7 @@ export const deleteOffer = async (req: Request, res: Response) => {
   try {
     const { id = "" } = req.params;
 
-    await Offer.deleteOne({ _id: id, creatorId: req.body.uid });
+    await Offer.deleteOne({ _id: id, creatorId: req.body.user.uid });
 
     return responseObj({
       resObj: res,

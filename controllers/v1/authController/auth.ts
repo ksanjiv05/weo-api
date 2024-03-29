@@ -10,7 +10,6 @@ import { ERROR_CODES } from "../../../config/errorCode";
 
 export const register = async (req: Request, res: Response) => {
   try {
-    console.log("req.body", req.body);
     const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
@@ -152,7 +151,8 @@ export const isUserNameAvailable = async (req: Request, res: Response) => {
 
 export const updateCreatorName = async (req: Request, res: Response) => {
   try {
-    const { uid = "", creatorName = "", description = "" } = req.body;
+    const { creatorName = "", description = "" } = req.body;
+    const { uid = "" } = req.body.user;
     if (uid == "" || creatorName == "")
       return responseObj({
         statusCode: HTTP_STATUS_CODES.BAD_REQUEST,
@@ -229,7 +229,8 @@ export const updateCreatorName = async (req: Request, res: Response) => {
 
 export const updateUser = async (req: Request, res: Response) => {
   try {
-    const { _id = "", uid = "" } = req.body;
+    const { _id = "" } = req.body;
+    const { uid = "" } = req.body.user;
     if (_id == "")
       return responseObj({
         statusCode: HTTP_STATUS_CODES.BAD_REQUEST,
@@ -324,7 +325,8 @@ export const updateUser = async (req: Request, res: Response) => {
 
 export const getUserProfile = async (req: Request, res: Response) => {
   try {
-    const { uid = "" } = req.body;
+    // const { uid = "" } = req.body;
+    const { uid = "" } = req.body.user;
     const { initData = false } = req.query;
     if (uid == "")
       return responseObj({

@@ -14,7 +14,7 @@ export const auth = (req: Request, res: Response, next: NextFunction) => {
       .verifyIdToken(token)
       .then((claims) => {
         // console.log("clams", claims);
-        req.body = { ...req.body, ...claims };
+        req.body.user = claims; //{ ...req.body, ...claims };
         next();
       })
       .catch((err) => {

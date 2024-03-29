@@ -11,7 +11,8 @@ import { exportCsv } from "../../../helper/csvUtils";
 export const isBrandNameExist = async (req: Request, res: Response) => {
   try {
     const { brandName = "" } = req.query;
-    const { uid = "" } = req.body;
+    // const { uid = "" } = req.body;
+    const { uid = "" } = req.body.user;
     if (brandName == "") {
       return responseObj({
         resObj: res,
@@ -80,7 +81,8 @@ export const addBrand = async (req: Request, res: Response) => {
     }
     // const { uid = "" } = req.body;
     // req.body.creatorId = uid;
-    const { brandName = "", uid = "" } = req.body;
+    const { brandName = "" } = req.body;
+    const { uid = "" } = req.body.user;
     const brand = await Brand.findOne({ brandName, uid });
     if (brand) {
       return responseObj({
@@ -323,7 +325,7 @@ export const getBrandsByUid = async (req: Request, res: Response) => {
     const filter = {
       ...(status === BRAND_STATUS.UNKNOWN ? {} : { status }),
       // ...(minAccessBalance === -1 ? {} : { minAccessBalance }),
-      uid: req.body.uid,
+      uid: req.body.user.uid,
     };
     const brands = await Brand.find(filter)
       .sort("-createdAt")

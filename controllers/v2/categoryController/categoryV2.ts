@@ -47,6 +47,8 @@ export const addCategory = async (req: Request, res: Response) => {
     //     data: null,
     //   });
     // }
+    req.body.uid = req.body.user.uid;
+    console.log("body", req.body);
     const newCategory = new Category(req.body);
     await newCategory.save();
 
