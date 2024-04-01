@@ -189,7 +189,7 @@ export const getBrands = async (req: Request, res: Response) => {
       status = "",
       // categoriesIds = [],
     } = req.query;
-    const { admin = false } = req.body;
+    const { admin = false } = req.body.user;
     if (!admin) {
       return responseObj({
         resObj: res,
@@ -435,7 +435,7 @@ export const deleteBrand = async (req: Request, res: Response) => {
 
 export const getBrandCsv = async (req: Request, res: Response) => {
   try {
-    if (!req.body.admin) {
+    if (!req.body.user.admin) {
       return responseObj({
         resObj: res,
         type: "error",

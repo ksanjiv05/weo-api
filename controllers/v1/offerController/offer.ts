@@ -186,7 +186,7 @@ export const getOffers = async (req: Request, res: Response) => {
       offerStatus = OFFER_STATUS.LIVE,
     } = req.query;
     req.body.creatorId = req.body.user.uid;
-    const { admin = false } = req.body;
+    const { admin = false } = req.body.user;
 
     const skip = (Number(page) - 1) * Number(perPage);
 
@@ -498,7 +498,7 @@ export const getOfferCsv = async (req: Request, res: Response) => {
       offerActivitiesAt = "",
     } = req.query;
 
-    if (!req.body.admin) {
+    if (!req.body.user.admin) {
       return responseObj({
         resObj: res,
         type: "error",

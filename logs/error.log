@@ -81,3 +81,5 @@ error: POST /api/v1/brands 400 7ms
 {"level":"error","message":"GET /favicon.ico 404 5ms","timestamp":"2024-03-29T05:40:57.676Z"}
 {"level":"error","message":"GET /favicon.ico 404 2ms","timestamp":"2024-03-29T05:41:39.506Z"}
 {"level":"error","message":"GET /api/v1/categories 403 7ms","timestamp":"2024-03-29T13:13:21.236Z"}
+{"level":"error","message":"GET /api/v1/store-categories? 404 60ms","timestamp":"2024-03-31T16:00:55.384Z"}
+{"level":"error","message":"POST /test 500 30ms","timestamp":"2024-03-31T16:31:51.493Z"}

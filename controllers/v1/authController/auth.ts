@@ -422,7 +422,7 @@ export const login = async (req: Request, res: Response) => {
 
 export const getUsers = async (req: Request, res: Response) => {
   try {
-    const { admin = false } = req.body;
+    const { admin = false } = req.body.user;
     if (!admin) {
       return responseObj({
         resObj: res,
