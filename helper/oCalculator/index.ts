@@ -43,8 +43,8 @@
 // 1 O = 1% = $1
 
 export const oValueCalc = (
-  transactionValue: number,
-  totalNumberOfTransactions: number
+  transactionValue: number, // Transaction value
+  totalNumberOfTransactions: number // Total number of transactions
 ) => {
   return (transactionValue / totalNumberOfTransactions) * 100;
 };
@@ -53,11 +53,11 @@ export const oValueCalc = (
 // 82.4/100 or 0.824 Os/$1 or $0.82/O
 
 export const individualOValueCalc = (
-  totalOEarned: number,
-  totalNumberOfTransactions: number
+  totalOEarned: number, // Total O earned by the user
+  totalNumberOfTransactions: number // Total number of transactions by the user
 ) => {
   const avgOValue = totalOEarned / totalNumberOfTransactions;
-  return avgOValue / 100;
+  return avgOValue / 100; // O value per $1
 };
 
 // For example, with 128,492 total users with an average O value price of $0.796/O across $7,594,955.78 of total network transactions would make the current O price
@@ -66,14 +66,13 @@ export const individualOValueCalc = (
 // 59.10 * 0.796 = 46.98
 
 export const networkOPriceCalc = (
-  avgOValue: number,
-  totalTransactionValue: number,
-  totalNumberOfUsers: number
+  avgOValue: number, // Average O value of users
+  totalTransactionValue: number, // Total transaction value
+  totalNumberOfUsers: number // Total number of users
 ) => {
   const currentOPrice = totalTransactionValue / totalNumberOfUsers;
   return (currentOPrice * avgOValue * avgOValue) / currentOPrice;
 };
-
 // %My O value+%Offer access discount =Offer Access Price
 
 // The collector can access said Offer by the Os they have accrued at their own rate (transaction history) relative to the current O price.

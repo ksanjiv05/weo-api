@@ -1,0 +1,12 @@
+//
+
+//first  we need to add customer
+https://razorpay.com/docs/api/x/contacts/create/
+
+// add fund account
+https://razorpay.com/docs/api/x/payouts/create/bank-account/
+
+// payout 
+https://razorpay.com/docs/api/x/payouts/create/bank-account/
+
+requirement razorpay x account and good if we have razorpay current account

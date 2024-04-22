@@ -23,3 +23,9 @@ export const STATIC_FILE_PATH: string =
   process.env.NODE_ENV == "dev"
     ? "http://localhost:4000/static/"
     : "https://weo.ai/static/";
+
+export const STP_SECRET_KEY = process.env.STP_SECRET_KEY as string;
+export const STP_PUBLISHABLE_KEY = process.env.STP_PUBLISHABLE_KEY as string;
+
+import Stripe from "stripe";
+export const stripe = new Stripe(STP_SECRET_KEY);

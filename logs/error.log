@@ -83,3 +83,14 @@ error: POST /api/v1/brands 400 7ms
 {"level":"error","message":"GET /api/v1/categories 403 7ms","timestamp":"2024-03-29T13:13:21.236Z"}
 {"level":"error","message":"GET /api/v1/store-categories? 404 60ms","timestamp":"2024-03-31T16:00:55.384Z"}
 {"level":"error","message":"POST /test 500 30ms","timestamp":"2024-03-31T16:31:51.493Z"}
+{"level":"error","message":"GET /api/v2/deposit 404 3ms","timestamp":"2024-04-10T05:43:13.466Z"}
+{"level":"error","message":"POST /api/v2/deposit 500 509ms","timestamp":"2024-04-10T05:43:36.560Z"}
+{"level":"error","message":"POST /api/v2/deposit 500 448ms","timestamp":"2024-04-10T05:44:56.733Z"}
+{"level":"error","message":"POST /api/v2/deposit 500 568ms","timestamp":"2024-04-10T06:04:49.468Z"}
+{"level":"error","message":"POST /api/v2/deposit 500 391ms","timestamp":"2024-04-10T06:05:11.105Z"}
+{"level":"error","message":"POST /api/v2/deposit 500 713ms","timestamp":"2024-04-10T06:06:48.261Z"}
+{"level":"error","message":"POST /api/v2/deposit 500 444ms","timestamp":"2024-04-10T06:07:17.447Z"}
+{"level":"error","message":"POST /api/v2/deposit 500 484ms","timestamp":"2024-04-10T06:07:58.119Z"}
+{"level":"error","message":"POST /api/v2/deposit 500 268ms","timestamp":"2024-04-10T06:08:10.212Z"}
+{"level":"error","message":"POST /api/v2/deposit 500 506ms","timestamp":"2024-04-10T11:37:35.411Z"}
+{"level":"error","message":"POST /api/v2/deposit 500 476ms","timestamp":"2024-04-10T11:42:00.810Z"}

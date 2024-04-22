@@ -397,3 +397,16 @@ info: POST /api/v1/brands 200 295ms
 {"level":"info","message":"POST /test 200 10ms","timestamp":"2024-03-31T16:38:01.831Z"}
 {"level":"info","message":"POST /test 200 46ms","timestamp":"2024-03-31T16:41:34.730Z"}
 {"level":"info","message":"POST /test 200 10ms","timestamp":"2024-03-31T16:42:36.675Z"}
+{"level":"info","message":"POST /api/v2/customer 200 630ms","timestamp":"2024-04-10T05:39:37.186Z"}
+{"level":"error","message":"GET /api/v2/deposit 404 3ms","timestamp":"2024-04-10T05:43:13.466Z"}
+{"level":"error","message":"POST /api/v2/deposit 500 509ms","timestamp":"2024-04-10T05:43:36.560Z"}
+{"level":"error","message":"POST /api/v2/deposit 500 448ms","timestamp":"2024-04-10T05:44:56.733Z"}
+{"level":"error","message":"POST /api/v2/deposit 500 568ms","timestamp":"2024-04-10T06:04:49.468Z"}
+{"level":"error","message":"POST /api/v2/deposit 500 391ms","timestamp":"2024-04-10T06:05:11.105Z"}
+{"level":"error","message":"POST /api/v2/deposit 500 713ms","timestamp":"2024-04-10T06:06:48.261Z"}
+{"level":"error","message":"POST /api/v2/deposit 500 444ms","timestamp":"2024-04-10T06:07:17.447Z"}
+{"level":"error","message":"POST /api/v2/deposit 500 484ms","timestamp":"2024-04-10T06:07:58.119Z"}
+{"level":"error","message":"POST /api/v2/deposit 500 268ms","timestamp":"2024-04-10T06:08:10.212Z"}
+{"level":"error","message":"POST /api/v2/deposit 500 506ms","timestamp":"2024-04-10T11:37:35.411Z"}
+{"level":"error","message":"POST /api/v2/deposit 500 476ms","timestamp":"2024-04-10T11:42:00.810Z"}
+{"level":"info","message":"POST /api/v2/deposit 200 593ms","timestamp":"2024-04-10T11:45:52.918Z"}

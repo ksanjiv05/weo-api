@@ -21,6 +21,7 @@ export interface ICategoryV2 extends Document {
   _id: string;
   parentCategoryId: string | null;
   name: string;
+  quantities: string[];
   categoryPic: string;
   description?: string;
   isActive?: boolean;

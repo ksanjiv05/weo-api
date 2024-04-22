@@ -19,7 +19,7 @@ const CategorySchemaV2: Schema = new Schema(
       type: String,
       default: null,
     },
-
+    quantities: [{ type: Schema.Types.ObjectId, ref: "Quantity" }],
     description: {
       type: String,
     },

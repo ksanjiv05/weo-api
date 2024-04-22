@@ -15,6 +15,7 @@ export const addCategory = async (req: Request, res: Response) => {
       name = "",
       parentCategoryId = "",
       categoryPic = "",
+      quantities = [],
       _id = "",
     }: ICategoryV2 = req.body;
     // const file = req.file;
@@ -28,14 +29,15 @@ export const addCategory = async (req: Request, res: Response) => {
     // if (file) {
     //   req.body.categoryPic = file.filename;
     // }
-    if (name === "")
+    if (name === "" || quantities.length === 0)
       return responseObj({
         resObj: res,
         type: "error",
         statusCode: HTTP_STATUS_CODES.BAD_REQUEST,
-        msg: "Please provide category name and ",
+        msg: "Please provide category name and quantity",
         error: null,
         data: null,
+        code: ERROR_CODES.FIELD_VALIDATION_REQUIRED_ERR,
       });
     // if (parentCategoryId !== "") {
     //   return responseObj({
@@ -59,6 +61,7 @@ export const addCategory = async (req: Request, res: Response) => {
       msg: "you are successfully added Category",
       error: null,
       data: newCategory,
+      code: ERROR_CODES.SUCCESS,
     });
   } catch (error: any) {
     logging.error("Category", "unable to add Category", error);
@@ -69,21 +72,23 @@ export const addCategory = async (req: Request, res: Response) => {
       msg: "unable to add Category",
       error: error.message ? error.message : "internal server error",
       data: null,
+      code: ERROR_CODES.SERVER_ERR,
     });
   }
 };
 
 export const updateCategory = async (req: Request, res: Response) => {
   try {
-    const { _id = "" } = req.body;
-    if (_id == "")
+    const { _id = "", name = "", quantities = [] } = req.body;
+    if (_id == "" || quantities.length === 0 || name === "")
       return responseObj({
         statusCode: HTTP_STATUS_CODES.BAD_REQUEST,
         type: "error",
-        msg: "please provide a valid mongo Category ID",
+        msg: "please provide a valid mongo Category ID and required fields",
         error: null,
         resObj: res,
         data: null,
+        code: ERROR_CODES.FIELD_VALIDATION_REQUIRED_ERR,
       });
 
     await Category.updateOne(
@@ -99,6 +104,7 @@ export const updateCategory = async (req: Request, res: Response) => {
       error: null,
       resObj: res,
       data: null,
+      code: ERROR_CODES.SUCCESS,
     });
   } catch (error: any) {
     logging.error("Update Category", "unable to update Category", error);
@@ -109,6 +115,7 @@ export const updateCategory = async (req: Request, res: Response) => {
       msg: "unable to update Category",
       error: error.message ? error.message : "internal server error",
       data: null,
+      code: ERROR_CODES.SERVER_ERR,
     });
   }
 };
@@ -124,6 +131,7 @@ export const getCategory = async (req: Request, res: Response) => {
         error: null,
         resObj: res,
         data: null,
+        code: ERROR_CODES.FIELD_VALIDATION_REQUIRED_ERR,
       });
     const category = await Category.findOne({ _id });
     if (!category)
@@ -134,6 +142,7 @@ export const getCategory = async (req: Request, res: Response) => {
         error: null,
         resObj: res,
         data: null,
+        code: ERROR_CODES.NOT_FOUND,
       });
     // category.categoryPic =
     //   STATIC_FILE_PATH + "category/" + category.categoryPic;
@@ -144,6 +153,7 @@ export const getCategory = async (req: Request, res: Response) => {
       error: null,
       resObj: res,
       data: category,
+      code: ERROR_CODES.SUCCESS,
     });
   } catch (error: any) {
     logging.error("Get Category", "unable to get Category profile", error);
@@ -154,6 +164,7 @@ export const getCategory = async (req: Request, res: Response) => {
       msg: "unable to get Category profile",
       error: error.message ? error.message : "internal server error",
       data: null,
+      code: ERROR_CODES.SERVER_ERR,
     });
   }
 };
