@@ -8,10 +8,10 @@ const quantitySchema = new mongoose.Schema(
     name: {
       type: String,
       required: true,
+      unique: true,
     }, //name of usee who quantity
     description: {
       type: String,
-      required: true,
     },
   },
   { timestamps: true }
