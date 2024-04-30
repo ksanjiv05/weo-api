@@ -17,6 +17,6 @@ const quantitySchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-quantitySchema.index({ uid: 1, id: 1 }, { unique: true });
+// quantitySchema.index({ uid: 1, id: 1 }, { unique: true });
 
 export default mongoose.model("quantity", quantitySchema);
