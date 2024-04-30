@@ -1,10 +1,10 @@
 import { Request, Response } from "express";
 import logging from "../../../config/logging";
-import Address from "../../../models/Address";
+import Address from "../../../models_v1/Address";
 import { IAddress } from "../../../interfaces/IAddress";
 import { responseObj } from "../../../helper/response";
 import { HTTP_STATUS_CODES } from "../../../config/statusCode";
-import User from "../../../models/User";
+import User from "../../../models_v1/User";
 import { validationResult } from "express-validator";
 
 export const addAddress = async (req: Request, res: Response) => {

@@ -1,12 +1,12 @@
 import { Request, Response } from "express";
 import logging from "../../../config/logging";
-import Category from "../../../models/Category";
+import Category from "../../../models_v1/Category";
 import { ICategory } from "../../../interfaces/ICategory";
 import { responseObj } from "../../../helper/response";
 import { HTTP_STATUS_CODES } from "../../../config/statusCode";
-import User from "../../../models/User";
+import User from "../../../models_v1/User";
 import { ERROR_CODES } from "../../../config/errorCode";
-import Brand from "../../../models/Brand";
+import Brand from "../../../models_v1/Brand";
 import mongoose from "mongoose";
 
 export const addCategory = async (req: Request, res: Response) => {

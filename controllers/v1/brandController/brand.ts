@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import logging from "../../../config/logging";
-import Brand from "../../../models/Brand";
+import Brand from "../../../models_v1/Brand";
 import { BRAND_STATUS, IBrand } from "../../../interfaces/IBrand";
 import { responseObj } from "../../../helper/response";
 import { HTTP_STATUS_CODES } from "../../../config/statusCode";

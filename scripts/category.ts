@@ -12,7 +12,7 @@
 
 import { pupulateOrUpdateCategory } from "../helper/methods_for_controller_script/category";
 import { ICategory } from "../interfaces/ICategory";
-import Category from "../models/Category";
+import Category from "../models_v1/Category";
 
 // categoryTitle: string;
 // categories: string[];

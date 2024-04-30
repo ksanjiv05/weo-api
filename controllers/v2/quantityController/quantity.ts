@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import logging from "../../../config/logging";
 import { responseObj } from "../../../helper/response";
 import { HTTP_STATUS_CODES } from "../../../config/statusCode";
-import Quantity from "../../../models/Quantity";
+import Quantity from "../../../models_v1/Quantity";
 import { ERROR_CODES } from "../../../config/errorCode";
 
 export const createQuantity = async (req: Request, res: Response) => {

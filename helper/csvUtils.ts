@@ -1,6 +1,6 @@
 import { Response } from "express";
 import { Parser, transforms as t } from "json2csv";
-import Collector from "../models/Collector";
+import Collector from "../models_v1/Collector";
 
 // const parser = new Transform(opts, asyncOpts, transformOpts);
 // const parser = new AsyncParser(opts, asyncOpts, transformOpts);

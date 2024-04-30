@@ -1,12 +1,12 @@
 // when any body try to collect offer then offer should be in live mode
 import { Request, Response } from "express";
 import logging from "../../../config/logging";
-import Offer from "../../../models/Offer";
+import Offer from "../../../models_v1/Offer";
 import { IOffer, OFFER_STATUS } from "../../../interfaces/IOffer";
 import { responseObj } from "../../../helper/response";
 import { HTTP_STATUS_CODES } from "../../../config/statusCode";
 import { ERROR_CODES } from "../../../config/errorCode";
-import Collector from "../../../models/Collector";
+import Collector from "../../../models_v1/Collector";
 import mongoose from "mongoose";
 
 export const collectOffer = async (req: Request, res: Response) => {

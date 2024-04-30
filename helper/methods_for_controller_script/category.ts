@@ -1,6 +1,6 @@
 import logging from "../../config/logging";
 import { ICategory } from "../../interfaces/ICategory";
-import Category from "../../models/Category";
+import Category from "../../models_v1/Category";
 import { Request, Response } from "express";
 import { responseObj } from "../response";
 import { HTTP_STATUS_CODES } from "../../config/statusCode";
