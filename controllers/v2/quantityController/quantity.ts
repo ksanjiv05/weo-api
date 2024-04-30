@@ -50,9 +50,9 @@ export const getQuantities = async (req: Request, res: Response) => {
     const { page = 1, perPage = 10, name = "", all = false } = req.query;
 
     const skip = (Number(page) - 1) * Number(perPage);
-    const quantities = (await all)
-      ? Quantity.find()
-      : Quantity.find().skip(skip).limit(Number(perPage));
+    const quantities = all
+      ? await Quantity.find()
+      : await Quantity.find().skip(skip).limit(Number(perPage));
     responseObj({
       resObj: res,
       type: "success",
