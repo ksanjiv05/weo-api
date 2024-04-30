@@ -32,7 +32,18 @@ export const createQuantity = async (req: Request, res: Response) => {
       code: ERROR_CODES.SUCCESS,
     });
   } catch (error: any) {
-    logging.error("Quantity", error.message, error);
+    logging.error("Create Quantity", error.message, error);
+    if (error.message.includes("E11000 duplicate")) {
+      return responseObj({
+        resObj: res,
+        type: "error",
+        statusCode: HTTP_STATUS_CODES.BAD_REQUEST,
+        msg: "duplicate quantity name",
+        error: error.message,
+        data: null,
+        code: ERROR_CODES.DUPLICATE,
+      });
+    }
     return responseObj({
       resObj: res,
       type: "error",

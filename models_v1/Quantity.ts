@@ -2,17 +2,12 @@ import mongoose from "mongoose";
 
 const quantitySchema = new mongoose.Schema(
   {
-    quantityType: {
-      type: String,
-    },
     name: {
       type: String,
       required: true,
+      lowercase: true,
       unique: true,
     }, //name of usee who quantity
-    description: {
-      type: String,
-    },
   },
   { timestamps: true }
 );
