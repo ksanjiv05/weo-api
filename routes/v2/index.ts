@@ -7,14 +7,16 @@ import express from "express";
 
 const routerV2 = express.Router();
 
-import categoryRoute from "./category";
-import stripeRoute from "./stripe";
-import quantityRoute from "./quantity";
+import categoryRoute from "./category.route";
+import stripeRoute from "./stripe.route";
+import quantityRoute from "./quantity.route";
+import brandRoute from "./brand.route";
 
 //category routes
 routerV2.use(categoryRoute);
 routerV2.use(stripeRoute);
 routerV2.use(quantityRoute);
+routerV2.use(brandRoute);
 
 routerV2.all("*", (req, res) => {
   res.status(404).json({

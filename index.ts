@@ -22,7 +22,7 @@ import { createSuperAdmin } from "./scripts/createAdmin";
 
 globalThis.__dirname = __dirname;
 const app: Express = express();
-const port = 4000;
+const port = process.env.PORT || 4000;
 
 //for http logging
 const accessLogStream = createStream("api_request.log", {

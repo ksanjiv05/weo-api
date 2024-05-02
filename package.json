@@ -7,6 +7,8 @@
     "build": "npx tsc",
     "start": "node dist/index.js",
     "swagger-autogen": "node ./docs/swagger.js",
+    "prod-v1": "./weo_run.sh v1",
+    "prod-v2": "./weo_run.sh v2",
     "prod": "NODE_ENV=production rm -rf dist && npx tsc && pm2 start -f dist/index.js",
     "win-dev": "SET NODE_ENV=dev concurrently \"npx tsc --watch\" \"nodemon -q dist/index.js\"",
     "dev": "NODE_ENV=dev concurrently \"npx tsc --watch\" \"nodemon -q dist/index.js\"",

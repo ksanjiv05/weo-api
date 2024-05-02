@@ -46,4 +46,13 @@ const bankSchemaAccount: Schema = new Schema(
 // set unique constraint on accountNumber
 bankSchemaAccount.index({ accountNumber: 1, uid: 1 }, { unique: true });
 
+bankSchemaAccount.pre<IBank>("save", function (next) {
+  const brand = this; // This refers to the document being saved
+  const { user } = brand; // Extract user data
+
+  // Assign user reference to brand
+  brand.user = user._id;
+  next();
+});
+
 export default mongoose.model<IBank>("Bank", bankSchemaAccount);

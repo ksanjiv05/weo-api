@@ -1,6 +1,21 @@
-import mongoose, { Schema } from "mongoose";
+import mongoose, { Schema, Document } from "mongoose";
 import logging from "../config/logging";
-import { IAddress } from "../interfaces/IAddress";
+
+export interface IAddress extends Document {
+  user: any;
+  address: string;
+  city: string;
+  state: string;
+  country: string;
+  pinCode: string;
+  landmark: string;
+  coordinates: {
+    lat: number;
+    lng: number;
+  };
+  createdAt: Date;
+  updateAt: Date;
+}
 
 const addressSchema: Schema = new Schema(
   {
@@ -41,6 +56,15 @@ addressSchema.index({ location: "2dsphere" });
 
 addressSchema.post<IAddress>("save", function () {
   logging.info("Mongo", "Address just saved: ");
+});
+
+addressSchema.pre<IAddress>("save", function (next) {
+  const brand = this; // This refers to the document being saved
+  const { user } = brand; // Extract user data
+
+  // Assign user reference to brand
+  brand.user = user._id;
+  next();
 });
 
 export default mongoose.model<IAddress>("Address", addressSchema);

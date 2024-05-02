@@ -2,6 +2,7 @@
 // Author : Sanjiv Kumar Pandit (ksanjiv0005@gmail.com)
 
 import mongoose, { Schema, Document } from "mongoose";
+import Address from "../models_v1/Address";
 
 export interface IOutlet extends Document {
   user: any;
@@ -87,16 +88,7 @@ const outletSchema: Schema = new Schema(
       },
     ],
     serviceTools: [
-      {
-        service: {
-          type: String,
-          required: true,
-        },
-        oCharges: {
-          type: Number,
-          required: true,
-        },
-      },
+      { type: mongoose.Schema.Types.ObjectId, ref: "ServiceTool" },
     ],
     serviceContacts: [
       {
@@ -128,5 +120,18 @@ const outletSchema: Schema = new Schema(
 
 // set unique constraint on outletName
 outletSchema.index({ user: 1, brand: 1, outletName: 1 }, { unique: true });
+
+// pre-save hook to create a new Address document and update user reference
+outletSchema.pre("save", async function (next) {
+  const outlet = this; // This refers to the outlet document being saved
+  const { address, user } = outlet; // Extract address data
+
+  const newAddress = new Address(address);
+  await newAddress.save();
+
+  outlet.user = user._id;
+  outlet.address = newAddress._id; // Update outlet reference with new address ID
+  next(); // Proceed with saving the outlet document
+});
 
 export default mongoose.model<IOutlet>("Outlet", outletSchema);

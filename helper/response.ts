@@ -17,7 +17,7 @@ export const responseObj = ({
   msg,
   error,
   data,
-  code = null,
+  code = null, // i added this property by request
 }: IResponseObj) => {
   // console.log("responseObj", resObj);
   return resObj.status(statusCode).json({

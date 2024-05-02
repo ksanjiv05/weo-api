@@ -8,7 +8,7 @@ export interface IBrand extends Document {
   brandName: string;
   brandDescription: string;
   brandLogo: string;
-  categoryId: number;
+  categoryId: string;
   status: number;
   checkpoint: number;
 }
@@ -34,8 +34,8 @@ const brandSchema: Schema = new Schema(
       required: true,
     },
     categoryId: {
-      // category id
-      type: Number,
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Category",
       required: true,
     },
     status: {
@@ -62,6 +62,17 @@ brandSchema.index({ brandName: 1, user: 1 }, { unique: true });
 
 //set search index on brandName
 brandSchema.index({ brandName: "text" });
+
+// pre-save hook to assign user reference  to brand
+
+brandSchema.pre<IBrand>("save", function (next) {
+  const brand = this; // This refers to the document being saved
+  const { user } = brand; // Extract user data
+
+  // Assign user reference to brand
+  brand.user = user._id;
+  next();
+});
 
 // export the Brand model
 export default mongoose.model<IBrand>("Brand", brandSchema);
