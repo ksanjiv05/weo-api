@@ -3,6 +3,7 @@
 
 import mongoose, { Schema, Document } from "mongoose";
 import Address from "../models_v1/Address";
+import { conn_v2 } from "../db";
 
 export interface IOutlet extends Document {
   user: any;
@@ -16,7 +17,7 @@ export interface IOutlet extends Document {
   //   latitude: number;
   //   longitude: number;
   operatingDays?: [{ day: string; startTiming: string; endTiming: string }];
-  serviceTools?: [{ service: string; oCharges: number }];
+  serviceTools?: string[];
   serviceContacts?: [
     {
       email: { emailId: string; visibility: boolean };
@@ -134,4 +135,4 @@ outletSchema.pre("save", async function (next) {
   next(); // Proceed with saving the outlet document
 });
 
-export default mongoose.model<IOutlet>("Outlet", outletSchema);
+export default conn_v2.model<IOutlet>("Outlet", outletSchema);

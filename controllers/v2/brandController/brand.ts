@@ -81,17 +81,17 @@ export const getBrands = async (req: Request, res: Response) => {
     //pagination
     const { page = 1, perPage = 10, status = "", user } = req.query;
 
-    if (!user?.admin) {
-      return responseObj({
-        resObj: res,
-        type: "error",
-        statusCode: HTTP_STATUS_CODES.UNAUTHORIZED,
-        msg: "you are not allowed to get Brands",
-        error: "you are not allowed to get Brands",
-        data: null,
-        code: ERROR_CODES.AUTH_ERR,
-      });
-    }
+    // if (!user?.admin) {
+    //   return responseObj({
+    //     resObj: res,
+    //     type: "error",
+    //     statusCode: HTTP_STATUS_CODES.UNAUTHORIZED,
+    //     msg: "you are not allowed to get Brands",
+    //     error: "you are not allowed to get Brands",
+    //     data: null,
+    //     code: ERROR_CODES.AUTH_ERR,
+    //   });
+    // }
 
     const skip = (Number(page) - 1) * Number(perPage);
 

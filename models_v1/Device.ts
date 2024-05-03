@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { conn_v1 } from "../db";
 
 const DeviceSchema = new mongoose.Schema(
   {
@@ -25,4 +26,4 @@ const DeviceSchema = new mongoose.Schema(
 
 DeviceSchema.index({ deviceName: 1, deviceId: 1 }, { unique: true });
 
-export default mongoose.model("Device", DeviceSchema);
+export default conn_v1.model("Device", DeviceSchema);

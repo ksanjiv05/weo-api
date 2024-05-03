@@ -6,14 +6,14 @@ import swaggerUI from "swagger-ui-express";
 import swaggerJsdoc from "swagger-jsdoc";
 import morgan from "morgan";
 import { createStream } from "rotating-file-stream";
-import "./db";
+// import "./db";
 import router from "./routes/v1";
 import helmet from "helmet";
 //initial scripts
 import "./scripts/category";
 import rateLimiterMiddleware from "./middleware/rateLimiter";
 import path from "path";
-import { swaggerOptions } from "./config/swagger";
+import { swaggerOptions, swaggerOptionsV2 } from "./config/swagger";
 import loggingMiddleware from "./middleware/logger";
 import routerV2 from "./routes/v2";
 import { createSuperAdmin } from "./scripts/createAdmin";
@@ -72,9 +72,16 @@ app.listen(port, () => {
 
 const specs = swaggerJsdoc(swaggerOptions);
 app.use(
-  "/api-docs",
+  "/api-docs/v1",
   swaggerUI.serve,
   swaggerUI.setup(specs, { explorer: true })
+);
+
+const specsV2 = swaggerJsdoc(swaggerOptionsV2);
+app.use(
+  "/api-docs/v2",
+  swaggerUI.serve,
+  swaggerUI.setup(specsV2, { explorer: true })
 );
 
 // createSuperAdmin();

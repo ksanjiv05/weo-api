@@ -2,6 +2,7 @@ import mongoose, { Schema } from "mongoose";
 import logging from "../config/logging";
 import { ICategory } from "../interfaces/ICategory";
 import { boolean } from "joi";
+import { conn_v1 } from "../db";
 
 // const CategorySchema: Schema = new Schema(
 //   {
@@ -63,4 +64,4 @@ CategorySchema.post<ICategory>("save", function () {
   logging.info("Mongo", "Category just saved: ");
 });
 
-export default mongoose.model<ICategory>("Category", CategorySchema);
+export default conn_v1.model<ICategory>("Category", CategorySchema);

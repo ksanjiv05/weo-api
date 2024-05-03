@@ -102,3 +102,11 @@ error: POST /api/v1/brands 400 7ms
 {"level":"error","message":"POST /api/v2/quantities 500 278ms","timestamp":"2024-04-30T11:23:13.006Z"}
 {"level":"error","message":"POST /api/v2/quantities 500 7140ms","timestamp":"2024-04-30T11:25:31.572Z"}
 {"level":"error","message":"POST /api/v2/quantities 400 511ms","timestamp":"2024-04-30T11:26:07.425Z"}
+{"level":"error","message":"POST /api/v2/brand/outlet 404 5ms","timestamp":"2024-05-03T05:43:28.552Z"}
+{"level":"error","message":"POST /api/v2/brand/outlet 400 2ms","timestamp":"2024-05-03T05:44:35.694Z"}
+{"level":"error","message":"POST /api/v2/brand/outlet 400 1ms","timestamp":"2024-05-03T05:45:03.319Z"}
+{"level":"error","message":"POST /api/v2/brand/outlet 400 5ms","timestamp":"2024-05-03T05:46:15.133Z"}
+{"level":"error","message":"POST /api/v2/brand/outlet 400 5ms","timestamp":"2024-05-03T05:51:36.120Z"}
+{"level":"error","message":"POST /api/v2/brand/outlet 400 2ms","timestamp":"2024-05-03T05:51:55.845Z"}
+{"level":"error","message":"GET /api/docs 404 12ms","timestamp":"2024-05-03T11:21:27.676Z"}
+{"level":"error","message":"GET /api-docs/ 404 6ms","timestamp":"2024-05-03T11:26:29.244Z"}

@@ -28,7 +28,6 @@ export const addOutlet = async (req: Request, res: Response) => {
         code: ERROR_CODES.FIELD_VALIDATION_REQUIRED_ERR,
       });
     }
-
     const outlets: IOutlet[] = req.body;
 
     // await Outlet.bulkWrite(
@@ -54,6 +53,66 @@ export const addOutlet = async (req: Request, res: Response) => {
     });
   } catch (error: any) {
     logging.error("Outlet Add", error.message, error);
+
+    return responseObj({
+      resObj: res,
+      type: "error",
+      statusCode: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR,
+      msg: "Internal server error",
+      error: error.message,
+      data: null,
+      code: ERROR_CODES.SERVER_ERR,
+    });
+  }
+};
+
+// Function to update the outlet
+
+export const updateOutlet = async (req: Request, res: Response) => {
+  try {
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+      return responseObj({
+        resObj: res,
+        type: "error",
+        statusCode: HTTP_STATUS_CODES.BAD_REQUEST,
+        msg: "fields are required",
+        error: errors.array({}),
+        data: null,
+        code: ERROR_CODES.FIELD_VALIDATION_REQUIRED_ERR,
+      });
+    }
+
+    const outletId = req.params.id;
+    const outlet = req.body;
+
+    const updatedOutlet = await Outlet.findByIdAndUpdate(outletId, outlet, {
+      new: false,
+    });
+
+    if (!updatedOutlet) {
+      return responseObj({
+        resObj: res,
+        type: "error",
+        statusCode: HTTP_STATUS_CODES.NOT_FOUND,
+        msg: "Outlet not found",
+        error: null,
+        data: null,
+        code: ERROR_CODES.NOT_FOUND_ERR,
+      });
+    }
+
+    return responseObj({
+      resObj: res,
+      type: "success",
+      statusCode: HTTP_STATUS_CODES.OK,
+      msg: "Outlet updated successfully",
+      error: null,
+      data: updatedOutlet,
+    });
+  } catch (error: any) {
+    logging.error("Outlet Update", error.message, error);
 
     return responseObj({
       resObj: res,

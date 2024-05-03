@@ -1,5 +1,6 @@
 import mongoose, { Schema } from "mongoose";
 import logging from "../config/logging";
+import { conn_v2 } from "../db";
 
 export interface ICategory extends Document {
   uid: string;
@@ -49,4 +50,4 @@ categorySchema.post<ICategory>("save", function () {
   logging.info("Mongo", "Category just saved: ");
 });
 
-export default mongoose.model<ICategory>("Category", categorySchema);
+export default conn_v2.model<ICategory>("Category", categorySchema);

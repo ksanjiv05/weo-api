@@ -2,6 +2,7 @@
 // Author : Sanjiv Kumar Pandit ( ksanjiv0005@gmail.com)
 
 import mongoose, { Schema, Document } from "mongoose";
+import { conn_v2 } from "../db";
 
 export interface IBank extends Document {
   user: any;
@@ -55,4 +56,4 @@ bankSchemaAccount.pre<IBank>("save", function (next) {
   next();
 });
 
-export default mongoose.model<IBank>("Bank", bankSchemaAccount);
+export default conn_v2.model<IBank>("Bank", bankSchemaAccount);

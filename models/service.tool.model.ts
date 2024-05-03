@@ -2,6 +2,7 @@
 // Author : Sanjiv Kumar Pandit (ksanjiv0005@gmail.com)
 
 import mongoose, { Schema, Document } from "mongoose";
+import { conn_v2 } from "../db";
 
 export interface IServiceTool extends Document {
   service: string;
@@ -30,4 +31,4 @@ const serviceToolSchema: Schema = new Schema(
 // set unique constraint on service
 serviceToolSchema.index({ service: 1 }, { unique: true });
 
-export default mongoose.model<IServiceTool>("ServiceTool", serviceToolSchema);
+export default conn_v2.model<IServiceTool>("ServiceTool", serviceToolSchema);

@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { conn_v1 } from "../db";
 
 const quantitySchema = new mongoose.Schema(
   {
@@ -14,4 +15,4 @@ const quantitySchema = new mongoose.Schema(
 
 // quantitySchema.index({ uid: 1, id: 1 }, { unique: true });
 
-export default mongoose.model("quantity", quantitySchema);
+export default conn_v1.model("quantity", quantitySchema);
