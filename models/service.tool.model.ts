@@ -7,6 +7,7 @@ import { conn_v2 } from "../db";
 export interface IServiceTool extends Document {
   service: string;
   oCharges: number;
+  description: string;
 }
 
 // define the Service Tool schema

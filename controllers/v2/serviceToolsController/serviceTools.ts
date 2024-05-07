@@ -1,9 +1,9 @@
-// Objective : Define the Outlet functions that will be used in the routes
-// Author : Sanjiv Kumar Pandit (ksanjiv0005@gmail.com)
+// Objective : Define the Service Tool functions that will be used in the routes
+// Author : Sanjiv Kumar Pandit
 
 // Import necessary modules
 import { Request, Response } from "express";
-import Outlet, { IOutlet } from "../../../models/outlet.model";
+import ServiceTool, { IServiceTool } from "../../../models/service.tool.model";
 import logging from "../../../config/logging";
 import { validationResult } from "express-validator";
 import { responseObj } from "../../../helper/response";
@@ -12,8 +12,8 @@ import { ERROR_CODES } from "../../../config/errorCode";
 
 // Define the functions
 
-// Function to add the outlet
-export const addOutlet = async (req: Request, res: Response) => {
+// Function to add the service tool
+export const addServiceTool = async (req: Request, res: Response) => {
   try {
     const errors = validationResult(req);
 
@@ -28,38 +28,42 @@ export const addOutlet = async (req: Request, res: Response) => {
         code: ERROR_CODES.FIELD_VALIDATION_REQUIRED_ERR,
       });
     }
-    const outlets: IOutlet[] = req.body;
 
-    // await Outlet.bulkWrite(
-    //   outlets.map((outlet) => {
-    //     const newOutlet = new Outlet(outlet);
-    //     return {
-    //       insertOne: {
-    //         document: newOutlet,
-    //       },
-    //     };
-    //   })
-    // );
+    const serviceTool: IServiceTool = req.body;
 
-    await Outlet.insertMany(outlets);
+    const newServiceTool = new ServiceTool(serviceTool);
+
+    await newServiceTool.save();
+
+    if (!newServiceTool) {
+      return responseObj({
+        resObj: res,
+        type: "error",
+        statusCode: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR,
+        msg: "Service Tool not saved",
+        error: null,
+        data: null,
+        code: ERROR_CODES.SERVER_ERR,
+      });
+    }
 
     return responseObj({
       resObj: res,
       type: "success",
       statusCode: HTTP_STATUS_CODES.CREATED,
-      msg: "Outlet added successfully",
+      msg: "Service Tool added successfully",
       error: null,
       data: null,
       code: ERROR_CODES.SUCCESS,
     });
   } catch (error: any) {
-    logging.error("Outlet Add", error.message, error);
+    logging.error("Service Tool Add", error.message, error);
 
     return responseObj({
       resObj: res,
       type: "error",
       statusCode: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR,
-      msg: "Internal server error",
+      msg: "Service Tool not saved",
       error: error.message,
       data: null,
       code: ERROR_CODES.SERVER_ERR,
@@ -67,9 +71,9 @@ export const addOutlet = async (req: Request, res: Response) => {
   }
 };
 
-// Function to update the outlet
+// Function to update the service tool
 
-export const updateOutlet = async (req: Request, res: Response) => {
+export const updateServiceTool = async (req: Request, res: Response) => {
   try {
     const errors = validationResult(req);
 
@@ -85,19 +89,61 @@ export const updateOutlet = async (req: Request, res: Response) => {
       });
     }
 
-    const outletId = req.params.id;
-    const outlet = req.body;
+    const serviceTool: IServiceTool = req.body;
 
-    const updatedOutlet = await Outlet.findByIdAndUpdate(outletId, outlet, {
-      new: false,
+    const updatedServiceTool = await ServiceTool.findByIdAndUpdate(
+      req.params.id,
+      serviceTool,
+      { new: false }
+    );
+
+    if (!updatedServiceTool) {
+      return responseObj({
+        resObj: res,
+        type: "error",
+        statusCode: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR,
+        msg: "Service Tool not updated",
+        error: null,
+        data: null,
+        code: ERROR_CODES.SERVER_ERR,
+      });
+    }
+
+    return responseObj({
+      resObj: res,
+      type: "success",
+      statusCode: HTTP_STATUS_CODES.CREATED,
+      msg: "Service Tool updated successfully",
+      error: null,
+      data: updatedServiceTool,
+      code: ERROR_CODES.SUCCESS,
     });
+  } catch (error: any) {
+    logging.error("Service Tool Update", error.message, error);
 
-    if (!updatedOutlet) {
+    return responseObj({
+      resObj: res,
+      type: "error",
+      statusCode: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR,
+      msg: "Service Tool not updated",
+      error: error.message,
+      data: null,
+      code: ERROR_CODES.SERVER_ERR,
+    });
+  }
+};
+
+// Function to get the service tool by id
+export const getServiceToolById = async (req: Request, res: Response) => {
+  try {
+    const serviceTool = await ServiceTool.findById(req.params.id);
+
+    if (!serviceTool) {
       return responseObj({
         resObj: res,
         type: "error",
         statusCode: HTTP_STATUS_CODES.NOT_FOUND,
-        msg: "Outlet not found",
+        msg: "Service Tool not found",
         error: null,
         data: null,
         code: ERROR_CODES.NOT_FOUND,
@@ -108,19 +154,19 @@ export const updateOutlet = async (req: Request, res: Response) => {
       resObj: res,
       type: "success",
       statusCode: HTTP_STATUS_CODES.SUCCESS,
-      msg: "Outlet updated successfully",
+      msg: "Service Tool found",
       error: null,
-      data: updatedOutlet,
+      data: serviceTool,
       code: ERROR_CODES.SUCCESS,
     });
   } catch (error: any) {
-    logging.error("Outlet Update", error.message, error);
+    logging.error("Service Tool Get", error.message, error);
 
     return responseObj({
       resObj: res,
       type: "error",
       statusCode: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR,
-      msg: "Internal server error",
+      msg: "Service Tool not found",
       error: error.message,
       data: null,
       code: ERROR_CODES.SERVER_ERR,
@@ -128,20 +174,18 @@ export const updateOutlet = async (req: Request, res: Response) => {
   }
 };
 
-// Function to get the outlet by id
+// Function to get all service tools
 
-export const getOutletById = async (req: Request, res: Response) => {
+export const getServiceTools = async (req: Request, res: Response) => {
   try {
-    const outletId = req.params.id;
+    const serviceTools = await ServiceTool.find();
 
-    const outlet = await Outlet.findById(outletId);
-
-    if (!outlet) {
+    if (!serviceTools) {
       return responseObj({
         resObj: res,
         type: "error",
         statusCode: HTTP_STATUS_CODES.NOT_FOUND,
-        msg: "Outlet not found",
+        msg: "Service Tools not found",
         error: null,
         data: null,
         code: ERROR_CODES.NOT_FOUND,
@@ -152,19 +196,19 @@ export const getOutletById = async (req: Request, res: Response) => {
       resObj: res,
       type: "success",
       statusCode: HTTP_STATUS_CODES.SUCCESS,
-      msg: "Outlet found",
+      msg: "All service tools",
       error: null,
-      data: outlet,
+      data: serviceTools,
       code: ERROR_CODES.SUCCESS,
     });
   } catch (error: any) {
-    logging.error("Get Outlet by id", error.message, error);
+    logging.error("Get all service tools", error.message, error);
 
     return responseObj({
       resObj: res,
       type: "error",
       statusCode: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR,
-      msg: "Internal server error",
+      msg: "Service Tools not found",
       error: error.message,
       data: null,
       code: ERROR_CODES.SERVER_ERR,
@@ -172,102 +216,18 @@ export const getOutletById = async (req: Request, res: Response) => {
   }
 };
 
-// Function to get all the outlets
+// Function to delete the service tool
 
-export const getOutlets = async (req: Request, res: Response) => {
+export const deleteServiceTool = async (req: Request, res: Response) => {
   try {
-    const user = req.body.user;
-    if (!user?.admin) {
-      return responseObj({
-        resObj: res,
-        type: "error",
-        statusCode: HTTP_STATUS_CODES.UNAUTHORIZED,
-        msg: "you are not allowed to get Outlets",
-        error: "you are not allowed to get Outlets",
-        data: null,
-        code: ERROR_CODES.AUTH_ERR,
-      });
-    }
-    const { page = 1, perPage = 10, status = "" } = req.query;
+    const serviceTool = await ServiceTool.findByIdAndDelete(req.params.id);
 
-    const skip = (Number(page) - 1) * Number(perPage);
-
-    const outlets = await Outlet.find()
-      .sort("createdAt")
-      .skip(skip)
-      .limit(Number(perPage));
-    const total = await Outlet.countDocuments({});
-
-    return responseObj({
-      resObj: res,
-      type: "success",
-      statusCode: HTTP_STATUS_CODES.SUCCESS,
-      msg: "Outlets found",
-      error: null,
-      data: { outlets, total },
-      code: ERROR_CODES.SUCCESS,
-    });
-  } catch (error: any) {
-    logging.error("Get all outlets", error.message, error);
-
-    return responseObj({
-      resObj: res,
-      type: "error",
-      statusCode: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR,
-      msg: "Outlets not found",
-      error: error.message,
-      data: null,
-      code: ERROR_CODES.SERVER_ERR,
-    });
-  }
-};
-
-// Function to get the outlet by brand id
-
-export const getOutletsByBrandId = async (req: Request, res: Response) => {
-  try {
-    const brandId = req.params.id;
-
-    const outlets = await Outlet.find({ brand: brandId });
-
-    return responseObj({
-      resObj: res,
-      type: "success",
-      statusCode: HTTP_STATUS_CODES.SUCCESS,
-      msg: "Outlet found",
-      error: null,
-      data: outlets,
-      code: ERROR_CODES.SUCCESS,
-    });
-  } catch (error: any) {
-    logging.error("Get Outlet by brand id", error.message, error);
-
-    return responseObj({
-      resObj: res,
-      type: "error",
-      statusCode: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR,
-      msg: "Internal server error",
-      error: error.message,
-      data: null,
-      code: ERROR_CODES.SERVER_ERR,
-    });
-  }
-};
-
-// Function to delete the outlet
-
-export const deleteOutlet = async (req: Request, res: Response) => {
-  try {
-    const outletId = req.params.id;
-
-    const deletedOutlet = await Outlet.findByIdAndDelete(outletId);
-
-    if (!deletedOutlet) {
+    if (!serviceTool) {
       return responseObj({
         resObj: res,
         type: "error",
         statusCode: HTTP_STATUS_CODES.NOT_FOUND,
-        msg: "Outlet not found",
+        msg: "Service Tool not deleted",
         error: null,
         data: null,
         code: ERROR_CODES.NOT_FOUND,
@@ -278,19 +238,19 @@ export const deleteOutlet = async (req: Request, res: Response) => {
       resObj: res,
       type: "success",
       statusCode: HTTP_STATUS_CODES.SUCCESS,
-      msg: "Outlet deleted successfully",
+      msg: "Service Tool deleted successfully",
       error: null,
       data: null,
       code: ERROR_CODES.SUCCESS,
     });
   } catch (error: any) {
-    logging.error("Outlet Delete", error.message, error);
+    logging.error("Service Tool Delete", error.message, error);
 
     return responseObj({
       resObj: res,
       type: "error",
       statusCode: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR,
-      msg: "Internal server error",
+      msg: "Service Tool not deleted",
       error: error.message,
       data: null,
       code: ERROR_CODES.SERVER_ERR,

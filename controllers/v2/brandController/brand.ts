@@ -79,8 +79,8 @@ export const addBrand = async (req: Request, res: Response) => {
 export const getBrands = async (req: Request, res: Response) => {
   try {
     //pagination
-    const { page = 1, perPage = 10, status = "", user } = req.query;
-
+    const { page = 1, perPage = 10, status = "" } = req.query;
+    const user = req.body.user;
     // if (!user?.admin) {
     //   return responseObj({
     //     resObj: res,
@@ -95,10 +95,16 @@ export const getBrands = async (req: Request, res: Response) => {
 
     const skip = (Number(page) - 1) * Number(perPage);
 
-    const brands = await Brand.find()
+    const filter = {
+      ...(status && { status }),
+      ...(!user.admin && { user: user._id }),
+    };
+
+    const brands = await Brand.find(filter)
       .sort("createdAt")
       .skip(skip)
       .limit(Number(perPage));
+    const total = await Brand.countDocuments(filter);
 
     return responseObj({
       resObj: res,
@@ -106,7 +112,7 @@ export const getBrands = async (req: Request, res: Response) => {
       statusCode: HTTP_STATUS_CODES.SUCCESS,
       msg: "All brands",
       error: null,
-      data: brands,
+      data: { brands, total },
     });
   } catch (error: any) {
     logging.error("Get all brands", error.message, error);
@@ -127,7 +133,6 @@ export const getBrands = async (req: Request, res: Response) => {
 export const getBrandById = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-
     const brand = await Brand.findById(id);
 
     if (!brand) {

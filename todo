@@ -196,6 +196,8 @@ and repair service
 //how you set price time of the product/offer and optimze for maxmize reach
 //
 
-
-
 https://razorpay.com/docs/payments/settlements/faqs/#:~:text=Our%20standard%20settlement%20cycle%20is,from%20the%20date%20of%20capture.
+
+{
+"outletid": "123",
+}
