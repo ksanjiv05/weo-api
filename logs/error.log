@@ -128,3 +128,9 @@ error: POST /api/v1/brands 400 7ms
 {"level":"error","message":"GET /api/v2/brands/i12 500 4ms","timestamp":"2024-05-07T11:25:35.303Z"}
 {"level":"error","message":"GET /api/v2/brands/i12 500 7ms","timestamp":"2024-05-07T11:26:15.333Z"}
 {"level":"error","message":"GET /api/v2/brands/i12/outlets 500 2ms","timestamp":"2024-05-07T11:26:23.199Z"}
+{"level":"error","message":"POST /api/v1//ai/weo/chat 403 10ms","timestamp":"2024-05-09T04:24:28.194Z"}
+{"level":"error","message":"POST /api/v1//ai/image 404 1ms","timestamp":"2024-05-09T04:24:48.578Z"}
+{"level":"error","message":"POST /api/v1/ai/image 404 0ms","timestamp":"2024-05-09T04:24:54.000Z"}
+{"level":"error","message":"POST /api/v1/ai/images 500 3520ms","timestamp":"2024-05-09T04:25:17.415Z"}
+{"level":"error","message":"POST /api/v1/ai/images 500 2731ms","timestamp":"2024-05-09T04:35:09.641Z"}
+{"level":"error","message":"POST /api/v1/ai/weo/chat 403 3ms","timestamp":"2024-05-09T07:05:13.253Z"}

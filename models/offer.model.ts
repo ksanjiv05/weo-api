@@ -3,6 +3,7 @@
 
 import mongoose, { Schema, Document } from "mongoose";
 import { conn_v2 } from "../db";
+import { off } from "process";
 
 export interface IOffer extends Document {
   user: any; //creatorId
@@ -20,6 +21,7 @@ export interface IOffer extends Document {
   totalOfferUnitItem: number; // number of items in offer
   offerUnitType: string; // quanity type of item i.e Day, Weeks, month, year, classes. it will be based on subcategory selection
   minimumOfferUnitItem: number; // minimum item in offer while collecting
+  serviceTime: string; // time of service
   serviceStartDate: Date;
   serviceEndDate: Date;
   offerLiveTillSoldOut: boolean; // flag to show offer live till all items are sold
@@ -95,6 +97,9 @@ const offerSchema: Schema = new Schema(
     minimumOfferUnitItem: {
       type: Number,
     },
+    serviceTime: {
+      type: String,
+    },
     serviceStartDate: {
       type: Date,
     },
@@ -147,6 +152,10 @@ const offerSchema: Schema = new Schema(
       type: Number,
       enum: [0, 1, 2],
     },
+    isDeleted: {
+      type: Boolean,
+      default: false,
+    },
   },
   { timestamps: true }
 );
@@ -156,3 +165,29 @@ offerSchema.index({ offerName: 1, brand: 1, user: 1 }, { unique: true });
 offerSchema.index({ offerName: "text", offerDescription: "text" });
 
 export default conn_v2.model<IOffer>("Offer", offerSchema);
+
+// const outletSchema = {
+//   outletName: {
+//     type: String,
+//     required: true,
+//   },
+//   address: {
+//     outletAddress: String,
+//     location: {
+//       type: { type: String, enum: ["Point"], default: "Point" },
+//       coordinates: { type: [Number], index: "2dsphere" }, // Latitude and Longitude
+//     },
+//   },
+// };
+
+// const offerSchema = {
+//   offerName: String,
+//   offerDescription: String,
+//   outlets: [
+//     {
+//       type: mongoose.Schema.Types.ObjectId,
+//       ref: "Outlet",
+//       required: true,
+//     },
+//   ],
+// };

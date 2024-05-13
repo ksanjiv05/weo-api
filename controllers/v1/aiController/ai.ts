@@ -20,16 +20,17 @@ export const getAiGeneratedImg = async (req: Request, res: Response) => {
       });
 
     // const response = await openai.createImage({
-
     //   prompt: promptString,
     //   n,
     //   size,
     // });
+    // https://community.openai.com/t/429-rate-limit-exceeded-limit-0-1min-current-1-1min/565451
+
     const response = await openai.images.generate({
-      model: "dall-e-3",
-      prompt: "a white siamese cat",
-      n: 1,
-      size: "1024x1024",
+      model: "dall-e-2",
+      prompt: promptString,
+      n: 2,
+      size: "512x512",
     });
     console.log("response", response);
     const image_urls = response.data;

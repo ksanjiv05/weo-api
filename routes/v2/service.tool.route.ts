@@ -19,7 +19,7 @@ const router = express.Router();
 
 /**
  * @swagger
- * /v2/services
+ * /v2/services:
  *   post:
  *     summary: Add a services
  *     tags: [Services]

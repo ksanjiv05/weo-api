@@ -217,7 +217,7 @@ export const getServiceTools = async (req: Request, res: Response) => {
 };
 
 // Function to delete the service tool
-
+// add soft delete functionality
 export const deleteServiceTool = async (req: Request, res: Response) => {
   try {
     const serviceTool = await ServiceTool.findByIdAndDelete(req.params.id);

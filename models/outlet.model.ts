@@ -4,6 +4,7 @@
 import mongoose, { Schema, Document } from "mongoose";
 import Address from "../models_v1/Address";
 import { conn_v2 } from "../db";
+import { add } from "winston";
 
 export interface IOutlet extends Document {
   user: any;
@@ -44,10 +45,36 @@ const outletSchema: Schema = new Schema(
       type: String,
       required: true,
     },
+    // address: {
+    //   type: mongoose.Schema.Types.ObjectId,
+    //   ref: "Address",
+    //   required: true,
+    // },
     address: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Address",
-      required: true,
+      outletAddress: {
+        type: String,
+        required: true,
+      },
+      city: {
+        type: String,
+        // required: true,
+      },
+      state: {
+        type: String,
+        // required: true,
+      },
+      country: {
+        type: String,
+        required: true,
+      },
+      pinCode: {
+        type: String,
+        required: true,
+      },
+      location: {
+        type: { type: String, enum: ["Point"], default: "Point" },
+        coordinates: { type: [Number], index: "2dsphere" }, // Latitude and Longitude
+      },
     },
     // outletLocation: {
     //   type: String,

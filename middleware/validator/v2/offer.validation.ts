@@ -76,7 +76,7 @@ export const offerValidationCh5 = [
     .withMessage("total offers available is required"),
   body("offerResellable")
     .isBoolean()
-    .withMessage("offer resellable is required"),
+    .withMessage("offer re sellable is required"),
   body("offerLimitPerCustomer")
     .isNumeric()
     .withMessage("offer limit per customer is required"),

@@ -7,6 +7,7 @@ import { OpenAIEmbeddings } from "langchain/embeddings/openai";
 import { ContextualCompressionRetriever } from "langchain/retrievers/contextual_compression";
 import { LLMChainExtractor } from "langchain/retrievers/document_compressors/chain_extract";
 import dotenv from "dotenv";
+import logger from "./logger";
 dotenv.config();
 
 const model = new OpenAI({
@@ -40,11 +41,9 @@ export const getQueryResponse = async (query: string) => {
       query,
     });
 
-    console.log("----", res);
-
     return res;
   } catch (error) {
-    console.log("error", error);
+    logger.error("AI Chat Bot", "unable to generate images", error);
     return null;
   }
 };

@@ -17,7 +17,9 @@ export const DB_URL: string =
 
 import OpenAI from "openai";
 
-export const openai = new OpenAI();
+export const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
 
 export const RAZORPAY_KEY_ID: string = process.env.RAZORPAY_KEY_ID as string;
 export const RAZORPAY_KEY_SECRET: string = process.env
