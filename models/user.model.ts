@@ -1,5 +1,6 @@
 import mongoose, { Schema, Document } from "mongoose";
 import logging from "../config/logging";
+import { conn_v2 } from "../db";
 
 const userSchema: Schema = new Schema(
   {
@@ -70,7 +71,7 @@ userSchema.post<IUser>("save", function () {
   logging.info("Mongo", "User just saved: ");
 });
 
-export default mongoose.model<IUser>("User", userSchema);
+export default conn_v2.model<IUser>("User", userSchema);
 
 export interface IUser extends Document {
   uid: string; // unique id from firebase

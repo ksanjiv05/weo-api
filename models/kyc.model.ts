@@ -2,6 +2,7 @@
 //Author : Sanjiv Kumar Pandit (ksanjiv0005@gmail.com)
 
 import mongoose, { Schema, Document } from "mongoose";
+import { conn_v2 } from "../db";
 
 export interface IKYC extends Document {
   uid: string;
@@ -44,4 +45,4 @@ const KYCSchema: Schema = new Schema(
   { timestamps: true }
 );
 
-export default mongoose.model<IKYC>("KYC", KYCSchema);
+export default conn_v2.model<IKYC>("KYC", KYCSchema);

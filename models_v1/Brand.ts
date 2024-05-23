@@ -2,6 +2,7 @@ import mongoose, { Schema } from "mongoose";
 import logging from "../config/logging";
 import { IBrand } from "../interfaces/IBrand";
 import { pointSchema } from "./GeoPoint";
+import { conn_v1 } from "../db";
 
 const BrandSchema: Schema = new Schema(
   {
@@ -76,4 +77,4 @@ BrandSchema.post<IBrand>("save", function () {
   logging.info("Mongo", "Brand just saved: ");
 });
 
-export default mongoose.model<IBrand>("Brand", BrandSchema);
+export default conn_v1.model<IBrand>("Brand", BrandSchema);

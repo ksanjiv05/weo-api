@@ -11,12 +11,16 @@ import categoryRoute from "./category.route";
 import stripeRoute from "./stripe.route";
 import quantityRoute from "./quantity.route";
 import brandRoute from "./brand.route";
+import outletRoute from "./outlet.route";
+import serviceRoute from "./service.tool.route";
 
 //category routes
 routerV2.use(categoryRoute);
 routerV2.use(stripeRoute);
 routerV2.use(quantityRoute);
 routerV2.use(brandRoute);
+routerV2.use(outletRoute);
+routerV2.use(serviceRoute);
 
 routerV2.all("*", (req, res) => {
   res.status(404).json({

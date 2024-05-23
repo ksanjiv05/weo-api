@@ -1,6 +1,7 @@
 import mongoose, { Schema } from "mongoose";
 import logging from "../config/logging";
 import { ITransactionLog } from "../interfaces/ITransactionLog";
+import { conn_v1 } from "../db";
 
 const TransactionLogSchema: Schema = new Schema(
   {
@@ -65,7 +66,7 @@ TransactionLogSchema.post<ITransactionLog>("save", function () {
   logging.info("Mongo", "TransactionLog just saved: ");
 });
 
-export default mongoose.model<ITransactionLog>(
+export default conn_v1.model<ITransactionLog>(
   "TransactionLog",
   TransactionLogSchema
 );

@@ -196,6 +196,122 @@ and repair service
 //how you set price time of the product/offer and optimze for maxmize reach
 //
 
-
-
 https://razorpay.com/docs/payments/settlements/faqs/#:~:text=Our%20standard%20settlement%20cycle%20is,from%20the%20date%20of%20capture.
+
+{
+"outletid": "123",
+}
+
+///Logic of offer re sell
+
+//Logic of boost
+
+//
+Listed
+->offer_id
+->ownership_code : offer_id+creator_id (if product is service based then ownership code is remain same for all user if product is physical then ownership code is update with there user id)
+->offer_activation_date
+->offer_expiry_date
+->offer_type : physical/service (if offer type physical then serviceable is deactivate)
+->isServiceable : true/false
+->isPaid : "paid"/"installment"
+
+Collected
+->offer_id
+->ownership_code : offer_id+creator_id (when user re sell collected offer then ownership code is replace with "ownership_transfer")
+->offer_activation_date
+->offer_expiry_date
+->offer_type : physical/service
+->isServiceable : true/false
+->isPaid : "paid"/"installment"
+
+============================Consider It is service based product============================
+
+//////////////////////// Original Creator //////////////////////
+Listed
+->offer_id
+->ownership_codes : [1,2,3] (received 3-installments that generated 3 ownership codes)
+->active_ownership_code : 1
+->offer_activation_date (QR is bind with first ownership code) // these codes are not deletable it is remain in database for verification
+->offer_expiry_date
+->offer_type : physical/service (if offer type physical then serviceable is deactivate)
+->isServiceable : true/false
+->isPaid : "paid"/"installment"
+->reSold : true/false
+
+------------------------------ user A ------------------------------
+Collected
+->offer_id
+->ownership_codes : [1,2,3]
+->offer_activation_date
+->offer_expiry_date
+->offer_type : physical/service
+->isServiceable : true/false
+->isPaid : "paid"/"installment"
+
+Listed
+->offer_id
+->ownership_codes : [2,3] // user A re sell offer to user B then ownership code is transfer to user B against one installment
+->offer_activation_date
+->offer_expiry_date
+->offer_type : physical/service
+->isServiceable : true/false
+->isPaid : "paid"/"installment"
+
+------------------------------ user B ------------------------------
+Collected
+->offer_id
+->ownership_codes : [1]
+->offer_activation_date
+->offer_expiry_date
+->offer_type : physical/service
+->isServiceable : true/false
+->isPaid : "paid"/"installment"
+
+============================Consider It is physical based product============================
+
+//////////////////////// Original Creator //////////////////////
+Listed
+->offer_id
+->ownership_codes : [1,2,3] (received 3-installments that generated 3 ownership codes)
+->offer_activation_date (QR is bind with first ownership code)
+// these codes are deleted after delivery happened verification
+->offer_expiry_date
+->offer_type : physical/service (if offer type physical then serviceable is deactivate)
+->isServiceable : true/false
+->isPaid : "paid"/"installment"
+->reSold : true/false
+
+------------------------------ user A ------------------------------
+Collected
+->offer_id
+->ownership_codes : [1,2,3]
+->offer_activation_date
+->offer_expiry_date
+->offer_type : physical/service
+->isServiceable : true/false
+->isPaid : "paid"/"installment"
+
+Collected
+->offer_id
+->ownership_codes : [2,3] // user A re sell offer to user B then ownership code is transfer to user B against one installment
+->offer_activation_date
+->offer_expiry_date
+->offer_type : physical/service
+->isServiceable : true/false
+->isPaid : "paid"/"installment"
+
+------------------------------ user B ------------------------------
+Collected
+->offer_id
+->ownership_codes : [1]
+->offer_activation_date
+->offer_expiry_date
+->offer_type : physical/service
+->isServiceable : true/false
+->isPaid : "paid"/"installment"
+
+//order
+order_id
+user_id
+transaction_id

@@ -7,7 +7,7 @@ import { getQueryResponse } from "../../../helper/chatGptPoweredChatBot";
 
 export const getAiGeneratedImg = async (req: Request, res: Response) => {
   try {
-    const { promptString = "", size = "512x512", n = 1 } = req.body;
+    const { promptString = "", size = "1024x1024", n = 1 } = req.body;
 
     if (promptString == "")
       return responseObj({
@@ -19,12 +19,21 @@ export const getAiGeneratedImg = async (req: Request, res: Response) => {
         data: null,
       });
 
-    const response = await openai.createImage({
+    // const response = await openai.createImage({
+    //   prompt: promptString,
+    //   n,
+    //   size,
+    // });
+    // https://community.openai.com/t/429-rate-limit-exceeded-limit-0-1min-current-1-1min/565451
+
+    const response = await openai.images.generate({
+      model: "dall-e-2",
       prompt: promptString,
-      n,
-      size,
+      n: 2,
+      size: "512x512",
     });
-    const image_urls = response.data.data;
+    console.log("response", response);
+    const image_urls = response.data;
     return responseObj({
       resObj: res,
       type: "success",
@@ -73,7 +82,7 @@ export const getAiGeneratedChatResponse = async (
       data: response,
     });
   } catch (error: any) {
-    logging.error("AI Chat", "unable to add connect chat bot", error);
+    logging.error("AI Chat", "unable tos connect chat bot", error);
     return responseObj({
       resObj: res,
       type: "error",

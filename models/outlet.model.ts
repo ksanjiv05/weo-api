@@ -3,6 +3,7 @@
 
 import mongoose, { Schema, Document } from "mongoose";
 import Address from "../models_v1/Address";
+import { conn_v2 } from "../db";
 
 export interface IOutlet extends Document {
   user: any;
@@ -16,7 +17,7 @@ export interface IOutlet extends Document {
   //   latitude: number;
   //   longitude: number;
   operatingDays?: [{ day: string; startTiming: string; endTiming: string }];
-  serviceTools?: [{ service: string; oCharges: number }];
+  serviceTools?: string[];
   serviceContacts?: [
     {
       email: { emailId: string; visibility: boolean };
@@ -43,34 +44,37 @@ const outletSchema: Schema = new Schema(
       type: String,
       required: true,
     },
+    // address: {
+    //   type: mongoose.Schema.Types.ObjectId,
+    //   ref: "Address",
+    //   required: true,
+    // },
     address: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Address",
-      required: true,
+      outletAddress: {
+        type: String,
+        required: true,
+      },
+      city: {
+        type: String,
+        // required: true,
+      },
+      state: {
+        type: String,
+        // required: true,
+      },
+      country: {
+        type: String,
+        required: true,
+      },
+      pinCode: {
+        type: String,
+        required: true,
+      },
+      location: {
+        type: { type: String, enum: ["Point"], default: "Point" },
+        coordinates: { type: [Number], index: "2dsphere" }, // Latitude and Longitude
+      },
     },
-    // outletLocation: {
-    //   type: String,
-    //   required: true,
-    // },
-    // outletAddress: {
-    //   type: String,
-    //   required: true,
-    // },
-    // outletPincode: {
-    //   type: Number,
-    //   required: true,
-    // },
-    // outletLandmark: {
-    //   type: String,
-    // },
-    // latitude: {
-    //   type: Number,
-    //   required: true,
-    // },
-    // longitude: {
-    //   type: Number,
-    //   required: true,
-    // },
     operatingDays: [
       {
         day: {
@@ -134,4 +138,40 @@ outletSchema.pre("save", async function (next) {
   next(); // Proceed with saving the outlet document
 });
 
-export default mongoose.model<IOutlet>("Outlet", outletSchema);
+export default conn_v2.model<IOutlet>("Outlet", outletSchema);
+
+// User's current location (example coordinates)
+// const userLocation = {
+//   type: "Point",
+//   coordinates: [-73.856077, 40.848447], // longitude, latitude
+// };
+
+// // Aggregation pipeline
+// Brand.aggregate([
+//   {
+//     $unwind: "$outlets", // Decompose the outlets array
+//   },
+//   {
+//     $match: {
+//       "outlets.address.location": {
+//         $nearSphere: {
+//           $geometry: userLocation,
+//           $maxDistance: 10000, // distance in meters, 10 km
+//         },
+//       },
+//     },
+//   },
+//   {
+//     $group: {
+//       _id: "$_id", // Group back by brand ID
+//       brandName: { $first: "$brandName" }, // Retain the brand name
+//       outlets: { $push: "$outlets" }, // Aggregate the filtered outlets
+//     },
+//   },
+// ])
+//   .then((brands) => {
+//     console.log(brands); // Output the brands and their nearby outlets
+//   })
+//   .catch((err) => {
+//     console.error(err); // Handle possible errors
+//   });

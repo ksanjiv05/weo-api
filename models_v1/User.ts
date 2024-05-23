@@ -1,6 +1,7 @@
 import mongoose, { Schema } from "mongoose";
 import logging from "../config/logging";
 import { IUser } from "../interfaces/IUser";
+import { conn_v1 } from "../db";
 
 const UserSchema: Schema = new Schema(
   {
@@ -72,4 +73,4 @@ UserSchema.post<IUser>("save", function () {
   logging.info("Mongo", "User just saved: ");
 });
 
-export default mongoose.model<IUser>("User", UserSchema);
+export default conn_v1.model<IUser>("User", UserSchema);

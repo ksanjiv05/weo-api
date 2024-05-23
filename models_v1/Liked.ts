@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { conn_v1 } from "../db";
 
 const LikedSchema = new mongoose.Schema(
   {
@@ -32,4 +33,4 @@ const LikedSchema = new mongoose.Schema(
 
 LikedSchema.index({ uid: 1, id: 1 }, { unique: true });
 
-export default mongoose.model("Liked", LikedSchema);
+export default conn_v1.model("Liked", LikedSchema);

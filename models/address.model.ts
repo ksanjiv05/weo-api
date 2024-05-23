@@ -1,5 +1,6 @@
 import mongoose, { Schema, Document } from "mongoose";
 import logging from "../config/logging";
+import { conn_v2 } from "../db";
 
 export interface IAddress extends Document {
   user: any;
@@ -30,11 +31,11 @@ const addressSchema: Schema = new Schema(
     },
     city: {
       type: String,
-      required: true,
+      // required: true,
     },
     state: {
       type: String,
-      required: true,
+      // required: true,
     },
     country: {
       type: String,
@@ -67,7 +68,7 @@ addressSchema.pre<IAddress>("save", function (next) {
   next();
 });
 
-export default mongoose.model<IAddress>("Address", addressSchema);
+export default conn_v2.model<IAddress>("Address", addressSchema);
 
 // const mapItemSchema = new mongoose.Schema({
 //   name: String,

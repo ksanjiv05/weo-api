@@ -2,18 +2,24 @@ import { Secret } from "jsonwebtoken";
 
 export const SECRET_KEY: Secret = process.env.SECRET_KEY as string;
 const DB_URL_LOCAL: string = "127.0.0.1:27017";
-const DB_NAME: string = process.env.DB_NAME as string;
+export const DB_NAME: string = process.env.DB_NAME as string;
+
 const PROD_DB_URL: string = process.env.DB_URL as string;
 export const DB_URL: string =
   process.env.NODE_ENV == "dev"
-    ? "mongodb://" + DB_URL_LOCAL + "/" + DB_NAME + "?retryWrites=true"
-    : PROD_DB_URL + "/" + DB_NAME + "?retryWrites=true";
+    ? "mongodb://" + DB_URL_LOCAL + "/"
+    : PROD_DB_URL + "/";
 
-import { Configuration, OpenAIApi } from "openai";
-const configuration = new Configuration({
+// import { Configuration, OpenAIApi } from "openai";
+// const configuration = new Configuration({
+//   apiKey: process.env.OPENAI_API_KEY,
+// });
+
+import OpenAI from "openai";
+
+export const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
-export const openai = new OpenAIApi(configuration);
 
 export const RAZORPAY_KEY_ID: string = process.env.RAZORPAY_KEY_ID as string;
 export const RAZORPAY_KEY_SECRET: string = process.env

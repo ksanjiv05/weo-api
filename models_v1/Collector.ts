@@ -1,6 +1,7 @@
 import mongoose, { Schema } from "mongoose";
 import logging from "../config/logging";
 import { ICollector } from "../interfaces/ICollector";
+import { conn_v1 } from "../db";
 
 const CollectorSchema: Schema = new Schema(
   {
@@ -62,4 +63,4 @@ CollectorSchema.post<ICollector>("save", function () {
   logging.info("Mongo", "Collector just saved: ");
 });
 
-export default mongoose.model<ICollector>("Collector", CollectorSchema);
+export default conn_v1.model<ICollector>("Collector", CollectorSchema);

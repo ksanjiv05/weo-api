@@ -48,8 +48,8 @@ router.use(collectRoute);
 // router.post("/static", upload.single("file"), uploadStaticFile);
 // router.post("/static/bulk", upload.array("files"), uploadStaticFiles);
 
-router.post("/ai/images", auth, getAiGeneratedImg);
-router.post("/ai/weo/chat", auth, getAiGeneratedChatResponse);
+router.post("/ai/images", getAiGeneratedImg);
+router.post("/ai/weo/chat", getAiGeneratedChatResponse);
 
 //offer routes
 

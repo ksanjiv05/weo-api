@@ -2,6 +2,7 @@
 // Author : Sanjiv Kumar Pandit (ksanjiv0005@gmail.com)
 
 import mongoose, { Schema, Document } from "mongoose";
+import { conn_v2 } from "../db";
 
 export interface IBrand extends Document {
   user: any;
@@ -75,4 +76,4 @@ brandSchema.pre<IBrand>("save", function (next) {
 });
 
 // export the Brand model
-export default mongoose.model<IBrand>("Brand", brandSchema);
+export default conn_v2.model<IBrand>("Brand", brandSchema);

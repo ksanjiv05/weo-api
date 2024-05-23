@@ -1,6 +1,7 @@
 import mongoose, { Schema } from "mongoose";
 import logging from "../config/logging";
 import { IOffer, OFFER_STATUS } from "../interfaces/IOffer";
+import { conn_v1 } from "../db";
 
 const OfferSchema: Schema = new Schema(
   {
@@ -147,4 +148,4 @@ OfferSchema.post<IOffer>("save", function () {
   logging.info("Mongo", "Offer just saved: ");
 });
 
-export default mongoose.model<IOffer>("Offer", OfferSchema);
+export default conn_v1.model<IOffer>("Offer", OfferSchema);
