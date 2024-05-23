@@ -600,3 +600,12 @@ info: POST /api/v1/brands 200 295ms
 {"level":"info","message":"POST /api/v1/ai/images 200 15034ms","timestamp":"2024-05-09T07:59:11.371Z"}
 {"level":"info","message":"POST /api/v1/ai/images 200 10031ms","timestamp":"2024-05-09T08:01:25.600Z"}
 {"level":"info","message":"POST /api/v1/ai/images 200 10469ms","timestamp":"2024-05-09T08:05:00.476Z"}
+{"level":"info","message":"GET /api/v2/categories/sub_categories 200 67ms","timestamp":"2024-05-23T14:58:24.155Z"}
+{"level":"error","message":"GET /favicon.ico 404 2ms","timestamp":"2024-05-23T14:58:24.697Z"}
+{"level":"info","message":"GET /api/v2/categories 200 40ms","timestamp":"2024-05-23T14:58:30.565Z"}
+{"level":"info","message":"GET /api/v2/categories 200 11ms","timestamp":"2024-05-23T14:58:34.673Z"}
+{"level":"info","message":"GET /api/v2/categories 200 21ms","timestamp":"2024-05-23T15:00:18.655Z"}
+{"level":"info","message":"GET /api/v2/categories 200 2334ms","timestamp":"2024-05-23T15:02:44.364Z"}
+{"level":"info","message":"GET /api/v2/categories 200 626ms","timestamp":"2024-05-23T15:03:00.656Z"}
+{"level":"info","message":"GET /api/v2/categories 200 1432ms","timestamp":"2024-05-23T15:04:14.198Z"}
+{"level":"info","message":"GET /api/v2/categories 200 1053ms","timestamp":"2024-05-23T15:06:26.926Z"}

@@ -1,7 +1,6 @@
 import { Request, Response } from "express";
 import logging from "../../../config/logging";
-import Category from "../../../models_v1/CategoryV2";
-import { ICategoryV2 } from "../../../interfaces/ICategory";
+import Category, { ICategory } from "../../..//models/category.model";
 import { responseObj } from "../../../helper/response";
 import { HTTP_STATUS_CODES } from "../../../config/statusCode";
 import { ERROR_CODES } from "../../../config/errorCode";
@@ -17,7 +16,7 @@ export const addCategory = async (req: Request, res: Response) => {
       categoryPic = "",
       quantities = [],
       _id = "",
-    }: ICategoryV2 = req.body;
+    }: ICategory = req.body;
     // const file = req.file;
     // console.log(
     //   "file",
