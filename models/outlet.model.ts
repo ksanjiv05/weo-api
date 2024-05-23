@@ -4,7 +4,6 @@
 import mongoose, { Schema, Document } from "mongoose";
 import Address from "../models_v1/Address";
 import { conn_v2 } from "../db";
-import { add } from "winston";
 
 export interface IOutlet extends Document {
   user: any;
@@ -76,29 +75,6 @@ const outletSchema: Schema = new Schema(
         coordinates: { type: [Number], index: "2dsphere" }, // Latitude and Longitude
       },
     },
-    // outletLocation: {
-    //   type: String,
-    //   required: true,
-    // },
-    // outletAddress: {
-    //   type: String,
-    //   required: true,
-    // },
-    // outletPincode: {
-    //   type: Number,
-    //   required: true,
-    // },
-    // outletLandmark: {
-    //   type: String,
-    // },
-    // latitude: {
-    //   type: Number,
-    //   required: true,
-    // },
-    // longitude: {
-    //   type: Number,
-    //   required: true,
-    // },
     operatingDays: [
       {
         day: {
@@ -163,3 +139,39 @@ outletSchema.pre("save", async function (next) {
 });
 
 export default conn_v2.model<IOutlet>("Outlet", outletSchema);
+
+// User's current location (example coordinates)
+// const userLocation = {
+//   type: "Point",
+//   coordinates: [-73.856077, 40.848447], // longitude, latitude
+// };
+
+// // Aggregation pipeline
+// Brand.aggregate([
+//   {
+//     $unwind: "$outlets", // Decompose the outlets array
+//   },
+//   {
+//     $match: {
+//       "outlets.address.location": {
+//         $nearSphere: {
+//           $geometry: userLocation,
+//           $maxDistance: 10000, // distance in meters, 10 km
+//         },
+//       },
+//     },
+//   },
+//   {
+//     $group: {
+//       _id: "$_id", // Group back by brand ID
+//       brandName: { $first: "$brandName" }, // Retain the brand name
+//       outlets: { $push: "$outlets" }, // Aggregate the filtered outlets
+//     },
+//   },
+// ])
+//   .then((brands) => {
+//     console.log(brands); // Output the brands and their nearby outlets
+//   })
+//   .catch((err) => {
+//     console.error(err); // Handle possible errors
+//   });

@@ -8,6 +8,7 @@ import logging from "../../../config/logging";
 import { responseObj } from "../../../helper/response";
 import { HTTP_STATUS_CODES } from "../../../config/statusCode";
 import { ERROR_CODES } from "../../../config/errorCode";
+import OfferData, { IOfferData } from "../../../models/offer.data.model";
 
 // Function to add the offer
 export const addOffer = async (req: Request, res: Response) => {
@@ -59,6 +60,178 @@ export const addOffer = async (req: Request, res: Response) => {
     });
   } catch (error: any) {
     logging.error("Add Offer", error.message, error);
+
+    return responseObj({
+      resObj: res,
+      type: "error",
+      statusCode: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR,
+      msg: "Internal server error",
+      error: error.message ? error.message : "internal server error",
+      data: null,
+      code: ERROR_CODES.SERVER_ERR,
+    });
+  }
+};
+
+// Function to add the offer
+export const addOfferDataPoints = async (req: Request, res: Response) => {
+  try {
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+      return responseObj({
+        resObj: res,
+        type: "error",
+        statusCode: HTTP_STATUS_CODES.BAD_REQUEST,
+        msg: "fields are required",
+        error: errors.array({}),
+        data: null,
+        code: ERROR_CODES.FIELD_VALIDATION_REQUIRED_ERR,
+      });
+    }
+
+    // create session for transaction
+    const session = await Offer.startSession();
+    session.startTransaction();
+
+    try {
+      const { offerId } = req.body;
+
+      const offer = await Offer.findById(offerId);
+
+      if (!offer) {
+        return responseObj({
+          resObj: res,
+          type: "error",
+          statusCode: HTTP_STATUS_CODES.NOT_FOUND,
+          msg: "Offer not found",
+          error: null,
+          data: null,
+          code: ERROR_CODES.NOT_FOUND,
+        });
+      }
+
+      const offerData: IOfferData = new OfferData(req.body);
+      await offerData.save();
+
+      await Offer.findByIdAndUpdate(
+        offerId,
+        { $push: { offerDataPoints: { offerData, version: { $inc: 1 } } } },
+        { session }
+      );
+
+      await session.commitTransaction();
+      session.endSession();
+
+      return responseObj({
+        resObj: res,
+        type: "success",
+        statusCode: HTTP_STATUS_CODES.CREATED,
+        msg: "Offer data points added successfully",
+        error: null,
+        data: offerData,
+        code: ERROR_CODES.SUCCESS,
+      });
+    } catch (error: any) {
+      await session.abortTransaction();
+      session.endSession();
+
+      return responseObj({
+        resObj: res,
+        type: "error",
+        statusCode: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR,
+        msg: "Internal server error",
+        error: error.message ? error.message : "internal server error",
+        data: null,
+        code: ERROR_CODES.SERVER_ERR,
+      });
+    }
+  } catch (error: any) {
+    logging.error("Add Offer", error.message, error);
+
+    return responseObj({
+      resObj: res,
+      type: "error",
+      statusCode: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR,
+      msg: "Internal server error",
+      error: error.message ? error.message : "internal server error",
+      data: null,
+      code: ERROR_CODES.SERVER_ERR,
+    });
+  }
+};
+
+export const updateOfferData = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const offer = await OfferData.findByIdAndUpdate(id, req.body, {
+      new: false,
+    });
+
+    if (!offer) {
+      return responseObj({
+        resObj: res,
+        type: "error",
+        statusCode: HTTP_STATUS_CODES.NOT_FOUND,
+        msg: "Offer not found",
+        error: null,
+        data: null,
+        code: ERROR_CODES.NOT_FOUND,
+      });
+    }
+
+    return responseObj({
+      resObj: res,
+      type: "success",
+      statusCode: HTTP_STATUS_CODES.SUCCESS,
+      msg: "Offer updated successfully",
+      error: null,
+      data: null,
+      code: ERROR_CODES.SUCCESS,
+    });
+  } catch (error: any) {
+    logging.error("Update Offer Data", error.message, error);
+
+    return responseObj({
+      resObj: res,
+      type: "error",
+      statusCode: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR,
+      msg: "Internal server error",
+      error: error.message ? error.message : "internal server error",
+      data: null,
+      code: ERROR_CODES.SERVER_ERR,
+    });
+  }
+};
+// Function to update the offer
+export const updateOffer = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const offer = await Offer.findByIdAndUpdate(id, req.body, { new: false });
+
+    if (!offer) {
+      return responseObj({
+        resObj: res,
+        type: "error",
+        statusCode: HTTP_STATUS_CODES.NOT_FOUND,
+        msg: "Offer not found",
+        error: null,
+        data: null,
+        code: ERROR_CODES.NOT_FOUND,
+      });
+    }
+
+    return responseObj({
+      resObj: res,
+      type: "success",
+      statusCode: HTTP_STATUS_CODES.SUCCESS,
+      msg: "Offer updated successfully",
+      error: null,
+      data: null,
+      code: ERROR_CODES.SUCCESS,
+    });
+  } catch (error: any) {
+    logging.error("Update Offer", error.message, error);
 
     return responseObj({
       resObj: res,
@@ -190,48 +363,6 @@ export const getOfferByUserId = async (req: Request, res: Response) => {
       type: "error",
       statusCode: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR,
       msg: "Offer not found",
-      error: error.message ? error.message : "internal server error",
-      data: null,
-      code: ERROR_CODES.SERVER_ERR,
-    });
-  }
-};
-
-// Function to update the offer
-export const updateOffer = async (req: Request, res: Response) => {
-  try {
-    const { id } = req.params;
-    const offer = await Offer.findByIdAndUpdate(id, req.body, { new: false });
-
-    if (!offer) {
-      return responseObj({
-        resObj: res,
-        type: "error",
-        statusCode: HTTP_STATUS_CODES.NOT_FOUND,
-        msg: "Offer not found",
-        error: null,
-        data: null,
-        code: ERROR_CODES.NOT_FOUND,
-      });
-    }
-
-    return responseObj({
-      resObj: res,
-      type: "success",
-      statusCode: HTTP_STATUS_CODES.SUCCESS,
-      msg: "Offer updated successfully",
-      error: null,
-      data: null,
-      code: ERROR_CODES.SUCCESS,
-    });
-  } catch (error: any) {
-    logging.error("Update Offer", error.message, error);
-
-    return responseObj({
-      resObj: res,
-      type: "error",
-      statusCode: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR,
-      msg: "Internal server error",
       error: error.message ? error.message : "internal server error",
       data: null,
       code: ERROR_CODES.SERVER_ERR,
