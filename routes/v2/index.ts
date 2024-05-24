@@ -13,8 +13,10 @@ import quantityRoute from "./quantity.route";
 import brandRoute from "./brand.route";
 import outletRoute from "./outlet.route";
 import serviceRoute from "./service.tool.route";
-
+import userRoute from "./user.route";
 //category routes
+
+routerV2.use(userRoute);
 routerV2.use(categoryRoute);
 routerV2.use(stripeRoute);
 routerV2.use(quantityRoute);
