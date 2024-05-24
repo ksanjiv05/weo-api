@@ -92,11 +92,16 @@ export default conn_v2.model<IOffer>("Offer", offerSchema);
 // const offerSchema = {
 //   offerName: String,
 //   offerDescription: String,
-//   outlets: [
-//     {
-//       type: mongoose.Schema.Types.ObjectId,
-//       ref: "Outlet",
-//       required: true,
-//     },
-//   ],
+//   totalOffersAvailable: {
+//     type: Number, //total offer to sell
+//     required: true,
+//   },
+//   offerStatus: {
+//     type: Number, //live/pending/soldout
+//     default: 1,
+//   },
+//   boost:[{
+//     bootDate: Date,//24 hours countdown
+//     isActive: Boolean,
+//   }]
 // };

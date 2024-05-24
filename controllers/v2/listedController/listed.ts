@@ -10,7 +10,8 @@ import { HTTP_STATUS_CODES } from "../../../config/statusCode";
 import { ERROR_CODES } from "../../../config/errorCode";
 import Offer from "../../../models/offer.model";
 import Outlet from "../../../models/outlet.model";
-import Brand from "../../../models_v1/Brand";
+import Brand from "../../../models/brand.model";
+import mongoose from "mongoose";
 
 // define function for create listed
 //TODO: created listed logic not implemented yet
@@ -103,7 +104,21 @@ export const getListedOffers = async (req: Request, res: Response) => {
       },
     ]);
 
-    const listed = await Listed.find();
+    const listed = await Listed.find({
+      offer: {
+        $in: brands
+          .map((brand: any) =>
+            brand.outlets.map((outlet: any) => outlet.offers)
+          )
+          .flat(),
+      },
+    }).populate({
+      path: "offer",
+      populate: {
+        path: "brand",
+        select: "brandName",
+      },
+    });
     return responseObj({
       resObj: res,
       type: "success",
@@ -120,6 +135,83 @@ export const getListedOffers = async (req: Request, res: Response) => {
       type: "error",
       statusCode: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR,
       msg: "Internal server error",
+      error: error.message ? error.message : "internal server error",
+      data: null,
+      code: ERROR_CODES.SERVER_ERR,
+    });
+  }
+};
+
+export const getAllListedBrands = async (req: Request, res: Response) => {
+  try {
+    const { user } = req.body;
+    const brands = await Brand.find({ user: user._id });
+    // const result = await Offer.aggregate([
+    //   // Match offers associated with the specified user
+    //   { $match: { user:new mongoose.Types.ObjectId(user._id) } },
+    //   // Lookup brand details
+    //   {
+    //     $lookup: {
+    //       from: 'brands',
+    //       localField: 'brand',
+    //       foreignField: '_id',
+    //       as: 'brandDetails'
+    //     }
+    //   },
+    //   { $unwind: '$brandDetails' },
+    //   // Lookup offerDataPoints details
+    //   {
+    //     $lookup: {
+    //       from: 'offerdatas',
+    //       localField: 'offerDataPoints.offerData',
+    //       foreignField: '_id',
+    //       as: 'offerDataDetails'
+    //     }
+    //   },
+    //   // Project required fields and add additional data points
+    //   {
+    //     $project: {
+    //       _id: 0,
+    //       brand: '$brandDetails',
+    //       totalOffersAvailable: { $sum: '$offerDataDetails.totalOffersAvailable' },
+    //       totalBoostedOffers: {
+    //         $size: {
+    //           $filter: {
+    //             input: '$boost',
+    //             as: 'boost',
+    //             cond: { $ne: ['$$boost', null] }
+    //           }
+    //         }
+    //       }
+    //     }
+    //   },
+    //   // Group by brand to aggregate offer details
+    //   {
+    //     $group: {
+    //       _id: '$brand._id',
+    //       brandName: { $first: '$brand.brandName' }, // Adjust the field name as per your Brand schema
+    //       totalOffersAvailable: { $sum: '$totalOffersAvailable' },
+    //       totalBoostedOffers: { $sum: '$totalBoostedOffers' }
+    //     }
+    //   }
+    // ]);
+
+    return responseObj({
+      resObj: res,
+      type: "success",
+      statusCode: HTTP_STATUS_CODES.SUCCESS,
+      msg: "All brands",
+      error: null,
+      data: brands,
+      code: ERROR_CODES.SUCCESS,
+    });
+  } catch (error: any) {
+    logging.error("Get all brands", error.message, error);
+    return responseObj({
+      resObj: res,
+      type: "error",
+      statusCode: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR,
+      msg: "Brands not found",
       error: error.message ? error.message : "internal server error",
       data: null,
       code: ERROR_CODES.SERVER_ERR,

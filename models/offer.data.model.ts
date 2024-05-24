@@ -121,7 +121,7 @@ const offerDataSchema: Schema = new Schema(
       },
     ],
     totalOffersAvailable: {
-      type: Number,
+      type: Number, //total offer to sell
       required: true,
     },
     offerReSellable: {
@@ -147,7 +147,7 @@ const offerDataSchema: Schema = new Schema(
       },
     ],
     offerStatus: {
-      type: Number,
+      type: Number, //live/pending/soldout
       default: 1,
     },
   },
