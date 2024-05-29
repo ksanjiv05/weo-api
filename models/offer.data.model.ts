@@ -34,7 +34,6 @@ export interface IOfferData extends Document {
   oRewardDeductPercentageLatePayment: number; // percentage of O deduction from collector as well as creator on lote payment
 
   offerMedia: [string]; // images/video
-  offerStatus: number; // 1:pending 2:listed, 3: pushed, 4: sold out, 5: expired
 }
 
 const offerDataSchema: Schema = new Schema(
@@ -146,10 +145,6 @@ const offerDataSchema: Schema = new Schema(
         required: true,
       },
     ],
-    offerStatus: {
-      type: Number, //live/pending/soldout
-      default: 1,
-    },
   },
   {
     timestamps: true,

@@ -95,9 +95,9 @@ export const addOfferDataPoints = async (req: Request, res: Response) => {
     session.startTransaction();
 
     try {
-      const { offerId } = req.body;
+      const { _id } = req.body;
 
-      const offer = await Offer.findById(offerId);
+      const offer = await Offer.findById(_id);
 
       if (!offer) {
         return responseObj({
@@ -111,11 +111,15 @@ export const addOfferDataPoints = async (req: Request, res: Response) => {
         });
       }
 
-      const offerData: IOfferData = new OfferData(req.body);
+      delete req.body._id;
+      const offerData: IOfferData = new OfferData({
+        offerId: _id,
+        ...req.body,
+      });
       await offerData.save();
 
       await Offer.findByIdAndUpdate(
-        offerId,
+        _id,
         { $push: { offerDataPoints: { offerData, version: { $inc: 1 } } } },
         { session }
       );
@@ -408,6 +412,70 @@ export const deleteOffer = async (req: Request, res: Response) => {
       type: "error",
       statusCode: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR,
       msg: "Internal server error",
+      error: error.message ? error.message : "internal server error",
+      data: null,
+      code: ERROR_CODES.SERVER_ERR,
+    });
+  }
+};
+
+// Function to get the offers by user location
+export const getOffersByLocation = async (req: Request, res: Response) => {
+  try {
+    const { userLatitude, userLongitude, maxDistance } = req.query;
+
+    const offers = await Offer.aggregate([
+      {
+        $lookup: {
+          from: "outlets",
+          localField: "outlets",
+          foreignField: "_id",
+          as: "outletDetails",
+        },
+      },
+      {
+        $unwind: "$outletDetails",
+      },
+      {
+        $match: {
+          "outletDetails.location.coordinates": {
+            $nearSphere: {
+              $geometry: {
+                type: "Point",
+                coordinates: [userLongitude, userLatitude],
+              },
+              $maxDistance: maxDistance,
+            },
+          },
+        },
+      },
+      {
+        $group: {
+          _id: "$_id",
+          offerName: { $first: "$offerName" },
+          offerDescription: { $first: "$offerDescription" },
+          outlets: { $push: "$outletDetails" },
+        },
+      },
+    ]);
+
+    return responseObj({
+      resObj: res,
+      type: "success",
+      statusCode: HTTP_STATUS_CODES.SUCCESS,
+      msg: "Offer found",
+      error: null,
+      data: offers,
+      code: ERROR_CODES.SUCCESS,
+    });
+  } catch (error: any) {
+    logging.error("Get Offer by location", error.message, error);
+
+    return responseObj({
+      resObj: res,
+      type: "error",
+      statusCode: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR,
+      msg: "Offer not found",
       error: error.message ? error.message : "internal server error",
       data: null,
       code: ERROR_CODES.SERVER_ERR,

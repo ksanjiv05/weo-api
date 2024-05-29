@@ -1,6 +1,7 @@
 // Objective : Define the Offer validation schema
 // Author : Sanjiv Kumar Pandit
 
+import { Request, Response } from "express";
 import { body } from "express-validator";
 
 export const offerValidationCh1 = [
@@ -98,3 +99,31 @@ export const offerValidationCh7 = [
     .isArray({ min: 1, max: 5 })
     .withMessage("Offer media is required"),
 ];
+
+// dynamic validation for each checkpoint
+const offerValidation = (checkpoint: number) => {
+  switch (checkpoint) {
+    case 1:
+      return offerValidationCh1;
+    case 2:
+      return offerValidationCh2;
+    case 3:
+      return offerValidationCh3;
+    case 4:
+      return offerValidationCh4;
+    case 5:
+      return offerValidationCh5;
+    case 6:
+      return offerValidationCh6;
+    case 7:
+      return offerValidationCh7;
+    default:
+      return offerValidationCh1;
+  }
+};
+
+// middleware for validation according to checkpoint
+export const validateOffer = (req: Request, res: Response) => {
+  const { checkpoint } = req.params;
+  return [...offerValidation(parseInt(checkpoint))];
+};

@@ -8,6 +8,7 @@ export interface IServiceTool extends Document {
   service: string;
   oCharges: number;
   description: string;
+  status: number; // 0: PENDING, 1: LIVE, 2: ONHOLD
 }
 
 // define the Service Tool schema
@@ -24,6 +25,12 @@ const serviceToolSchema: Schema = new Schema(
     },
     description: {
       type: String,
+    },
+    status: {
+      type: Number,
+      enum: [0, 1, 2], // 0: PENDING, 1: LIVE, 2: ONHOLD
+      required: true,
+      default: 0,
     },
   },
   { timestamps: true }
