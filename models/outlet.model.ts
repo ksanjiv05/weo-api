@@ -7,7 +7,6 @@ import { conn_v2 } from "../db";
 
 export interface IOutlet extends Document {
   user: any;
-  brand: any;
   outletName: string;
   address: any;
   //   outletLocation: string;
@@ -35,11 +34,11 @@ const outletSchema: Schema = new Schema(
       ref: "User",
       required: true,
     },
-    brand: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Brand",
-      required: true,
-    },
+    // brand: {
+    //   type: mongoose.Schema.Types.ObjectId,
+    //   ref: "Brand",
+    //   required: true,
+    // },
     outletName: {
       type: String,
       required: true,

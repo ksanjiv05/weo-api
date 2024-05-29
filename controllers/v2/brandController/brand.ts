@@ -79,7 +79,15 @@ export const addBrand = async (req: Request, res: Response) => {
 export const getBrands = async (req: Request, res: Response) => {
   try {
     //pagination
-    const { page = 1, perPage = 10, status = "" } = req.query;
+    const {
+      page = 1,
+      perPage = 10,
+      status = "",
+      location = false,
+      lat = null,
+      lng = null,
+      maxDistance = 10000,
+    } = req.query;
     const user = req.body.user;
     // if (!user?.admin) {
     //   return responseObj({
@@ -98,6 +106,16 @@ export const getBrands = async (req: Request, res: Response) => {
     const filter = {
       ...(status && { status }),
       ...(!user.admin && { user: user._id }),
+      ...(location &&
+        lat &&
+        lng && {
+          location: {
+            $near: {
+              $geometry: { type: "Point", coordinates: [lng, lat] },
+              $maxDistance: maxDistance,
+            },
+          },
+        }),
     };
 
     const brands = await Brand.find(filter)
@@ -113,6 +131,7 @@ export const getBrands = async (req: Request, res: Response) => {
       msg: "All brands",
       error: null,
       data: { brands, total },
+      code: ERROR_CODES.SUCCESS,
     });
   } catch (error: any) {
     logging.error("Get all brands", error.message, error);
@@ -157,6 +176,48 @@ export const getBrandById = async (req: Request, res: Response) => {
     });
   } catch (error: any) {
     logging.error("Get brand by id", error.message, error);
+
+    return responseObj({
+      resObj: res,
+      type: "error",
+      statusCode: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR,
+      msg: "Brand not found",
+      error: error.message,
+      data: null,
+      code: ERROR_CODES.SERVER_ERR,
+    });
+  }
+};
+
+// Function to get brand by id
+export const getBrandByName = async (req: Request, res: Response) => {
+  try {
+    const { _id } = req.body;
+    const { name } = req.params;
+    const brand = await Brand.findById({ brandName: name, user: _id });
+
+    if (!brand) {
+      return responseObj({
+        resObj: res,
+        type: "error",
+        statusCode: HTTP_STATUS_CODES.NOT_FOUND,
+        msg: "Brand not found",
+        error: null,
+        data: null,
+        code: ERROR_CODES.NOT_FOUND,
+      });
+    }
+
+    return responseObj({
+      resObj: res,
+      type: "success",
+      statusCode: HTTP_STATUS_CODES.SUCCESS,
+      msg: "Brand found",
+      error: null,
+      data: brand,
+    });
+  } catch (error: any) {
+    logging.error("Get brand by name", error.message, error);
 
     return responseObj({
       resObj: res,

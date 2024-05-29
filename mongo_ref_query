@@ -1,0 +1,375 @@
+db={
+  "user": [
+    {
+      "_id": "60d0fe4f5311236168a109ca",
+      "name": "John Doe",
+      "email": "john.doe@example.com"
+    }
+  ],
+  "brand": [
+    {
+      "_id": "60d0fe4f5311236168a109cd",
+      "user": "60d0fe4f5311236168a109ca",
+      "brandName": "Brand A",
+      "brandDescription": "Description for Brand A",
+      "brandLogo": "logoA.png",
+      "categoryId": "60d0fe4f5311236168a109ce",
+      "status": 1,
+      "checkpoint": 1,
+      "outlets": [
+        "60d0fe4f5311236168a109cb",
+        "60d0fe4f5311236168a109cc"
+      ]
+    },
+    {
+      "_id": "60d0fe4f5311236168a109cf",
+      "user": "60d0fe4f5311236168a109ca",
+      "brandName": "Brand B",
+      "brandDescription": "Description for Brand B",
+      "brandLogo": "logoB.png",
+      "categoryId": "60d0fe4f5311236168a109d0",
+      "status": 0,
+      "checkpoint": 2,
+      "outlets": [
+        "60d0fe4f5311236168a109cc"
+      ]
+    }
+  ],
+  "outlet": [
+    {
+      "_id": "60d0fe4f5311236168a109cb",
+      "user": "60d0fe4f5311236168a109ca",
+      "outletName": "Outlet 1",
+      "address": {
+        "street": "123 Main St",
+        "city": "Metropolis",
+        "state": "NY",
+        "zip": "12345",
+        "location": {
+          "type": "Point",
+          "coordinates": [
+            -73.935242,
+            40.73061
+          ]// Example coordinates for New York
+          
+        }
+      },
+      "operatingDays": [
+        {
+          "day": "Monday",
+          "startTiming": "09:00",
+          "endTiming": "18:00"
+        }
+      ],
+      "serviceTools": [
+        "Tool1",
+        "Tool2"
+      ],
+      "serviceContacts": [
+        {
+          "email": {
+            "emailId": "contact1@example.com",
+            "visibility": true
+          },
+          "phone": {
+            "number": "123-456-7890",
+            "visibility": true
+          }
+        }
+      ]
+    },
+    {
+      "_id": "60d0fe4f5311236168a109cc",
+      "user": "60d0fe4f5311236168a109ca",
+      "outletName": "Outlet 2",
+      "address": {
+        "street": "456 Elm St",
+        "city": "Gotham",
+        "state": "NJ",
+        "zip": "54321",
+        "location": {
+          "type": "Point",
+          "coordinates": [
+            -74.006,
+            40.7128
+          ]// Example coordinates for New Jersey
+          
+        }
+      },
+      "operatingDays": [
+        {
+          "day": "Tuesday",
+          "startTiming": "10:00",
+          "endTiming": "19:00"
+        }
+      ],
+      "serviceTools": [
+        "Tool3"
+      ],
+      "serviceContacts": [
+        {
+          "email": {
+            "emailId": "contact2@example.com",
+            "visibility": false
+          },
+          "phone": {
+            "number": "987-654-3210",
+            "visibility": true
+          }
+        }
+      ]
+    }
+  ],
+  "offer": [
+    {
+      "_id": "60d0fe4f5311236168a109d3",
+      "user": "60d0fe4f5311236168a109ca",
+      "brand": "60d0fe4f5311236168a109cd",
+      "totalListed": 10,
+      "sold": 5,
+      "outlets": [
+        "60d0fe4f5311236168a109cb"
+      ],
+      "subCategories": [
+        "60d0fe4f5311236168a109ce"
+      ],
+      "offerName": "Offer 1",
+      "offerDescription": "Description for Offer 1",
+      "offerDataPoints": [
+        {
+          "offerData": "60d0fe4f5311236168a109d1",
+          "version": 1
+        }
+      ],
+      "boost": [],
+      "status": "live"
+    },
+    {
+      "_id": "60d0fe4f5311236168a109c4",
+      "user": "60d0fe4f5311236168a109ca",
+      "brand": "60d0fe4f5311236168a109cd",
+      "totalListed": 15,
+      "sold": 5,
+      "outlets": [
+        "60d0fe4f5311236168a109cb"
+      ],
+      "subCategories": [
+        "60d0fe4f5311236168a109ce"
+      ],
+      "offerName": "Offer 3",
+      "offerDescription": "Description for Offer 1",
+      "offerDataPoints": [
+        {
+          "offerData": "60d0fe4f5311236168a109d1",
+          "version": 1
+        }
+      ],
+      "boost": [
+        "60d0fe4f5311236168a109d5"
+      ],
+      "status": "pushed"
+    },
+    {
+      "_id": "60d0fe4f5311236168a109x4",
+      "user": "60d0fe4f5311236168a109ca",
+      "brand": "60d0fe4f5311236168a109cd",
+      "totalListed": 15,
+      "sold": 0,
+      "outlets": [
+        "60d0fe4f5311236168a109cb"
+      ],
+      "subCategories": [
+        "60d0fe4f5311236168a109ce"
+      ],
+      "offerName": "Offer 3",
+      "offerDescription": "Description for Offer 1",
+      "offerDataPoints": [
+        {
+          "offerData": "60d0fe4f5311236168a109d1",
+          "version": 1
+        }
+      ],
+      "boost": [
+        "60d0fe4f5311236168a109d5"
+      ],
+      "status": "draft"
+    },
+    {
+      "_id": "60d0fe4f5311236168a109d4",
+      "user": "60d0fe4f5311236168a109ca",
+      "brand": "60d0fe4f5311236168a109cf",
+      "totalListed": 20,
+      "sold": 10,
+      "outlets": [
+        "60d0fe4f5311236168a109cc"
+      ],
+      "subCategories": [
+        "60d0fe4f5311236168a109d0"
+      ],
+      "offerName": "Offer 2",
+      "offerDescription": "Description for Offer 2",
+      "offerDataPoints": [
+        {
+          "offerData": "60d0fe4f5311236168a109d2",
+          "version": 1
+        }
+      ],
+      "boost": [
+        "60d0fe4f5311236168a109d5"
+      ],
+      "status": "live"
+    },
+    {
+      "_id": "60d0fe4f5311236168a109h4",
+      "user": "60d0fe4f5311236168a109ca",
+      "brand": "60d0fe4f5311236168a109cf",
+      "totalListed": 20,
+      "sold": 20,
+      "outlets": [
+        "60d0fe4f5311236168a109cc"
+      ],
+      "subCategories": [
+        "60d0fe4f5311236168a109d0"
+      ],
+      "offerName": "Offer 4",
+      "offerDescription": "Description for Offer 2",
+      "offerDataPoints": [
+        {
+          "offerData": "60d0fe4f5311236168a109d2",
+          "version": 1
+        }
+      ],
+      "boost": [
+        "60d0fe4f5311236168a109d5"
+      ],
+      "status": "live"
+    }
+  ],
+  "OfferData": [
+    {
+      "_id": "60d0fe4f5311236168a109d1",
+      "totalOffersAvailable": 100,
+      "offerStatus": 1
+    },
+    {
+      "_id": "60d0fe4f5311236168a109d2",
+      "totalOffersAvailable": 50,
+      "offerStatus": 1
+    }
+  ]
+}
+db.brand.aggregate([
+  {
+    "$match": {
+      "user": "60d0fe4f5311236168a109ca"
+    }
+  },
+  //{
+  //"$unwind": "$outlets"
+  //},
+  //{
+  //"$lookup": {
+  //"from": "outlet",
+  //"localField": "outlets",
+  //"foreignField": "_id",
+  //"as": "brand_outlets"
+  //}
+  //},
+  {
+    "$lookup": {
+      "from": "offer",
+      "localField": "_id",
+      "foreignField": "brand",
+      "as": "offers",
+      "pipeline": [
+        {
+          "$match": {
+            "status": {
+              "$ne": "draft"
+            }
+          }
+        }
+      ]
+    }
+  },
+  {
+    $addFields: {
+      totalPushedOffers: {
+        $size: {
+          $filter: {
+            input: "$offers",
+            as: "offer",
+            cond: {
+              $eq: [
+                "$$offer.status",
+                "pushed"
+              ]
+            }
+          }
+        }
+      }
+    }
+  },
+  {
+    "$unwind": "$offers"
+  },
+  {
+    "$group": {
+      "_id": "$_id",
+      "brandName": {
+        "$first": "$brandName"
+      },
+      "brandDescription": {
+        "$first": "$brandDescription"
+      },
+      "brandLogo": {
+        "$first": "$brandLogo"
+      },
+      "categoryId": {
+        "$first": "$categoryId"
+      },
+      "status": {
+        "$first": "$status"
+      },
+      "checkpoint": {
+        "$first": "$checkpoint"
+      },
+      "outlets": {
+        "$first": "$outlets"
+      },
+      "totalPushedOffers": {
+        "$first": "$totalPushedOffers"
+      },
+      "offers": {
+        "$push": {
+          "offerId": "$offers._id",
+          "pending": {
+            "$subtract": [
+              "$offers.totalListed",
+              "$offers.sold"
+            ]
+          },
+          "completed": "$offers.sold",
+          "boosted": {
+            "$size": "$offers.boost"
+          },
+          "listed": "$offers.totalListed",
+          "status": "$offers.status"
+        }
+      }
+    }
+  },
+  {
+    "$project": {
+      "brandName": 1,
+      "brandDescription": 1,
+      "brandLogo": 1,
+      "categoryId": 1,
+      "status": 1,
+      "checkpoint": 1,
+      "outlets": 1,
+      "totalPushedOffers": 1,
+      "offers": 1
+    }
+  }
+])

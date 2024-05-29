@@ -13,6 +13,7 @@ export interface IOffer extends Document {
   offerDescription: string;
   offerDataPoints: any[]; // offer data points
   boost: any[]; // boost reference
+  offerStatus: number; // 1:pending 2:listed, 3: pushed, 4: sold out, 5: expired
 }
 
 const offerSchema: Schema = new Schema(
@@ -65,6 +66,10 @@ const offerSchema: Schema = new Schema(
         ref: "Boost",
       },
     ],
+    offerStatus: {
+      type: Number, //1:pending 2:listed, 3: pushed, 4: sold out, 5: expired
+      default: 1,
+    },
   },
   { timestamps: true }
 );

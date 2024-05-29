@@ -76,56 +76,19 @@ export const createListed = async (req: Request, res: Response) => {
 export const getListedOffers = async (req: Request, res: Response) => {
   try {
     //add filter for listed offer by nearby outlet
-    const { latitude, longitude } = req.query;
-    const userLocation = {
-      type: "Point",
-      coordinates: [longitude, latitude], // longitude, latitude
-    };
-    const brands = await Brand.aggregate([
-      {
-        $unwind: "$outlets", // Decompose the outlets array
-      },
-      {
-        $match: {
-          "outlets.address.location": {
-            $nearSphere: {
-              $geometry: userLocation,
-              $maxDistance: 10000, // distance in meters, 10 km
-            },
-          },
-        },
-      },
-      {
-        $group: {
-          _id: "$_id", // Group back by brand ID
-          brandName: { $first: "$brandName" }, // Retain the brand name
-          outlets: { $push: "$outlets" }, // Aggregate the filtered outlets
-        },
-      },
-    ]);
+    const { brandId } = req.params;
 
-    const listed = await Listed.find({
-      offer: {
-        $in: brands
-          .map((brand: any) =>
-            brand.outlets.map((outlet: any) => outlet.offers)
-          )
-          .flat(),
-      },
-    }).populate({
-      path: "offer",
-      populate: {
-        path: "brand",
-        select: "brandName",
-      },
-    });
+    const offers = await Offer.find({ brand: brandId }).populate(
+      "offerDataPoints"
+    );
+
     return responseObj({
       resObj: res,
       type: "success",
       statusCode: HTTP_STATUS_CODES.SUCCESS,
       msg: "Listed Offer",
       error: null,
-      data: listed,
+      data: offers,
       code: ERROR_CODES.SUCCESS,
     });
   } catch (error: any) {
@@ -145,56 +108,129 @@ export const getListedOffers = async (req: Request, res: Response) => {
 export const getAllListedBrands = async (req: Request, res: Response) => {
   try {
     const { user } = req.body;
-    const brands = await Brand.find({ user: user._id });
-    // const result = await Offer.aggregate([
-    //   // Match offers associated with the specified user
-    //   { $match: { user:new mongoose.Types.ObjectId(user._id) } },
-    //   // Lookup brand details
-    //   {
-    //     $lookup: {
-    //       from: 'brands',
-    //       localField: 'brand',
-    //       foreignField: '_id',
-    //       as: 'brandDetails'
-    //     }
-    //   },
-    //   { $unwind: '$brandDetails' },
-    //   // Lookup offerDataPoints details
-    //   {
-    //     $lookup: {
-    //       from: 'offerdatas',
-    //       localField: 'offerDataPoints.offerData',
-    //       foreignField: '_id',
-    //       as: 'offerDataDetails'
-    //     }
-    //   },
-    //   // Project required fields and add additional data points
-    //   {
-    //     $project: {
-    //       _id: 0,
-    //       brand: '$brandDetails',
-    //       totalOffersAvailable: { $sum: '$offerDataDetails.totalOffersAvailable' },
-    //       totalBoostedOffers: {
-    //         $size: {
-    //           $filter: {
-    //             input: '$boost',
-    //             as: 'boost',
-    //             cond: { $ne: ['$$boost', null] }
-    //           }
-    //         }
-    //       }
-    //     }
-    //   },
-    //   // Group by brand to aggregate offer details
-    //   {
-    //     $group: {
-    //       _id: '$brand._id',
-    //       brandName: { $first: '$brand.brandName' }, // Adjust the field name as per your Brand schema
-    //       totalOffersAvailable: { $sum: '$totalOffersAvailable' },
-    //       totalBoostedOffers: { $sum: '$totalBoostedOffers' }
-    //     }
-    //   }
-    // ]);
+    // const brands = await Brand.find({ user: user._id });
+
+    const brands = await Brand.aggregate([
+      {
+        $match: {
+          user: user._id,
+        },
+      },
+
+      {
+        $lookup: {
+          from: "offer",
+          localField: "_id",
+          foreignField: "brand",
+          as: "offers",
+          pipeline: [
+            {
+              $match: {
+                status: {
+                  $ne: 1, // 1: pending or draft
+                },
+              },
+            },
+          ],
+        },
+      },
+      {
+        $addFields: {
+          totalPushedOffers: {
+            $size: {
+              $filter: {
+                input: "$offers",
+                as: "offer",
+                cond: {
+                  $eq: ["$$offer.status", 3], // 3: pushed
+                },
+              },
+            },
+          },
+        },
+      },
+      {
+        $addFields: {
+          completed: {
+            $size: {
+              $filter: {
+                input: "$offers",
+                as: "offer",
+                cond: {
+                  $eq: ["$$offer.status", 4], // 4: sold out
+                },
+              },
+            },
+          },
+        },
+      },
+
+      {
+        $unwind: "$offers",
+      },
+      {
+        $group: {
+          _id: "$_id",
+          brandName: {
+            $first: "$brandName",
+          },
+          brandDescription: {
+            $first: "$brandDescription",
+          },
+          brandLogo: {
+            $first: "$brandLogo",
+          },
+          categoryId: {
+            $first: "$categoryId",
+          },
+          status: {
+            $first: "$status",
+          },
+          checkpoint: {
+            $first: "$checkpoint",
+          },
+          outlets: {
+            $first: "$outlets",
+          },
+          totalPushedOffers: {
+            $first: "$totalPushedOffers",
+          },
+          offers: {
+            $push: {
+              offerId: "$offers._id",
+              // pending: {
+              //   $subtract: ["$offers.totalListed", "$offers.sold"],
+              // },
+              // completed: "$offers.sold",
+              // listed: "$offers.totalListed",
+              // pending: {
+              //   $subtract: ["$offers.totalListed", "$offers.sold"],
+              // },
+              completed: "$completed",
+              listed: { $size: "$offers" },
+              // listed: "$offers.totalListed",
+              boosted: {
+                $size: "$offers.boost",
+              },
+              status: "$offers.status",
+            },
+          },
+        },
+      },
+      {
+        $project: {
+          brandName: 1,
+          brandDescription: 1,
+          brandLogo: 1,
+          categoryId: 1,
+          status: 1,
+          checkpoint: 1,
+          outlets: 1,
+          totalPushedOffers: 1,
+          offers: 1,
+        },
+      },
+    ]);
 
     return responseObj({
       resObj: res,

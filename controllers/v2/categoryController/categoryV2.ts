@@ -28,12 +28,22 @@ export const addCategory = async (req: Request, res: Response) => {
     // if (file) {
     //   req.body.categoryPic = file.filename;
     // }
-    if (name === "" || quantities.length === 0)
+    if (name === "")
       return responseObj({
         resObj: res,
         type: "error",
         statusCode: HTTP_STATUS_CODES.BAD_REQUEST,
-        msg: "Please provide category name and quantity",
+        msg: "Please provide category name",
+        error: null,
+        data: null,
+        code: ERROR_CODES.FIELD_VALIDATION_REQUIRED_ERR,
+      });
+    if (quantities.length === 0)
+      return responseObj({
+        resObj: res,
+        type: "error",
+        statusCode: HTTP_STATUS_CODES.BAD_REQUEST,
+        msg: "Please provide quantity",
         error: null,
         data: null,
         code: ERROR_CODES.FIELD_VALIDATION_REQUIRED_ERR,

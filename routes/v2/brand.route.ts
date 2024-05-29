@@ -7,6 +7,7 @@ import {
   addBrand,
   deleteBrand,
   getBrandById,
+  getBrandByName,
   getBrands,
   updateBrand,
 } from "../../controllers/v2/brandController/brand";
@@ -56,16 +57,90 @@ router.post("/brands", auth, addBrandValidation, addBrand);
 
 /**
  * @swagger
- * /v2/brands:
+ * /brand:
  *   get:
- *     summary: Get all brands
+ *     summary: Retrieve a list of brands
  *     tags: [Brand]
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           default: 1
+ *         description: Page number to retrieve
+ *       - in: query
+ *         name: perPage
+ *         schema:
+ *           type: integer
+ *           default: 10
+ *         description: Number of items per page
+ *       - in: query
+ *         name: status
+ *         schema:
+ *           type: string
+ *           default: ""
+ *         description: Status filter for the brands
+ *       - in: query
+ *         name: location
+ *         schema:
+ *           type: boolean
+ *           default: false
+ *         description: Flag to filter by location
+ *       - in: query
+ *         name: lat
+ *         schema:
+ *           type: number
+ *           format: float
+ *           nullable: true
+ *           default: null
+ *         description: Latitude for location-based filtering
+ *       - in: query
+ *         name: lng
+ *         schema:
+ *           type: number
+ *           format: float
+ *           nullable: true
+ *           default: null
+ *         description: Longitude for location-based filtering
+ *       - in: query
+ *         name: maxDistance
+ *         schema:
+ *           type: integer
+ *           default: 10000
+ *         description: Maximum distance for location-based filtering (in meters)
  *     responses:
- *       200:
- *         description: Get all brands
- *       500:
- *         description: Brand not found
+ *       '200':
+ *         description: A list of brands
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 msg:
+ *                   type: string
+ *                 error:
+ *                   type: string
+ *                   nullable: true
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     brands:
+ *                       type: array
+ *                       items:
+ *                         type: object
+ *                     total:
+ *                       type: integer
+ *                 code:
+ *                   type: integer
+ *                   example: 200
+ *       '400':
+ *         description: Bad request
+ *       '500':
+ *         description: Internal server error
  */
+
 router.get("/brands", auth, getBrands);
 
 /**
@@ -88,6 +163,27 @@ router.get("/brands", auth, getBrands);
  *         description: Brand not found
  */
 router.get("/brands/:id", auth, getBrandById);
+
+/**
+ * @swagger
+ * /v2/brands/name/{name}:
+ *   get:
+ *     summary: Get a brand by name
+ *     tags: [Brand]
+ *     parameters:
+ *       - in: path
+ *         name: name
+ *         required: true
+ *         description: Brand name
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Get a brand by id
+ *       500:
+ *         description: Brand not found
+ */
+router.get("/brands/name/:name", auth, getBrandByName);
 
 /**
  * @swagger

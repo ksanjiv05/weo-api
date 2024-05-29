@@ -10,8 +10,9 @@ export interface IBrand extends Document {
   brandDescription: string;
   brandLogo: string;
   categoryId: string;
-  status: number;
+  status: number; // 0: PENDING, 1: LIVE, 2: ONHOLD
   checkpoint: number;
+  outlets: any[];
 }
 
 // define the Brand schema

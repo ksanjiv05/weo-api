@@ -14,6 +14,7 @@ import brandRoute from "./brand.route";
 import outletRoute from "./outlet.route";
 import serviceRoute from "./service.tool.route";
 import userRoute from "./user.route";
+import offerRoute from "./offer.route";
 //category routes
 
 routerV2.use(userRoute);
@@ -23,6 +24,7 @@ routerV2.use(quantityRoute);
 routerV2.use(brandRoute);
 routerV2.use(outletRoute);
 routerV2.use(serviceRoute);
+routerV2.use(offerRoute);
 
 routerV2.all("*", (req, res) => {
   res.status(404).json({
