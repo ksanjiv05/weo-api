@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { adminApp } from "../firebase";
+import User from "../models/user.model";
 
 export const auth = (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -12,9 +13,10 @@ export const auth = (req: Request, res: Response, next: NextFunction) => {
     adminApp
       .auth()
       .verifyIdToken(token)
-      .then((claims) => {
+      .then(async (claims) => {
         // console.log("clams", claims);
-        req.body.user = claims; //{ ...req.body, ...claims };
+        const user = await User.findOne({ uid: claims.uid });
+        req.body.user = user; //{ ...req.body, ...claims };
         next();
       })
       .catch((err) => {

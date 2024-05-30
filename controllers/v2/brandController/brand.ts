@@ -30,7 +30,7 @@ export const addBrand = async (req: Request, res: Response) => {
     }
 
     const { user } = req.body;
-
+    // console.log("user", user);
     const brand: IBrand = {
       user: user._id,
       ...req.body,
@@ -59,6 +59,7 @@ export const addBrand = async (req: Request, res: Response) => {
       msg: "Brand added successfully",
       error: null,
       data: newBrand,
+      code: ERROR_CODES.SUCCESS,
     });
   } catch (error: any) {
     logging.error("Add new Brand", error.message, error);
@@ -68,7 +69,10 @@ export const addBrand = async (req: Request, res: Response) => {
       type: "error",
       statusCode: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR,
       msg: "Brand not saved",
-      error: error.message,
+      error:
+        error.message && error.message.includes("E11000")
+          ? "Brand name already exists"
+          : error.message,
       data: null,
       code: ERROR_CODES.SERVER_ERR,
     });
@@ -273,6 +277,7 @@ export const updateBrand = async (req: Request, res: Response) => {
       msg: "Brand updated",
       error: null,
       data: brand,
+      code: ERROR_CODES.SUCCESS,
     });
   } catch (error: any) {
     logging.error("Update brand", error.message, error);
