@@ -16,7 +16,7 @@ export const auth = (req: Request, res: Response, next: NextFunction) => {
       .then(async (claims) => {
         // console.log("clams", claims);
         const user = await User.findOne({ uid: claims.uid });
-        req.body.user = user; //{ ...req.body, ...claims };
+        req.body.user = user;
         next();
       })
       .catch((err) => {
