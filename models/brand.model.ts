@@ -8,7 +8,7 @@ export interface IBrand extends Document {
   user: any;
   brandName: string;
   brandDescription: string;
-  brandLogo: string;
+  brandLogo?: string;
   categoryId: string;
   status: number; // 0: PENDING, 1: LIVE, 2: ONHOLD
   checkpoint: number;
@@ -33,7 +33,8 @@ const brandSchema: Schema = new Schema(
     },
     brandLogo: {
       type: String,
-      required: true,
+      // required: true,
+      default: "n/a",
     },
     categoryId: {
       type: mongoose.Schema.Types.ObjectId,

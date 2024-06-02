@@ -19,7 +19,7 @@ const router = express.Router();
 
 /**
  * @swagger
- * /v2/brand:
+ * /v2/brands:
  *   post:
  *     summary: Add a brand
  *     tags: [Brand]
@@ -57,7 +57,7 @@ router.post("/brands", auth, addBrandValidation, addBrand);
 
 /**
  * @swagger
- * /brand:
+ * /brands:
  *   get:
  *     summary: Retrieve a list of brands
  *     tags: [Brand]

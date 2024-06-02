@@ -6,7 +6,7 @@ import { body } from "express-validator";
 export const addBrandValidation = [
   body("brandName").isString().notEmpty(),
   body("brandDescription").isString().notEmpty(),
-  body("brandLogo").isString().notEmpty(),
+  // body("brandLogo").isString().notEmpty(),
   body("categoryId").isString().notEmpty(),
   body("status").isNumeric().notEmpty(),
   body("checkpoint").isNumeric().notEmpty(),
