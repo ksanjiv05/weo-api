@@ -17,7 +17,7 @@ const router = express.Router();
 
 /**
  * @swagger
- * /v2/outlet:
+ * /v2/brand/outlets:
  *   post:
  *     summary: Add an outlet
  *     tags: [Outlet]
@@ -45,6 +45,8 @@ const router = express.Router();
  *                     type: string
  *                   pinCode:
  *                     type: string
+ *                   landmark:
+ *                     type: string
  *                   location:
  *                     type: array
  *                     items:
@@ -61,9 +63,9 @@ const router = express.Router();
  *                   properties:
  *                     day:
  *                       type: string
- *                     startTiming:
+ *                     startTime:
  *                       type: string
- *                     endTiming:
+ *                     endTime:
  *                       type: string
  *               serviceTools:
  *                 type: array
@@ -115,7 +117,7 @@ router.post("/brand/outlets", auth, addOutletValidation, addOutlet);
 
 /**
  * @swagger
- * /v2/outlet/{id}:
+ * /v2/brand/outlets/{id}:
  *   put:
  *     summary: Update an outlet
  *     tags: [Outlet]
@@ -219,7 +221,7 @@ router.put("/brand/outlets/:id", auth, addOutletValidation, updateOutlet);
 
 /**
  * @swagger
- * /v2/outlet:
+ * /v2/brand/outlets:
  *   get:
  *     summary: Get all outlets
  *     tags: [Outlet]
@@ -241,7 +243,7 @@ router.get("/brand/outlets", auth, getOutlets);
 
 /**
  * @swagger
- * /v2/outlet/{id}:
+ * /v2/brand/outlets/{id}:
  *   get:
  *     summary: Get an outlet by id
  *     tags: [Outlet]
@@ -262,7 +264,7 @@ router.get("/brand/outlets/:id", auth, getOutletById);
 
 /**
  * @swagger
- * /v2/outlet/{id}:
+ * /v2/brand/outlets/{id}:
  *   delete:
  *     summary: Delete an outlet by id
  *     tags: [Outlet]

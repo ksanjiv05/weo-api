@@ -1,8 +1,9 @@
-import { NextFunction, Request, Response } from "express";
+import { NextFunction, Response } from "express";
 import { adminApp } from "../firebase";
 import User from "../models/user.model";
+import { IRequest, Request } from "../interfaces/IRequest";
 
-export const auth = (req: Request, res: Response, next: NextFunction) => {
+export const auth = (req: IRequest, res: Response, next: NextFunction) => {
   try {
     const token: string | undefined = req
       .header("authorization")
@@ -16,7 +17,7 @@ export const auth = (req: Request, res: Response, next: NextFunction) => {
       .then(async (claims) => {
         // console.log("clams", claims);
         const user = await User.findOne({ uid: claims.uid });
-        req.body.user = user;
+        req.user = user;
         next();
       })
       .catch((err) => {

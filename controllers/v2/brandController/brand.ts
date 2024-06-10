@@ -9,6 +9,7 @@ import { validationResult } from "express-validator";
 import { responseObj } from "../../../helper/response";
 import { HTTP_STATUS_CODES } from "../../../config/statusCode";
 import { ERROR_CODES } from "../../../config/errorCode";
+import { IRequest } from "../../../interfaces/IRequest";
 
 // Define the functions
 
@@ -80,19 +81,11 @@ export const addBrand = async (req: Request, res: Response) => {
 };
 
 // Function to get all brands
-export const getBrands = async (req: Request, res: Response) => {
+export const getBrands = async (req: IRequest, res: Response) => {
   try {
     //pagination
-    const {
-      page = 1,
-      perPage = 10,
-      status = "",
-      location = false,
-      lat = null,
-      lng = null,
-      maxDistance = 10000,
-    } = req.query;
-    const user = req.body.user;
+    const { page = 1, perPage = 10, status = "" } = req.query;
+    const user = req.user;
     // if (!user?.admin) {
     //   return responseObj({
     //     resObj: res,
@@ -110,16 +103,6 @@ export const getBrands = async (req: Request, res: Response) => {
     const filter = {
       ...(status && { status }),
       ...(!user.admin && { user: user._id }),
-      ...(location &&
-        lat &&
-        lng && {
-          location: {
-            $near: {
-              $geometry: { type: "Point", coordinates: [lng, lat] },
-              $maxDistance: maxDistance,
-            },
-          },
-        }),
     };
 
     const brands = await Brand.find(filter)
@@ -368,3 +351,66 @@ export const getBrandsByUserId = async (req: Request, res: Response) => {
 };
 
 // Function to get all brands by nearby user location within 10 km with pagination
+
+export const getBrandsByLocation = async (req: Request, res: Response) => {
+  try {
+    const { userLatitude, userLongitude, maxDistance } = req.query;
+
+    const brands = await Brand.aggregate([
+      {
+        $lookup: {
+          from: "outlets",
+          localField: "outlets",
+          foreignField: "_id",
+          as: "outletDetails",
+        },
+      },
+      {
+        $unwind: "$outletDetails",
+      },
+      {
+        $match: {
+          "outletDetails.location.coordinates": {
+            $nearSphere: {
+              $geometry: {
+                type: "Point",
+                coordinates: [userLongitude, userLatitude],
+              },
+              $maxDistance: maxDistance,
+            },
+          },
+        },
+      },
+      {
+        $group: {
+          _id: "$_id",
+          brandName: { $first: "$brandName" },
+          brandDescription: { $first: "$brandDescription" },
+          outlets: { $push: "$outletDetails" },
+        },
+      },
+    ]);
+
+    return responseObj({
+      resObj: res,
+      type: "success",
+      statusCode: HTTP_STATUS_CODES.SUCCESS,
+      msg: "brands",
+      error: null,
+      data: brands,
+      code: ERROR_CODES.SUCCESS,
+    });
+  } catch (error: any) {
+    logging.error("Get Brands by location", error.message, error);
+
+    return responseObj({
+      resObj: res,
+      type: "error",
+      statusCode: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR,
+      msg: "brands not found",
+      error: error.message ? error.message : "internal server error",
+      data: null,
+      code: ERROR_CODES.SERVER_ERR,
+    });
+  }
+};

@@ -8,6 +8,7 @@ import { HTTP_STATUS_CODES } from "../../../config/statusCode";
 import { ERROR_CODES } from "../../../config/errorCode";
 import Collector from "../../../models_v1/Collector";
 import mongoose from "mongoose";
+import { IRequest } from "../../../interfaces/IRequest";
 
 export const collectOffer = async (req: Request, res: Response) => {
   try {
@@ -58,20 +59,20 @@ export const collectOffer = async (req: Request, res: Response) => {
   }
 };
 
-export const getCollectedOffers = async (req: Request, res: Response) => {
+export const getCollectedOffers = async (req: IRequest, res: Response) => {
   try {
     const { page = 1, perPage = 10 } = req.query;
-    req.body.creatorId = req.body.user.uid;
+    req.body.creatorId = req.user.uid;
 
     const skip = (Number(page) - 1) * Number(perPage);
 
-    const offers = await Collector.find({ uid: req.body.user.uid })
+    const offers = await Collector.find({ uid: req.user.uid })
       .sort("-createdAt")
       .populate("offer")
       .skip(Number(skip))
       .limit(Number(perPage))
       .exec();
-    const total = await Offer.find({ uid: req.body.user.uid }).count();
+    const total = await Offer.find({ uid: req.user.uid }).count();
 
     return responseObj({
       resObj: res,

@@ -6,16 +6,16 @@ import Address from "../models_v1/Address";
 import { conn_v2 } from "../db";
 
 export interface IOutlet extends Document {
-  user: any;
   outletName: string;
   address: any;
+  brand: any;
   //   outletLocation: string;
   //   outletAddress: string;
   //   outletPincode: number;
   //   outletLandmark?: string;
   //   latitude: number;
   //   longitude: number;
-  operatingDays?: [{ day: string; startTiming: string; endTiming: string }];
+  operatingDays?: [{ day: string; startTime: string; endTime: string }];
   serviceTools?: string[];
   serviceContacts?: [
     {
@@ -23,22 +23,18 @@ export interface IOutlet extends Document {
       phone: { number: string; visibility: boolean };
     }
   ];
+  isDeleted?: boolean;
 }
 
 // define the Outlet schema
 
 const outletSchema: Schema = new Schema(
   {
-    user: {
+    brand: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
+      ref: "Brand",
       required: true,
     },
-    // brand: {
-    //   type: mongoose.Schema.Types.ObjectId,
-    //   ref: "Brand",
-    //   required: true,
-    // },
     outletName: {
       type: String,
       required: true,
@@ -49,7 +45,7 @@ const outletSchema: Schema = new Schema(
     //   required: true,
     // },
     address: {
-      outletAddress: {
+      address: {
         type: String,
         required: true,
       },
@@ -65,9 +61,12 @@ const outletSchema: Schema = new Schema(
         type: String,
         required: true,
       },
-      pinCode: {
+      pincode: {
         type: String,
         required: true,
+      },
+      landmark: {
+        type: String,
       },
       location: {
         type: { type: String, enum: ["Point"], default: "Point" },
@@ -80,11 +79,11 @@ const outletSchema: Schema = new Schema(
           type: String,
           required: true,
         },
-        startTiming: {
+        startTime: {
           type: String,
           required: true,
         },
-        endTiming: {
+        endTime: {
           type: String,
           required: true,
         },
@@ -117,6 +116,10 @@ const outletSchema: Schema = new Schema(
         },
       },
     ],
+    isDeleted: {
+      type: Boolean,
+      default: false,
+    },
   },
   { timestamps: true }
 );

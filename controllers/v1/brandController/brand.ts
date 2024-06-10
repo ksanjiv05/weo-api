@@ -7,12 +7,13 @@ import { HTTP_STATUS_CODES } from "../../../config/statusCode";
 import { validationResult } from "express-validator";
 import { ERROR_CODES } from "../../../config/errorCode";
 import { exportCsv } from "../../../helper/csvUtils";
+import { IRequest } from "../../../interfaces/IRequest";
 
-export const isBrandNameExist = async (req: Request, res: Response) => {
+export const isBrandNameExist = async (req: IRequest, res: Response) => {
   try {
     const { brandName = "" } = req.query;
     // const { uid = "" } = req.body;
-    const { uid = "" } = req.body.user;
+    const { uid = "" } = req.user;
     if (brandName == "") {
       return responseObj({
         resObj: res,
@@ -59,7 +60,7 @@ export const isBrandNameExist = async (req: Request, res: Response) => {
   }
 };
 
-export const addBrand = async (req: Request, res: Response) => {
+export const addBrand = async (req: IRequest, res: Response) => {
   try {
     // console.log("req.body", req.body);
     const errors = validationResult(req);
@@ -82,7 +83,7 @@ export const addBrand = async (req: Request, res: Response) => {
     // const { uid = "" } = req.body;
     // req.body.creatorId = uid;
     const { brandName = "" } = req.body;
-    const { uid = "" } = req.body.user;
+    const { uid = "" } = req.user;
     const brand = await Brand.findOne({ brandName, uid });
     if (brand) {
       return responseObj({
@@ -181,7 +182,7 @@ export const updateBrand = async (req: Request, res: Response) => {
   }
 };
 
-export const getBrands = async (req: Request, res: Response) => {
+export const getBrands = async (req: IRequest, res: Response) => {
   try {
     const {
       page = 1,
@@ -189,7 +190,7 @@ export const getBrands = async (req: Request, res: Response) => {
       status = "",
       // categoriesIds = [],
     } = req.query;
-    const { admin = false } = req.body.user;
+    const { admin = false } = req.user;
     if (!admin) {
       return responseObj({
         resObj: res,
@@ -317,7 +318,7 @@ export const getBrandsBycategoriesIds = async (req: Request, res: Response) => {
   }
 };
 
-export const getBrandsByUid = async (req: Request, res: Response) => {
+export const getBrandsByUid = async (req: IRequest, res: Response) => {
   try {
     const { page = 1, perPage = 10, status = BRAND_STATUS.UNKNOWN } = req.query;
 
@@ -325,7 +326,7 @@ export const getBrandsByUid = async (req: Request, res: Response) => {
     const filter = {
       ...(status === BRAND_STATUS.UNKNOWN ? {} : { status }),
       // ...(minAccessBalance === -1 ? {} : { minAccessBalance }),
-      uid: req.body.user.uid,
+      uid: req.user.uid,
     };
     const brands = await Brand.find(filter)
       .sort("-createdAt")
@@ -433,9 +434,9 @@ export const deleteBrand = async (req: Request, res: Response) => {
   }
 };
 
-export const getBrandCsv = async (req: Request, res: Response) => {
+export const getBrandCsv = async (req: IRequest, res: Response) => {
   try {
-    if (!req.body.user.admin) {
+    if (!req.user.admin) {
       return responseObj({
         resObj: res,
         type: "error",
