@@ -352,3 +352,5 @@ export const getOutletsByUserLocation = async (req: Request, res: Response) => {
 };
 
 //https://www.mongodb.com/docs/manual/reference/operator/aggregation/geoNear/
+//21.2096818,72.8301963
+//21.2056451,72.8383332

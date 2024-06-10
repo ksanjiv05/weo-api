@@ -185,3 +185,15 @@ error: POST /api/v1/brands 400 7ms
 {"level":"error","message":"POST /api/v2/brand/outlets 500 3591ms","timestamp":"2024-06-10T04:47:02.620Z"}
 {"level":"error","message":"POST /api/v2/brand/outlets 500 4357ms","timestamp":"2024-06-10T05:10:46.925Z"}
 {"level":"error","message":"GET /api/v2/brand/outlets 401 304ms","timestamp":"2024-06-10T05:13:11.766Z"}
+{"level":"error","message":"GET /api/v2/brands/location 500 323ms","timestamp":"2024-06-10T12:46:02.958Z"}
+{"level":"error","message":"GET /favicon.ico 404 2ms","timestamp":"2024-06-10T12:46:03.458Z"}
+{"level":"error","message":"GET /api/v2/brands/location?userLatitude=21.2096818&userLongitude=72.8301963&maxDistance=10 500 344ms","timestamp":"2024-06-10T12:47:10.823Z"}
+{"level":"error","message":"GET /api/v2/brands/location?userLatitude=21.2096818&userLongitude=72.8301963&maxDistance=10 500 294ms","timestamp":"2024-06-10T12:55:23.530Z"}
+{"level":"error","message":"GET /api/v2/brands/location?userLatitude=21.2096818&userLongitude=72.8301963&maxDistance=10 500 399ms","timestamp":"2024-06-10T12:56:25.342Z"}
+{"level":"error","message":"GET /api/v2/brands/location?userLatitude=21.2096818&userLongitude=72.8301963&maxDistance=10 500 310ms","timestamp":"2024-06-10T13:00:12.585Z"}
+{"level":"error","message":"GET /api/v2/brands/location?userLatitude=21.2096818&userLongitude=72.8301963&maxDistance=10 500 2949ms","timestamp":"2024-06-10T13:00:54.193Z"}
+{"level":"error","message":"GET /api/v2/brands/location?userLatitude=21.2096818&userLongitude=72.8301963&maxDistance=10 500 357ms","timestamp":"2024-06-10T17:20:10.823Z"}
+{"level":"error","message":"GET /api/v2/brands/location?userLatitude=21.2096818&userLongitude=72.8301963&maxDistance=10 500 821ms","timestamp":"2024-06-10T17:20:58.200Z"}
+{"level":"error","message":"GET /api/v2/brands/location?userLatitude=21.2096818&userLongitude=72.8301963&maxDistance=10 500 1099ms","timestamp":"2024-06-10T17:24:12.396Z"}
+{"level":"error","message":"GET /api/v2/brands/location?userLatitude=21.2096818&userLongitude=72.8301963&maxDistance=10 500 1933ms","timestamp":"2024-06-10T17:24:42.691Z"}
+{"level":"error","message":"GET /api/v2/brands/location?userLatitude=21.2096818&userLongitude=72.8301963&maxDistance=10 500 278ms","timestamp":"2024-06-10T17:29:22.544Z"}
