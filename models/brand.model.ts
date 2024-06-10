@@ -12,7 +12,7 @@ export interface IBrand extends Document {
   categoryId: string;
   status: number; // 0: PENDING, 1: LIVE, 2: ONHOLD
   checkpoint: number;
-  outlets: any[];
+  isDeleted?: boolean;
 }
 
 // define the Brand schema
@@ -50,12 +50,6 @@ const brandSchema: Schema = new Schema(
       type: Number,
       required: true,
     },
-    outlets: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: "Outlets",
-      },
-    ],
   },
   { timestamps: true }
 );

@@ -6,6 +6,7 @@ import { HTTP_STATUS_CODES } from "../../../config/statusCode";
 import { validationResult } from "express-validator";
 import { adminApp } from "../../../firebase";
 import { ERROR_CODES } from "../../../config/errorCode";
+import { IRequest } from "../../../interfaces/IRequest";
 
 export const register = async (req: Request, res: Response) => {
   try {
@@ -148,10 +149,10 @@ export const isUserNameAvailable = async (req: Request, res: Response) => {
   }
 };
 
-export const updateCreatorName = async (req: Request, res: Response) => {
+export const updateCreatorName = async (req: IRequest, res: Response) => {
   try {
     const { creatorName = "", description = "" } = req.body;
-    const { uid = "" } = req.body.user;
+    const { uid = "" } = req.user;
     if (uid == "" || creatorName == "")
       return responseObj({
         statusCode: HTTP_STATUS_CODES.BAD_REQUEST,
@@ -226,10 +227,10 @@ export const updateCreatorName = async (req: Request, res: Response) => {
   }
 };
 
-export const updateUser = async (req: Request, res: Response) => {
+export const updateUser = async (req: IRequest, res: Response) => {
   try {
     const { _id = "" } = req.body;
-    const { uid = "" } = req.body.user;
+    const { uid = "" } = req.user;
     if (_id == "")
       return responseObj({
         statusCode: HTTP_STATUS_CODES.BAD_REQUEST,
@@ -322,10 +323,10 @@ export const updateUser = async (req: Request, res: Response) => {
   }
 };
 
-export const getUserProfile = async (req: Request, res: Response) => {
+export const getUserProfile = async (req: IRequest, res: Response) => {
   try {
     // const { uid = "" } = req.body;
-    const { uid = "" } = req.body.user;
+    const { uid = "" } = req.user;
     const { initData = false } = req.query;
     if (uid == "")
       return responseObj({
@@ -419,9 +420,9 @@ export const login = async (req: Request, res: Response) => {
   }
 };
 
-export const getUsers = async (req: Request, res: Response) => {
+export const getUsers = async (req: IRequest, res: Response) => {
   try {
-    const { admin = false } = req.body.user;
+    const { admin = false } = req.user;
     if (!admin) {
       return responseObj({
         resObj: res,

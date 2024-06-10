@@ -8,12 +8,13 @@ import { validationResult } from "express-validator";
 import { ERROR_CODES } from "../../../config/errorCode";
 import mongoose from "mongoose";
 import { exportCsv } from "../../../helper/csvUtils";
+import { IRequest } from "../../../interfaces/IRequest";
 
 // this function is used to check if the offer name is already exist or not
-export const isOfferNameExist = async (req: Request, res: Response) => {
+export const isOfferNameExist = async (req: IRequest, res: Response) => {
   try {
     const { offerTitle = "", brandId = "" } = req.query;
-    const { uid = "" } = req.body.user;
+    const { uid = "" } = req.user;
     if (brandId == "" || offerTitle == null) {
       return responseObj({
         resObj: res,
@@ -61,7 +62,7 @@ export const isOfferNameExist = async (req: Request, res: Response) => {
 };
 
 // this function is used to add new offer
-export const addOffer = async (req: Request, res: Response) => {
+export const addOffer = async (req: IRequest, res: Response) => {
   try {
     // console.log("req.body", req.body);
     const errors = validationResult(req);
@@ -78,7 +79,7 @@ export const addOffer = async (req: Request, res: Response) => {
       });
     }
     // const { uid = "" } = req.body;
-    req.body.creatorId = req.body.user.uid;
+    req.body.creatorId = req.user.uid;
 
     const newOffer = new Offer(req.body);
 
@@ -175,7 +176,7 @@ export const updateOffer = async (req: Request, res: Response) => {
 };
 
 // this function is used to get all offers
-export const getOffers = async (req: Request, res: Response) => {
+export const getOffers = async (req: IRequest, res: Response) => {
   try {
     const {
       page = 1,
@@ -185,8 +186,8 @@ export const getOffers = async (req: Request, res: Response) => {
       offerActivitiesAt = "",
       offerStatus = OFFER_STATUS.LIVE,
     } = req.query;
-    req.body.creatorId = req.body.user.uid;
-    const { admin = false } = req.body.user;
+    req.body.creatorId = req.user.uid;
+    const { admin = false } = req.user;
 
     const skip = (Number(page) - 1) * Number(perPage);
 
@@ -307,7 +308,7 @@ export const getOffers = async (req: Request, res: Response) => {
 };
 
 // this function is used to get all offers by uid
-export const getOffersByUid = async (req: Request, res: Response) => {
+export const getOffersByUid = async (req: IRequest, res: Response) => {
   try {
     const {
       page = 1,
@@ -323,7 +324,7 @@ export const getOffersByUid = async (req: Request, res: Response) => {
       // ...(minAccessBalance === -1 ? {} : { minAccessBalance }),
       ...(offerActivitiesAt === "" ? {} : { offerActivitiesAt }),
       // ...(tableId === "" ? {} : { tableIds: { $elemMatch: { tableId } } }),
-      creatorId: req.body.user.uid,
+      creatorId: req.user.uid,
     };
 
     const offers = await Offer.find(filter, {
@@ -345,7 +346,7 @@ export const getOffersByUid = async (req: Request, res: Response) => {
       .skip(Number(skip))
       .limit(Number(perPage));
     const total = await Offer.find({
-      creatorId: req.body.user.uid,
+      creatorId: req.user.uid,
       offerStatus,
     }).count();
 
@@ -460,11 +461,11 @@ export const getOffer = async (req: Request, res: Response) => {
 };
 
 // this function is used to delete offer by id
-export const deleteOffer = async (req: Request, res: Response) => {
+export const deleteOffer = async (req: IRequest, res: Response) => {
   try {
     const { id = "" } = req.params;
 
-    await Offer.deleteOne({ _id: id, creatorId: req.body.user.uid });
+    await Offer.deleteOne({ _id: id, creatorId: req.user.uid });
 
     return responseObj({
       resObj: res,
@@ -489,7 +490,7 @@ export const deleteOffer = async (req: Request, res: Response) => {
   }
 };
 
-export const getOfferCsv = async (req: Request, res: Response) => {
+export const getOfferCsv = async (req: IRequest, res: Response) => {
   try {
     const {
       offerStatus = OFFER_STATUS.UNKNOWN,
@@ -498,7 +499,7 @@ export const getOfferCsv = async (req: Request, res: Response) => {
       offerActivitiesAt = "",
     } = req.query;
 
-    if (!req.body.user.admin) {
+    if (!req.user.admin) {
       return responseObj({
         resObj: res,
         type: "error",

@@ -7,8 +7,9 @@ import { ERROR_CODES } from "../../../config/errorCode";
 import Brand from "../../../models_v1/Brand";
 import mongoose from "mongoose";
 import { STATIC_FILE_PATH } from "../../../config/config";
+import { IRequest } from "../../../interfaces/IRequest";
 
-export const addCategory = async (req: Request, res: Response) => {
+export const addCategory = async (req: IRequest, res: Response) => {
   try {
     const {
       name = "",
@@ -58,7 +59,7 @@ export const addCategory = async (req: Request, res: Response) => {
     //     data: null,
     //   });
     // }
-    req.body.uid = req.body.user.uid;
+    req.body.uid = req.user.uid;
     console.log("body", req.body);
     const newCategory = new Category(req.body);
     await newCategory.save();
