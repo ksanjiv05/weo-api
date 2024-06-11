@@ -10,11 +10,12 @@ import { responseObj } from "../../../helper/response";
 import { HTTP_STATUS_CODES } from "../../../config/statusCode";
 import { ERROR_CODES } from "../../../config/errorCode";
 import { IRequest } from "../../../interfaces/IRequest";
+import outletModel from "../../../models/outlet.model";
 
 // Define the functions
 
 // Function to add the brand
-export const addBrand = async (req: Request, res: Response) => {
+export const addBrand = async (req: IRequest, res: Response) => {
   try {
     const errors = validationResult(req);
 
@@ -30,7 +31,7 @@ export const addBrand = async (req: Request, res: Response) => {
       });
     }
 
-    const { user } = req.body;
+    const { user } = req;
     // console.log("user", user);
     const brand: IBrand = {
       user: user._id,
@@ -354,39 +355,52 @@ export const getBrandsByUserId = async (req: Request, res: Response) => {
 
 export const getBrandsByLocation = async (req: Request, res: Response) => {
   try {
-    const { userLatitude, userLongitude, maxDistance } = req.query;
+    const { userLatitude, userLongitude, maxDistance }: any = req.query;
 
-    const brands = await Brand.aggregate([
+    if (!userLatitude || !userLongitude) {
+      return responseObj({
+        resObj: res,
+        type: "error",
+        statusCode: HTTP_STATUS_CODES.BAD_REQUEST,
+        msg: "userLatitude and userLongitude are required",
+        error: "userLatitude and userLongitude are required",
+        data: null,
+        code: ERROR_CODES.FIELD_VALIDATION_REQUIRED_ERR,
+      });
+    }
+    const lat = parseFloat(userLongitude);
+    const lng = parseFloat(userLatitude);
+
+    const brands = await outletModel.aggregate([
+      {
+        $geoNear: {
+          near: {
+            type: "Point",
+            coordinates: [lng, lat],
+          },
+          distanceField: "distance",
+          maxDistance: maxDistance ? parseInt(maxDistance) : 10000,
+          spherical: true,
+        },
+      },
       {
         $lookup: {
-          from: "outlets",
-          localField: "outlets",
+          from: "brands",
+          localField: "brand",
           foreignField: "_id",
-          as: "outletDetails",
+          as: "brandDetails",
         },
       },
       {
-        $unwind: "$outletDetails",
-      },
-      {
-        $match: {
-          "outletDetails.location.coordinates": {
-            $nearSphere: {
-              $geometry: {
-                type: "Point",
-                coordinates: [userLongitude, userLatitude],
-              },
-              $maxDistance: maxDistance,
-            },
-          },
-        },
+        $unwind: "$brandDetails",
       },
       {
         $group: {
-          _id: "$_id",
-          brandName: { $first: "$brandName" },
-          brandDescription: { $first: "$brandDescription" },
-          outlets: { $push: "$outletDetails" },
+          _id: "$brand",
+          brandName: { $first: "$brandDetails.brandName" },
+          brandDescription: { $first: "$brandDetails.brandDescription" },
+          brandLogo: { $first: "$brandDetails.brandLogo" },
+          outlets: { $push: "$$ROOT" },
         },
       },
     ]);

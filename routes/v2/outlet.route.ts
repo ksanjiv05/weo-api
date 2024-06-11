@@ -48,14 +48,17 @@ const router = express.Router();
  *                   landmark:
  *                     type: string
  *                   location:
- *                     type: array
- *                     items:
- *                       type: number
- *                       minItems: 2
- *                       maxItems: 2
- *                       example: 37.863,38.9754
- *                       required: true
- *                       description: Coordinates are required like [lat,lng]
+ *                     type: object
+ *                     properties:
+ *                       coordinates:
+ *                         type: array
+ *                         items:
+ *                           type: number
+ *                           minItems: 2
+ *                           maxItems: 2
+ *                           example: 37.863,38.9754
+ *                           required: true
+ *                           description: Coordinates are required like [lat,lng]
  *               operatingDays:
  *                 type: array
  *                 items:
@@ -153,14 +156,17 @@ router.post("/brand/outlets", auth, addOutletValidation, addOutlet);
  *                   pinCode:
  *                     type: string
  *                   location:
- *                     type: array
- *                     items:
- *                       type: number
- *                       minItems: 2
- *                       maxItems: 2
- *                       example: 37.863,38.9754
- *                       required: true
- *                       description: Coordinates are required like [lat,lng]
+ *                     type: object
+ *                     properties:
+ *                       coordinates:
+ *                         type: array
+ *                         items:
+ *                           type: number
+ *                           minItems: 2
+ *                           maxItems: 2
+ *                           example: 37.863,38.9754
+ *                           required: true
+ *                           description: Coordinates are required like [lat,lng]
  *               operatingDays:
  *                 type: array
  *                 items:

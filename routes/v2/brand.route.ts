@@ -9,6 +9,7 @@ import {
   getBrandById,
   getBrandByName,
   getBrands,
+  getBrandsByLocation,
   updateBrand,
 } from "../../controllers/v2/brandController/brand";
 import { auth } from "../../middleware/auth";
@@ -142,6 +143,7 @@ router.post("/brands", auth, addBrandValidation, addBrand);
  */
 
 router.get("/brands", auth, getBrands);
+router.get("/brands/location", getBrandsByLocation);
 
 /**
  * @swagger

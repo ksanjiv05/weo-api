@@ -126,7 +126,7 @@ const outletSchema: Schema = new Schema(
 
 // set unique constraint on outletName
 outletSchema.index({ user: 1, brand: 1, outletName: 1 }, { unique: true });
-
+// outletSchema.index({ location: "2dsphere" });
 // pre-save hook to create a new Address document and update user reference
 outletSchema.pre("save", async function (next) {
   const outlet = this; // This refers to the outlet document being saved

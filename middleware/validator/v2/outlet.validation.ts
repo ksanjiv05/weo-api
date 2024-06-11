@@ -66,8 +66,10 @@ export const addOutletValidation = [
   body("*.address.address")
     .isLength({ min: 1 })
     .withMessage("Address is required"),
-  body("*.address.location").isArray().withMessage("Location must be an array"),
-  body("*.address.location.*")
+  body("*.address.location.coordinates")
+    .isArray()
+    .withMessage("Location must be an array"),
+  body("*.address.location.coordinates.*")
     .isFloat()
     .withMessage("Location coordinates must be floats"),
   body("*.address.pincode")
