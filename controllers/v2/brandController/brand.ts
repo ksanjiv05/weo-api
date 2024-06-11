@@ -15,7 +15,7 @@ import outletModel from "../../../models/outlet.model";
 // Define the functions
 
 // Function to add the brand
-export const addBrand = async (req: Request, res: Response) => {
+export const addBrand = async (req: IRequest, res: Response) => {
   try {
     const errors = validationResult(req);
 
@@ -31,7 +31,7 @@ export const addBrand = async (req: Request, res: Response) => {
       });
     }
 
-    const { user } = req.body;
+    const { user } = req;
     // console.log("user", user);
     const brand: IBrand = {
       user: user._id,

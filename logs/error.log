@@ -197,3 +197,7 @@ error: POST /api/v1/brands 400 7ms
 {"level":"error","message":"GET /api/v2/brands/location?userLatitude=21.2096818&userLongitude=72.8301963&maxDistance=10 500 1099ms","timestamp":"2024-06-10T17:24:12.396Z"}
 {"level":"error","message":"GET /api/v2/brands/location?userLatitude=21.2096818&userLongitude=72.8301963&maxDistance=10 500 1933ms","timestamp":"2024-06-10T17:24:42.691Z"}
 {"level":"error","message":"GET /api/v2/brands/location?userLatitude=21.2096818&userLongitude=72.8301963&maxDistance=10 500 278ms","timestamp":"2024-06-10T17:29:22.544Z"}
+{"level":"error","message":"POST /api/v2/brands 500 252ms","timestamp":"2024-06-11T05:09:40.510Z"}
+{"level":"error","message":"POST /api/v2/brand/outlets 400 261ms","timestamp":"2024-06-11T05:17:12.116Z"}
+{"level":"error","message":"POST /api/v2/brand/outlets 400 1316ms","timestamp":"2024-06-11T05:48:46.365Z"}
+{"level":"error","message":"POST /api/v2/brand/outlets 400 295ms","timestamp":"2024-06-11T05:50:03.587Z"}
