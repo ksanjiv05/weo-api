@@ -201,3 +201,7 @@ error: POST /api/v1/brands 400 7ms
 {"level":"error","message":"POST /api/v2/brand/outlets 400 261ms","timestamp":"2024-06-11T05:17:12.116Z"}
 {"level":"error","message":"POST /api/v2/brand/outlets 400 1316ms","timestamp":"2024-06-11T05:48:46.365Z"}
 {"level":"error","message":"POST /api/v2/brand/outlets 400 295ms","timestamp":"2024-06-11T05:50:03.587Z"}
+{"level":"error","message":"GET /api/v1/quantities 404 19ms","timestamp":"2024-06-12T14:09:48.089Z"}
+{"level":"error","message":"POST /api/v2/categories 500 1011ms","timestamp":"2024-06-12T14:10:32.988Z"}
+{"level":"error","message":"POST /api/v2/categories 500 593ms","timestamp":"2024-06-12T14:13:49.977Z"}
+{"level":"error","message":"GET /favicon.ico 404 54ms","timestamp":"2024-06-12T14:24:37.062Z"}

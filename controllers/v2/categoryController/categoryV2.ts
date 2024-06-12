@@ -59,8 +59,8 @@ export const addCategory = async (req: IRequest, res: Response) => {
     //     data: null,
     //   });
     // }
-    req.body.uid = req.user.uid;
-    console.log("body", req.body);
+    console.log("body", req.user);
+    req.body.uid = req.user?.uid;
     const newCategory = new Category(req.body);
     await newCategory.save();
 
@@ -306,7 +306,7 @@ export const getSubAllCategories = async (req: Request, res: Response) => {
       },
       {
         $lookup: {
-          from: "categoryv2", // same collection join
+          from: "categories", // same collection join
           localField: "parentCategoryObjId", // field in the documents of the current collection
           foreignField: "_id", // field in the documents of the from collection
           as: "catInfo", // array field added to each input document; contains the matching documents from the from collection
