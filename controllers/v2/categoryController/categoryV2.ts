@@ -321,8 +321,17 @@ export const getSubAllCategories = async (req: Request, res: Response) => {
         },
       },
       {
+        $lookup: {
+          from: "quantities",
+          localField: "quantities",
+          foreignField: "_id",
+          as: "quantitiesInfo",
+        },
+      },
+      {
         $project: {
           catInfo: 0, // Optionally remove the catInfo array from the output
+          quantities: 0, // Optionally remove the quantitiesInfo array from the output
         },
       },
       { $skip: Number(skip) }, // Skip documents for pagination
