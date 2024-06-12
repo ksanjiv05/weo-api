@@ -145,6 +145,12 @@ const offerDataSchema: Schema = new Schema(
         required: true,
       },
     ],
+    status: {
+      type: Number,
+      enum:[0,1,2],
+      default: 0,
+    
+    }
   },
   {
     timestamps: true,
