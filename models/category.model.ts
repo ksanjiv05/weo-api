@@ -32,7 +32,7 @@ const categorySchema: Schema = new Schema(
       type: String,
       default: null,
     },
-    quantities: [{ type: Schema.Types.ObjectId, ref: "Quantity" }],
+    quantities: [{ type: Schema.Types.ObjectId, ref: "Quantity", default: [] }],
     description: {
       type: String,
     },
