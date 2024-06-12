@@ -220,6 +220,7 @@ export const updateOfferData = async (req: Request, res: Response) => {
     });
   }
 };
+
 // Function to update the offer
 export const updateOffer = async (req: Request, res: Response) => {
   try {
