@@ -196,17 +196,74 @@ router.put("/offers/:id", auth, offerValidationCh1, updateOffer);
 
 /**
  * @swagger
- * /offers/data/{checkpoint-3}:
+ * /offers/data/{id}/{checkpoint-2}:
+ *   put:
+ *     summary: Update offer - Checkpoint 2
+ *     tags: [Offer]
+ *     parameters:
+ *       - in: path
+ *       - name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The offer data id
+ *       - name: checkpoint
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The checkpoint number
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               offerPriceAmount:
+ *                 type: number
+ *                 description: The offer price amount
+ *               offerPriceMinAmount:
+ *                 type: number
+ *                 description: The minimum offer price amount
+ *               offerPriceMinPercentage:
+ *                 type: number
+ *                 description: The minimum offer price percentage
+ *               paymentType:
+ *                 type: string
+ *                 description: The payment type
+ *               installmentDuration:
+ *                 type: number
+ *                 description: The installment duration
+ *               installmentPeriod:
+ *                 type: string
+ *                 description: The installment period
+ *     responses:
+ *       '200':
+ *         description: Offer updated successfully
+ *       '400':
+ *         description: Bad request
+ *       '500':
+ *         description: Internal server error
+ */
+
+/**
+ * @swagger
+ * /offers/data/{id}/{checkpoint-3}:
  *   put:
  *     summary: Update offer - Checkpoint 3
  *     tags: [Offer]
  *     parameters:
  *       - in: path
- *         name: checkpoint
+ *       - name: id
  *         required: true
  *         schema:
  *           type: string
- *         description: The offer checkpoint
+ *         description: The offer data id
+ *       - name: checkpoint
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The checkpoint number
  *     requestBody:
  *       required: true
  *       content:
@@ -242,17 +299,22 @@ router.put("/offers/:id", auth, offerValidationCh1, updateOffer);
 
 /**
  * @swagger
- * /offers/data/{checkpoint-4}:
+ * /offers/data/{id}/{checkpoint-4}:
  *   put:
  *     summary: Update offer - Checkpoint 4
  *     tags: [Offer]
  *     parameters:
  *       - in: path
- *         name: checkpoint
+ *       - name: id
  *         required: true
  *         schema:
  *           type: string
- *         description: The offer checkpoint
+ *         description: The offer data id
+ *       - name: checkpoint
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The checkpoint number
  *     requestBody:
  *       required: true
  *       content:
@@ -290,17 +352,22 @@ router.put("/offers/:id", auth, offerValidationCh1, updateOffer);
 
 /**
  * @swagger
- * /offers/data/{checkpoint-5}:
+ * /offers/data/{id}/{checkpoint-5}:
  *   put:
  *     summary: Update offer - Checkpoint 5
  *     tags: [Offer]
  *     parameters:
  *       - in: path
- *         name: checkpoint
+ *       - name: id
  *         required: true
  *         schema:
  *           type: string
- *         description: The offer checkpoint
+ *         description: The offer data id
+ *       - name: checkpoint
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The checkpoint number
  *     requestBody:
  *       required: true
  *       content:
@@ -328,17 +395,22 @@ router.put("/offers/:id", auth, offerValidationCh1, updateOffer);
 
 /**
  * @swagger
- * /offers/data/{checkpoint-6}:
+ * /offers/data/{id}/{checkpoint-6}:
  *   put:
  *     summary: Update offer - Checkpoint 6
  *     tags: [Offer]
  *     parameters:
  *       - in: path
- *         name: checkpoint
+ *       - name: id
  *         required: true
  *         schema:
  *           type: string
- *         description: The offer checkpoint
+ *         description: The offer data id
+ *       - name: checkpoint
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The checkpoint number
  *     requestBody:
  *       required: true
  *       content:
@@ -363,17 +435,22 @@ router.put("/offers/:id", auth, offerValidationCh1, updateOffer);
 
 /**
  * @swagger
- * /offers/data/{checkpoint-7}:
+ * /offers/data/{id}/{checkpoint-7}:
  *   put:
  *     summary: Update offer - Checkpoint 7
  *     tags: [Offer]
  *     parameters:
  *       - in: path
- *         name: checkpoint
+ *       - name: id
  *         required: true
  *         schema:
  *           type: string
- *         description: The offer checkpoint
+ *         description: The offer data id
+ *       - name: checkpoint
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The checkpoint number
  *     requestBody:
  *       required: true
  *       content:
@@ -399,6 +476,6 @@ router.put("/offers/:id", auth, offerValidationCh1, updateOffer);
 
 router.post("/offers/data/:checkpoint", auth, validateOffer, updateOffer);
 
-router.put("/offers/data/:checkpoint", auth, validateOffer, updateOffer);
+router.put("/offers/data/:id/:checkpoint", auth, validateOffer, updateOffer);
 
 export default router;

@@ -9,6 +9,8 @@ import { responseObj } from "../../../helper/response";
 import { HTTP_STATUS_CODES } from "../../../config/statusCode";
 import { ERROR_CODES } from "../../../config/errorCode";
 import OfferData, { IOfferData } from "../../../models/offer.data.model";
+import { STATUS } from "../../../config/enums";
+import { add } from "winston";
 
 // Function to add the offer
 export const addOffer = async (req: Request, res: Response) => {
@@ -95,9 +97,9 @@ export const addOfferDataPoints = async (req: Request, res: Response) => {
     session.startTransaction();
 
     try {
-      const { _id } = req.body;
+      const { offerId } = req.body;
 
-      const offer = await Offer.findById(_id);
+      const offer = await Offer.findById(offerId);
 
       if (!offer) {
         return responseObj({
@@ -113,13 +115,13 @@ export const addOfferDataPoints = async (req: Request, res: Response) => {
 
       delete req.body._id;
       const offerData: IOfferData = new OfferData({
-        offerId: _id,
+        // offerId: _id,
         ...req.body,
       });
       await offerData.save();
 
       await Offer.findByIdAndUpdate(
-        _id,
+        offerId,
         { $push: { offerDataPoints: { offerData, version: { $inc: 1 } } } },
         { session }
       );
@@ -181,6 +183,13 @@ export const updateOfferData = async (req: Request, res: Response) => {
       });
     }
     const { id } = req.params;
+    const { status } = req.body;
+
+    if (status === STATUS.LIVE) {
+      addOfferDataPoints(req, res);
+      return;
+    }
+
     const offer = await OfferData.findByIdAndUpdate(id, req.body, {
       new: false,
     });
