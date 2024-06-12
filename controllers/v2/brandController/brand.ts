@@ -106,11 +106,36 @@ export const getBrands = async (req: IRequest, res: Response) => {
       ...(!user.admin && { user: user._id }),
     };
 
-    const brands = await Brand.find(filter)
-      .sort("createdAt")
-      .skip(skip)
-      .limit(Number(perPage));
-    const total = await Brand.countDocuments(filter);
+    // const brands = await Brand.find(filter)
+    //   .sort("createdAt")
+    //   .skip(skip)
+    //   .limit(Number(perPage));
+    // const total = await Brand.countDocuments(filter);
+
+    // brands with there outlets
+    const brands = await Brand.aggregate([
+      {
+        $match: filter,
+      },
+      {
+        $lookup: {
+          from: "outlets",
+          localField: "_id",
+          foreignField: "brand",
+          as: "outlets",
+        },
+      },
+      {
+        $project: {
+          brandName: 1,
+          brandDescription: 1,
+          categoryId: 1,
+          brandLogo: 1,
+          checkpoint: 1,
+          outlets: 1,
+        },
+      },
+    ]);
 
     return responseObj({
       resObj: res,
@@ -118,7 +143,7 @@ export const getBrands = async (req: IRequest, res: Response) => {
       statusCode: HTTP_STATUS_CODES.SUCCESS,
       msg: "All brands",
       error: null,
-      data: { brands, total },
+      data: { brands, total: brands.length },
       code: ERROR_CODES.SUCCESS,
     });
   } catch (error: any) {

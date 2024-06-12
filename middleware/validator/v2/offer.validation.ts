@@ -13,6 +13,7 @@ export const offerValidationCh1 = [
   body("offerDescription")
     .isString()
     .withMessage("offer description is required"),
+  body("boost").isArray().withMessage("boost is required"),
   body("offerStatus").isNumeric().withMessage("offer status is required"),
 ];
 
@@ -75,7 +76,7 @@ export const offerValidationCh5 = [
   body("totalOffersAvailable")
     .isNumeric()
     .withMessage("total offers available is required"),
-  body("offerResellable")
+  body("offerReSellable")
     .isBoolean()
     .withMessage("offer re sellable is required"),
   body("offerLimitPerCustomer")

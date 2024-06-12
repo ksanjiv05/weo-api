@@ -44,6 +44,8 @@ const router = express.Router();
  *                 type: string
  *               offerDescription:
  *                 type: string
+ *               boost:
+ *                 type: array
  *               offerStatus:
  *                 type: number
  *     responses:
@@ -90,6 +92,8 @@ router.post("/offers", auth, offerValidationCh1, addOffer);
  *                   type: string
  *                 offerDescription:
  *                   type: string
+ *                 boost:
+ *                   type: array
  *                 offerStatus:
  *                   type: number
  *       404:
@@ -307,7 +311,7 @@ router.put("/offers/:id", auth, offerValidationCh1, updateOffer);
  *               totalOffersAvailable:
  *                 type: number
  *                 description: The total offers available
- *               offerResellable:
+ *               offerReSellable:
  *                 type: boolean
  *                 description: If the offer is resellable
  *               offerLimitPerCustomer:

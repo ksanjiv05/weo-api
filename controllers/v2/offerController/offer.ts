@@ -167,6 +167,19 @@ export const addOfferDataPoints = async (req: Request, res: Response) => {
 
 export const updateOfferData = async (req: Request, res: Response) => {
   try {
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+      return responseObj({
+        resObj: res,
+        type: "error",
+        statusCode: HTTP_STATUS_CODES.BAD_REQUEST,
+        msg: "fields are required",
+        error: errors.array({}),
+        data: null,
+        code: ERROR_CODES.FIELD_VALIDATION_REQUIRED_ERR,
+      });
+    }
     const { id } = req.params;
     const offer = await OfferData.findByIdAndUpdate(id, req.body, {
       new: false,
@@ -210,6 +223,19 @@ export const updateOfferData = async (req: Request, res: Response) => {
 // Function to update the offer
 export const updateOffer = async (req: Request, res: Response) => {
   try {
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+      return responseObj({
+        resObj: res,
+        type: "error",
+        statusCode: HTTP_STATUS_CODES.BAD_REQUEST,
+        msg: "fields are required",
+        error: errors.array({}),
+        data: null,
+        code: ERROR_CODES.FIELD_VALIDATION_REQUIRED_ERR,
+      });
+    }
     const { id } = req.params;
     const offer = await Offer.findByIdAndUpdate(id, req.body, { new: false });
 
