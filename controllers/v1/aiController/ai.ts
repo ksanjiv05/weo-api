@@ -7,7 +7,22 @@ import { getQueryResponse } from "../../../helper/chatGptPoweredChatBot";
 
 export const getAiGeneratedImg = async (req: Request, res: Response) => {
   try {
-    const { promptString = "", size = "1024x1024", n = 1 } = req.body;
+    const {
+      title = "",
+      description,
+      titleInLogo = false,
+      size = "1024x1024",
+      n = 1,
+    } = req.body;
+
+    const promptString = `
+    Create a logo for a brand called '${title}' that specializes in '${description}'. The design should feature a sleek, modern aesthetic with a glass effect. The logo should showcase in glass orb, similar to a terrarium. The glass should have a realistic, reflective surface. The overall design should be clean, elegant, and visually striking, with an emphasis on transparency and luminosity. Ensure the brand name is prominently displayed within or around the glass orb, integrating seamlessly with the design.
+    and also consider description. 
+    'logo should be single and center aligned.'
+    ${
+      titleInLogo ? `The brand name should be included in the logo design.` : ""
+    }
+    `;
 
     if (promptString == "")
       return responseObj({
