@@ -1071,3 +1071,17 @@ info: POST /api/v1/brands 200 295ms
 {"level":"info","message":"GET /api/v2/categories/6605743859d97f0c2b839d3f 200 32ms","timestamp":"2024-06-17T04:41:40.568Z"}
 {"level":"info","message":"GET /api/v2/categories/6605743859d97f0c2b839d3f 200 18ms","timestamp":"2024-06-17T04:44:26.647Z"}
 {"level":"info","message":"GET /api/v2/categories/6605743859d97f0c2b839d3f 200 344ms","timestamp":"2024-06-17T04:45:36.829Z"}
+{"level":"info","message":"GET /api/v2/categories/6605743859d97f0c2b839d3f 200 435ms","timestamp":"2024-06-17T05:02:46.102Z"}
+{"level":"info","message":"GET /api/v2/categories/6605743859d97f0c2b839d3f 200 281ms","timestamp":"2024-06-17T05:03:34.597Z"}
+{"level":"info","message":"GET / 200 1ms","timestamp":"2024-06-17T05:04:02.155Z"}
+{"level":"info","message":"GET /api-docs/v2/ 200 27ms","timestamp":"2024-06-17T13:02:22.179Z"}
+{"level":"info","message":"GET /api-docs/v2/swagger-ui-init.js 200 6ms","timestamp":"2024-06-17T13:02:22.252Z"}
+{"level":"info","message":"GET /api-docs/v2/swagger-ui.css 200 76ms","timestamp":"2024-06-17T13:02:22.318Z"}
+{"level":"info","message":"GET /api-docs/v2/swagger-ui-standalone-preset.js 200 80ms","timestamp":"2024-06-17T13:02:22.325Z"}
+{"level":"info","message":"GET /api-docs/v2/swagger-ui-bundle.js 200 128ms","timestamp":"2024-06-17T13:02:22.372Z"}
+{"level":"info","message":"GET /api/v2/brands 200 3985ms","timestamp":"2024-06-17T13:05:03.608Z"}
+{"level":"info","message":"GET /api/v2/brands 200 503ms","timestamp":"2024-06-17T13:05:07.800Z"}
+{"level":"info","message":"GET /api/v2/categories/6605743859d97f0c2b839d3f 200 262ms","timestamp":"2024-06-17T13:05:14.423Z"}
+{"level":"error","message":"POST /api/v2/offers/ 500 262ms","timestamp":"2024-06-17T13:05:51.909Z"}
+{"level":"info","message":"POST /api/v2/offers/ 201 998ms","timestamp":"2024-06-17T13:08:43.381Z"}
+{"level":"info","message":"POST /api/v2/offers/ 201 1105ms","timestamp":"2024-06-17T13:13:38.356Z"}

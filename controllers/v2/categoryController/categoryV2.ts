@@ -255,11 +255,35 @@ export const getSubCategories = async (req: Request, res: Response) => {
       //   }),
     };
 
-    const categories = await Category.find(filter);
-    // categories.map((category) => {
-    //   category.categoryPic =
-    //     STATIC_FILE_PATH + "category/" + category.categoryPic;
-    // });
+    // const categories = await Category.find(filter);
+    const categories = await Category.aggregate([
+      {
+        $match: { parentCategoryId: id },
+      },
+      {
+        $addFields: {
+          parentCategoryObjId: { $toObjectId: "$parentCategoryId" },
+        },
+      },
+      {
+        $lookup: {
+          from: "quantities",
+          localField: "quantities",
+          foreignField: "_id",
+          as: "quantitiesInfo",
+        },
+      },
+      {
+        $project: {
+          parentCategoryObjId: 0,
+          catInfo: 0, // Optionally remove the catInfo array from the output
+          quantities: 0, // Optionally remove the quantitiesInfo array from the output
+        },
+      },
+      // { $skip: Number(skip) }, // Skip documents for pagination
+      // { $limit: Number(perPage) }, // Limit the number of documents for pagination
+    ]);
+
     return responseObj({
       statusCode: HTTP_STATUS_CODES.SUCCESS,
       type: "success",
