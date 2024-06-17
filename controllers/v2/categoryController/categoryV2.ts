@@ -256,10 +256,10 @@ export const getSubCategories = async (req: Request, res: Response) => {
     };
 
     const categories = await Category.find(filter);
-    categories.map((category) => {
-      category.categoryPic =
-        STATIC_FILE_PATH + "category/" + category.categoryPic;
-    });
+    // categories.map((category) => {
+    //   category.categoryPic =
+    //     STATIC_FILE_PATH + "category/" + category.categoryPic;
+    // });
     return responseObj({
       statusCode: HTTP_STATUS_CODES.SUCCESS,
       type: "success",

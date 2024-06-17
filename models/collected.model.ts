@@ -1,4 +1,4 @@
-//Objective : Define the listed model and interface
+//Objective : Define the Collected model and interface
 //Author : Sanjiv Kumar Pandit
 
 import mongoose, { Schema, Document } from "mongoose";
@@ -9,7 +9,7 @@ import { conn_v2 } from "../db";
 // 1 offer sold C
 
 //Order
-export interface IListed extends Document {
+export interface ICollected extends Document {
   offer: any; // offer reference
   brand: any; // brand reference
   user: any;
@@ -38,7 +38,7 @@ export interface IListed extends Document {
   ]; // order reference
 }
 
-const ListedSchema: Schema = new Schema({
+const CollectedSchema: Schema = new Schema({
   offer: { type: Schema.Types.ObjectId, ref: "Offer" },
   brand: { type: Schema.Types.ObjectId, ref: "Brand" },
   user: { type: Schema.Types.ObjectId, ref: "User" },
@@ -67,6 +67,6 @@ const ListedSchema: Schema = new Schema({
   ],
 });
 
-ListedSchema.index({ offer: 1, brand: 1, user: 1 }, { unique: true });
+CollectedSchema.index({ offer: 1, brand: 1, user: 1 }, { unique: true });
 
-export default conn_v2.model<IListed>("Listed", ListedSchema);
+export default conn_v2.model<ICollected>("Collected", CollectedSchema);

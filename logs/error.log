@@ -212,3 +212,4 @@ error: POST /api/v1/brands 400 7ms
 {"level":"error","message":"POST /api/v2/categories 401 2ms","timestamp":"2024-06-12T17:24:55.211Z"}
 {"level":"error","message":"POST /api/v2/categories 401 1ms","timestamp":"2024-06-12T17:24:55.370Z"}
 {"level":"error","message":"POST /api/v2/categories 401 1ms","timestamp":"2024-06-12T17:25:10.519Z"}
+{"level":"error","message":"GET /favicon.ico 404 1ms","timestamp":"2024-06-17T04:30:54.239Z"}
