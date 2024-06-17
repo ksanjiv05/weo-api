@@ -11,9 +11,10 @@ import { ERROR_CODES } from "../../../config/errorCode";
 import OfferData, { IOfferData } from "../../../models/offer.data.model";
 import { STATUS } from "../../../config/enums";
 import { add } from "winston";
+import { IRequest } from "../../../interfaces/IRequest";
 
 // Function to add the offer
-export const addOffer = async (req: Request, res: Response) => {
+export const addOffer = async (req: IRequest, res: Response) => {
   try {
     const errors = validationResult(req);
 
@@ -29,7 +30,7 @@ export const addOffer = async (req: Request, res: Response) => {
       });
     }
 
-    const { user } = req.body;
+    const { user } = req;
 
     const offer: IOffer = {
       user: user._id,
@@ -58,7 +59,8 @@ export const addOffer = async (req: Request, res: Response) => {
       statusCode: HTTP_STATUS_CODES.CREATED,
       msg: "Offer added successfully",
       error: null,
-      data: null,
+      data: newOffer,
+      code: ERROR_CODES.SUCCESS,
     });
   } catch (error: any) {
     logging.error("Add Offer", error.message, error);
@@ -369,9 +371,9 @@ export const getOfferById = async (req: Request, res: Response) => {
 };
 
 // Function to get offer by user id
-export const getOfferByUserId = async (req: Request, res: Response) => {
+export const getOfferByUserId = async (req: IRequest, res: Response) => {
   try {
-    const { user } = req.body;
+    const { user } = req;
     const offer = await Offer.find({ user: user._id });
 
     if (!offer) {
