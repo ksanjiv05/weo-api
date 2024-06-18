@@ -6,10 +6,10 @@ export enum STATUS {
 }
 
 export enum OFFER_STATUS {
-  PENDING = 0,
-  LIVE = 1,
-  PUSHED = 2,
-  DELETED = 3,
-  SOLD = 4,
-  EXPIRED = 5,
+  PENDING = 1,
+  LIVE = 2,
+  PUSHED = 3,
+  DELETED = 4,
+  SOLD = 5,
+  EXPIRED = 6,
 }

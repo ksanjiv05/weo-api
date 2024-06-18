@@ -8,6 +8,7 @@ import {
   updateOffer,
   deleteOffer,
   addOfferDataPoints,
+  updateOfferData,
 } from "../../controllers/v2/offerController/offer";
 import { auth } from "../../middleware/auth";
 import {
@@ -15,6 +16,9 @@ import {
   offerValidationCh2,
   offerValidationCh3,
   offerValidationCh4,
+  offerValidationCh5,
+  offerValidationCh6,
+  offerValidationCh7,
   validateOffer,
 } from "../../middleware/validator/v2/offer.validation";
 
@@ -278,6 +282,12 @@ router.put("/offers/:id", auth, offerValidationCh1, updateOffer);
  *               offerUnitType:
  *                 type: string
  *                 description: The offer unit type
+ *               serviceStartTime:
+ *                 type: string
+ *                 description: The offer service start time should be 24 formate
+ *               serviceEndTime:
+ *                 type: string
+ *                 description: The offer service end time should be 24 formate
  *               minimumOfferUnitItem:
  *                 type: number
  *                 description: The minimum offer unit item
@@ -482,6 +492,13 @@ router.post(
   addOfferDataPoints
 );
 
-router.put("/offers/data/:id/:checkpoint", auth, validateOffer, updateOffer);
+router.put("/offers/data/:id/2", auth, offerValidationCh2, updateOfferData);
+router.put("/offers/data/:id/3", auth, offerValidationCh3, updateOfferData);
+router.put("/offers/data/:id/4", auth, offerValidationCh4, updateOfferData);
+router.put("/offers/data/:id/5", auth, offerValidationCh5, updateOfferData);
+router.put("/offers/data/:id/6", auth, offerValidationCh6, updateOfferData);
+router.put("/offers/data/:id/7", auth, offerValidationCh7, updateOfferData);
+
+// router.put("/offers/data/:id/7", auth, validateOffer, updateOffer);
 
 export default router;

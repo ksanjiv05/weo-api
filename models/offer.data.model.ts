@@ -18,9 +18,11 @@ export interface IOfferData extends Document {
   offerUnitType: string; // quanity type of item i.e Day, Weeks, month, year, classes. it will be based on subcategory selection
   minimumOfferUnitItem: number; // minimum item in offer while collecting
 
-  serviceTime: string; // time of service
+  // serviceTime: string; // time of service
   serviceStartDate: Date;
   serviceEndDate: Date;
+  serviceStartTime:number,
+  serviceEndTime:number,
 
   offerLiveTillSoldOut: boolean; // flag to show offer live till all items are sold
   offerAvailabilityStartDate: Date; // offer avaialable start days
@@ -70,7 +72,10 @@ const offerDataSchema: Schema = new Schema(
     minimumOfferUnitItem: {
       type: Number,
     },
-    serviceTime: {
+    serviceStartTime: {
+      type: String,
+    },
+    serviceEndTime: {
       type: String,
     },
     serviceStartDate: {

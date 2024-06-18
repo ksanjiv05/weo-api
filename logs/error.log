@@ -221,3 +221,14 @@ error: POST /api/v1/brands 400 7ms
 {"level":"error","message":"POST /api/v2/offers/ 500 924ms","timestamp":"2024-06-18T04:09:49.313Z"}
 {"level":"error","message":"POST /api/v2/offers/data/2 500 1271ms","timestamp":"2024-06-18T04:10:35.689Z"}
 {"level":"error","message":"POST /api/v2/offers/data/2 500 1862ms","timestamp":"2024-06-18T04:12:40.210Z"}
+{"level":"error","message":"PUT /api/v2/offers/data/3 404 1ms","timestamp":"2024-06-18T10:21:53.222Z"}
+{"level":"error","message":"PUT /api/v2/offers/data/3 404 25ms","timestamp":"2024-06-18T10:32:27.661Z"}
+{"level":"error","message":"PUT /api/v2/offers/data/66715f9c5f0c70aa96bff3fa/3 400 955ms","timestamp":"2024-06-18T10:34:59.832Z"}
+{"level":"error","message":"PUT /api/v2/offers/data//667163329e77a0104d427002/3 404 16ms","timestamp":"2024-06-18T11:07:02.624Z"}
+{"level":"error","message":"PUT /api/v2/offers/data/667163329e77a0104d427002/3 400 1362ms","timestamp":"2024-06-18T11:08:31.152Z"}
+{"level":"error","message":"PUT /api/v2/offers/data/667163329e77a0104d427002/3 401 496ms","timestamp":"2024-06-18T12:10:13.931Z"}
+{"level":"error","message":"PUT /api/v2/offers/data/667163329e77a0104d427002/3 400 9ms","timestamp":"2024-06-18T12:10:41.128Z"}
+{"level":"error","message":"PUT /api/v2/offers/data/667163329e77a0104d427002/3 400 4ms","timestamp":"2024-06-18T12:11:58.235Z"}
+{"level":"error","message":"PUT /api/v2/offers/data/667163329e77a0104d427002/3 404 4933ms","timestamp":"2024-06-18T12:14:17.101Z"}
+{"level":"error","message":"PUT /api/v2/offers/data/667163329e77a0104d427002/3 404 255ms","timestamp":"2024-06-18T12:14:27.542Z"}
+{"level":"error","message":"PUT /api/v2/offers/data/667163329e77a0104d427002/3 404 427ms","timestamp":"2024-06-18T12:16:54.925Z"}

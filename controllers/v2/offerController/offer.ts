@@ -206,21 +206,30 @@ export const updateOfferData = async (req: Request, res: Response) => {
       return;
     }
 
-    const offer = await OfferData.findByIdAndUpdate(id, req.body, {
-      new: false,
-    });
-
-    if (!offer) {
-      return responseObj({
-        resObj: res,
-        type: "error",
-        statusCode: HTTP_STATUS_CODES.NOT_FOUND,
-        msg: "Offer not found",
-        error: null,
-        data: null,
-        code: ERROR_CODES.NOT_FOUND,
-      });
-    }
+    // const offer = await OfferData.findByIdAndUpdate(id, req.body, {
+    //   new: false,
+    // });
+    // console.log(req.body);
+    const offer = await OfferData.updateOne(
+      { _id: id },
+      {
+        $set: {
+          ...req.body,
+        },
+      }
+    );
+    console.log(offer);
+    // if (!offer) {
+    //   return responseObj({
+    //     resObj: res,
+    //     type: "error",
+    //     statusCode: HTTP_STATUS_CODES.NOT_FOUND,
+    //     msg: "Offer not found",
+    //     error: null,
+    //     data: null,
+    //     code: ERROR_CODES.NOT_FOUND,
+    //   });
+    // }
 
     return responseObj({
       resObj: res,
