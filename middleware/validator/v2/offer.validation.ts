@@ -18,7 +18,7 @@ export const offerValidationCh1 = [
 ];
 
 export const offerValidationCh2 = [
-  ...offerValidationCh1,
+  // ...offerValidationCh1,
   body("offerPriceAmount")
     .isNumeric()
     .withMessage("offer price amount is required"),

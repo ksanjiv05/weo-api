@@ -7,6 +7,7 @@ import {
   getOfferById,
   updateOffer,
   deleteOffer,
+  addOfferDataPoints,
 } from "../../controllers/v2/offerController/offer";
 import { auth } from "../../middleware/auth";
 import {
@@ -474,7 +475,12 @@ router.put("/offers/:id", auth, offerValidationCh1, updateOffer);
  *         description: Internal server error
  */
 
-router.post("/offers/data/:checkpoint", auth, validateOffer, updateOffer);
+router.post(
+  "/offers/data/:checkpoint",
+  auth,
+  offerValidationCh2,
+  addOfferDataPoints
+);
 
 router.put("/offers/data/:id/:checkpoint", auth, validateOffer, updateOffer);
 

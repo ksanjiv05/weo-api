@@ -93,7 +93,7 @@ export const addOfferDataPoints = async (req: Request, res: Response) => {
         code: ERROR_CODES.FIELD_VALIDATION_REQUIRED_ERR,
       });
     }
-
+    console.log("error", errors);
     // create session for transaction
     const session = await Offer.startSession();
     session.startTransaction();
@@ -102,7 +102,6 @@ export const addOfferDataPoints = async (req: Request, res: Response) => {
       const { offerId } = req.body;
 
       const offer = await Offer.findById(offerId);
-
       if (!offer) {
         return responseObj({
           resObj: res,
@@ -120,14 +119,28 @@ export const addOfferDataPoints = async (req: Request, res: Response) => {
         // offerId: _id,
         ...req.body,
       });
-      await offerData.save();
+      await offerData.save({
+        session,
+      });
 
-      await Offer.findByIdAndUpdate(
-        offerId,
-        { $push: { offerDataPoints: { offerData, version: { $inc: 1 } } } },
-        { session }
-      );
+      // await Offer.findByIdAndUpdate(
+      //   offerId,
+      //   {
+      //     $push: {
+      //       offerDataPoints: { offerData: offerData._id, version: 1 },
+      //     },
+      //   },
+      //   { session }
+      // );
 
+      offer.offerDataPoints.push({
+        offerData: offerData._id,
+        version: offer.offerDataPoints.length + 1,
+      });
+
+      await offer.save({ session });
+      // commit transaction
+      console.log("offerData", offerData);
       await session.commitTransaction();
       session.endSession();
 
@@ -141,6 +154,7 @@ export const addOfferDataPoints = async (req: Request, res: Response) => {
         code: ERROR_CODES.SUCCESS,
       });
     } catch (error: any) {
+      console.log("error", error);
       await session.abortTransaction();
       session.endSession();
 
