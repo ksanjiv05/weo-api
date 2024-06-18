@@ -12,7 +12,7 @@ export interface IOfferData extends Document {
 
   paymentType: string;
   installmentDuration: number; // number of installment
-  installmentPeriod: string; // installment period types i.e days, weekly, monthly ……
+  installmentPeriod?: string; // installment period types i.e days, weekly, monthly ……
 
   totalOfferUnitItem: number; // number of items in offer
   offerUnitType: string; // quanity type of item i.e Day, Weeks, month, year, classes. it will be based on subcategory selection
@@ -41,116 +41,91 @@ const offerDataSchema: Schema = new Schema(
     offerId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Offer",
-      required: true,
     },
     offerPriceAmount: {
       type: Number,
-      required: true,
     },
     offerPriceMinAmount: {
       type: Number,
-      required: true,
     },
     offerPriceMinPercentage: {
       type: Number,
-      required: true,
     },
     paymentType: {
       type: String,
-      required: true,
     },
     installmentDuration: {
       type: Number,
-      required: true,
     },
     installmentPeriod: {
       type: String,
-      required: true,
+      default: "monthly",
     },
     totalOfferUnitItem: {
       type: Number,
-      required: true,
     },
     offerUnitType: {
       type: String,
-      required: true,
     },
     minimumOfferUnitItem: {
       type: Number,
-      required: true,
     },
     serviceTime: {
       type: String,
-      required: true,
     },
     serviceStartDate: {
       type: Date,
-      required: true,
     },
     serviceEndDate: {
       type: Date,
-      required: true,
     },
     offerLiveTillSoldOut: {
       type: Boolean,
-      required: true,
     },
     offerAvailabilityStartDate: {
       type: Date,
-      required: true,
     },
     offerAvailabilityEndDate: {
       type: Date,
-      required: true,
     },
     offerAvailableAllTime: {
       type: Boolean,
-      required: true,
     },
     offerAvailableDays: [
       {
         days: {
           type: String,
-          required: true,
         },
         time: {
           type: String,
-          required: true,
         },
       },
     ],
     totalOffersAvailable: {
       type: Number, //total offer to sell
-      required: true,
     },
     offerReSellable: {
       type: Boolean,
-      required: true,
     },
     offerLimitPerCustomer: {
       type: Number,
-      required: true,
     },
     oRewardDeductPercentagePerSale: {
       type: Number,
-      required: true,
     },
     oRewardDeductPercentageLatePayment: {
       type: Number,
-      required: true,
     },
     offerMedia: [
       {
         type: String,
-        required: true,
       },
     ],
     status: {
       type: Number,
-      enum:[0,1,2],
+      enum: [0, 1, 2],
       default: 0,
-    
-    }
+    },
   },
   {
     timestamps: true,

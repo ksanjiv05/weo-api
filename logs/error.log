@@ -214,3 +214,10 @@ error: POST /api/v1/brands 400 7ms
 {"level":"error","message":"POST /api/v2/categories 401 1ms","timestamp":"2024-06-12T17:25:10.519Z"}
 {"level":"error","message":"GET /favicon.ico 404 1ms","timestamp":"2024-06-17T04:30:54.239Z"}
 {"level":"error","message":"POST /api/v2/offers/ 500 262ms","timestamp":"2024-06-17T13:05:51.909Z"}
+{"level":"error","message":"POST /api/v2/offers/data/2 400 1220ms","timestamp":"2024-06-17T18:05:56.436Z"}
+{"level":"error","message":"POST /api/v2/offers/data/2 500 1113ms","timestamp":"2024-06-17T18:06:37.082Z"}
+{"level":"error","message":"POST /api/v2/offers/data/2 500 1512ms","timestamp":"2024-06-17T18:08:06.027Z"}
+{"level":"error","message":"POST /api/v2/offers/data/2 401 802ms","timestamp":"2024-06-18T04:05:30.140Z"}
+{"level":"error","message":"POST /api/v2/offers/ 500 924ms","timestamp":"2024-06-18T04:09:49.313Z"}
+{"level":"error","message":"POST /api/v2/offers/data/2 500 1271ms","timestamp":"2024-06-18T04:10:35.689Z"}
+{"level":"error","message":"POST /api/v2/offers/data/2 500 1862ms","timestamp":"2024-06-18T04:12:40.210Z"}
