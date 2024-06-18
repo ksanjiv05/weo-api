@@ -15,6 +15,8 @@ import mongoose from "mongoose";
 
 // define function for create Collected
 //TODO: created Collected logic not implemented yet
+
+//
 export const createCollected = async (req: Request, res: Response) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {

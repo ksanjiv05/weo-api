@@ -38,22 +38,27 @@ export const offerValidationCh2 = [
 ];
 
 export const offerValidationCh3 = [
-  ...offerValidationCh2,
+  // ...offerValidationCh2,
   body("totalOfferUnitItem")
     .isNumeric()
     .withMessage("total offer unit item is required"),
+  body("serviceStartTime").isString().withMessage("provide service start time"),
+  body("serviceEndTime").isString().withMessage("provide service end time"),
+
   body("offerUnitType").isString().withMessage("offer unit type is required"),
   body("minimumOfferUnitItem")
     .isNumeric()
     .withMessage("minimum offer unit item is required"),
   body("serviceStartDate")
-    .isString()
+    .isNumeric()
     .withMessage("service start date is required"),
-  body("serviceEndDate").isString().withMessage("service end date is required"),
+  body("serviceEndDate")
+    .isNumeric()
+    .withMessage("service end date is required"),
 ];
 
 export const offerValidationCh4 = [
-  ...offerValidationCh3,
+  // ...offerValidationCh3,
   body("offerLiveTillSoldOut")
     .isBoolean()
     .withMessage("offer live till sold out is required"),
@@ -72,7 +77,7 @@ export const offerValidationCh4 = [
 ];
 
 export const offerValidationCh5 = [
-  ...offerValidationCh4,
+  // ...offerValidationCh4,
   body("totalOffersAvailable")
     .isNumeric()
     .withMessage("total offers available is required"),
@@ -85,7 +90,7 @@ export const offerValidationCh5 = [
 ];
 
 export const offerValidationCh6 = [
-  ...offerValidationCh5,
+  // ...offerValidationCh5,
   body("ORewardDeductPercentagePerSale")
     .isNumeric()
     .withMessage("O reward deduct percentage per sale is required"),
@@ -95,7 +100,7 @@ export const offerValidationCh6 = [
 ];
 
 export const offerValidationCh7 = [
-  ...offerValidationCh6,
+  // ...offerValidationCh6,
   body("OfferMedia")
     .isArray({ min: 1, max: 5 })
     .withMessage("Offer media is required"),
@@ -104,8 +109,8 @@ export const offerValidationCh7 = [
 // dynamic validation for each checkpoint
 const offerValidation = (checkpoint: number) => {
   switch (checkpoint) {
-    case 1:
-      return offerValidationCh1;
+    // case 1:
+    //   return offerValidationCh1;
     case 2:
       return offerValidationCh2;
     case 3:

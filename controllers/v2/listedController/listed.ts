@@ -12,10 +12,12 @@ import Offer from "../../../models/offer.model";
 import Outlet from "../../../models/outlet.model";
 import Brand from "../../../models/brand.model";
 import mongoose from "mongoose";
+import { IRequest } from "../../../interfaces/IRequest";
+import { OFFER_STATUS } from "../../../config/enums";
 
 // define function for create listed
 //TODO: created listed logic not implemented yet
-export const createListed = async (req: Request, res: Response) => {
+export const createListed = async (req: IRequest, res: Response) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return responseObj({
@@ -44,9 +46,17 @@ export const createListed = async (req: Request, res: Response) => {
   }
 
   try {
-    const newOfferListed = new Listed(req.body);
+    const newOfferListed = new Listed({
+      user: req.user._id,
+      offer: offer._id,
+      brand: offer.brand,
+      ownership: [],
+    });
     newOfferListed.offer = id;
     await newOfferListed.save();
+    offer.offerStatus = OFFER_STATUS.LIVE;
+    await offer.save();
+
     return responseObj({
       resObj: res,
       type: "success",
