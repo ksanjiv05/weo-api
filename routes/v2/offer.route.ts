@@ -9,6 +9,7 @@ import {
   deleteOffer,
   addOfferDataPoints,
   updateOfferData,
+  toListOffer,
 } from "../../controllers/v2/offerController/offer";
 import { auth } from "../../middleware/auth";
 import {
@@ -19,6 +20,7 @@ import {
   offerValidationCh5,
   offerValidationCh6,
   offerValidationCh7,
+  offerValidationCh8,
   validateOffer,
 } from "../../middleware/validator/v2/offer.validation";
 
@@ -355,7 +357,10 @@ router.put("/offers/:id", auth, offerValidationCh1, updateOffer);
  *                     days:
  *                       type: number
  *                       description: The day of the week
- *                     time:
+ *                     startTime:
+ *                       type: string
+ *                       description: time of the day
+ *                     endTime:
  *                       type: string
  *                       description: time of the day
  *     responses:
@@ -491,6 +496,43 @@ router.put("/offers/:id", auth, offerValidationCh1, updateOffer);
  *         description: Internal server error
  */
 
+/**
+ * @swagger
+ * /offers/data/{id}/{checkpoint-8}:
+ *   put:
+ *     summary: Update offer - Checkpoint 8
+ *     tags: [Offer]
+ *     parameters:
+ *       - in: path
+ *       - name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The offer data id
+ *       - name: checkpoint
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The checkpoint number
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               offerThumbnail:
+ *                 type: string
+ *                 description: The offer cover image
+ *     responses:
+ *       '200':
+ *         description: Offer updated successfully
+ *       '400':
+ *         description: Bad request
+ *       '500':
+ *         description: Internal server error
+ */
+
 router.post(
   "/offers/data/:checkpoint",
   auth,
@@ -504,6 +546,8 @@ router.put("/offers/data/:id/4", auth, offerValidationCh4, updateOfferData);
 router.put("/offers/data/:id/5", auth, offerValidationCh5, updateOfferData);
 router.put("/offers/data/:id/6", auth, offerValidationCh6, updateOfferData);
 router.put("/offers/data/:id/7", auth, offerValidationCh7, updateOfferData);
+router.put("/offers/data/:id/8", auth, offerValidationCh8, updateOfferData);
+router.put("/offers/listed/:id", auth, toListOffer);
 
 // router.put("/offers/data/:id/7", auth, validateOffer, updateOffer);
 

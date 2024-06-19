@@ -3,6 +3,7 @@
 
 import mongoose, { Schema, Document } from "mongoose";
 import { conn_v2 } from "../db";
+import { number } from "joi";
 
 export interface IOfferData extends Document {
   offerId: string;
@@ -35,7 +36,15 @@ export interface IOfferData extends Document {
   oRewardDeductPercentagePerSale: number; // percentage of O deduction from creator while collecting
   oRewardDeductPercentageLatePayment: number; // percentage of O deduction from collector as well as creator on lote payment
 
-  offerMedia: [string]; // images/video
+  offerMedia: [
+    {
+      type: string;
+      mediaUrl: string;
+      mediaType: string;
+    }
+  ]; // images/video
+  offerThumbnail: string;
+  checkpoint: number;
 }
 
 const offerDataSchema: Schema = new Schema(
@@ -101,7 +110,10 @@ const offerDataSchema: Schema = new Schema(
         days: {
           type: Number,
         },
-        time: {
+        startTime: {
+          type: String,
+        },
+        endTime: {
           type: String,
         },
       },
@@ -123,13 +135,20 @@ const offerDataSchema: Schema = new Schema(
     },
     offerMedia: [
       {
-        type: String,
+        index: Number,
+        mediaUrl: String,
+        mediaType: String,
       },
     ],
+    offerThumbnail: String,
     status: {
       type: Number,
       enum: [0, 1, 2],
       default: 0,
+    },
+    checkpoint: {
+      type: Number,
+      default: 2,
     },
   },
   {

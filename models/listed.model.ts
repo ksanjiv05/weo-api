@@ -21,6 +21,7 @@ export interface IListed extends Document {
           isCurrentOwner: boolean;
         }
       ]; // user reference
+      transaction: string;
       offer_access_codes: [
         {
           code: string; // access code combination of //offer id and sum number(0001 - 9999)
@@ -34,6 +35,7 @@ export interface IListed extends Document {
       installmentDueDate: string;
       offerActivationDate: string;
       offerExpiryDate: string;
+      quantity: number;
     }
   ]; // order reference
 }
@@ -63,6 +65,7 @@ const ListedSchema: Schema = new Schema({
       installmentDueDate: { type: String },
       offerActivationDate: { type: String },
       offerExpiryDate: { type: String },
+      quantity: String,
     },
   ],
 });

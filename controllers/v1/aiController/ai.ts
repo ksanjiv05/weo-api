@@ -5,7 +5,7 @@ import { HTTP_STATUS_CODES } from "../../../config/statusCode";
 import { responseObj } from "../../../helper/response";
 import { getQueryResponse } from "../../../helper/chatGptPoweredChatBot";
 
-export const getAiGeneratedImg = async (req: Request, res: Response) => {
+export const getAiGeneratedLogo = async (req: Request, res: Response) => {
   try {
     const {
       title = "",
@@ -23,6 +23,56 @@ export const getAiGeneratedImg = async (req: Request, res: Response) => {
       titleInLogo ? `The brand name should be included in the logo design.` : ""
     }
     `;
+
+    if (promptString == "")
+      return responseObj({
+        resObj: res,
+        type: "error",
+        statusCode: HTTP_STATUS_CODES.BAD_REQUEST,
+        msg: "Please provide promptString",
+        error: null,
+        data: null,
+      });
+
+    // const response = await openai.createImage({
+    //   prompt: promptString,
+    //   n,
+    //   size,
+    // });
+    // https://community.openai.com/t/429-rate-limit-exceeded-limit-0-1min-current-1-1min/565451
+
+    const response = await openai.images.generate({
+      model: "dall-e-3",
+      prompt: promptString,
+      n: 1,
+      size: "1024x1024",
+    });
+    // console.log("response", response);
+    const image_urls = response.data;
+    return responseObj({
+      resObj: res,
+      type: "success",
+      statusCode: HTTP_STATUS_CODES.SUCCESS,
+      msg: "here your ai genrated images",
+      error: null,
+      data: image_urls,
+    });
+  } catch (error: any) {
+    logging.error("AI Bot", "unable to genrate images", error);
+    return responseObj({
+      resObj: res,
+      type: "error",
+      statusCode: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR,
+      msg: "unable to genrate images",
+      error: error.message ? error.message : "internal server error",
+      data: null,
+    });
+  }
+};
+
+export const getAiGeneratedImg = async (req: Request, res: Response) => {
+  try {
+    const { promptString = "", size = "1024x1024", n = 1 } = req.body;
 
     if (promptString == "")
       return responseObj({
