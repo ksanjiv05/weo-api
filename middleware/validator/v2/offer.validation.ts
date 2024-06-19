@@ -106,6 +106,13 @@ export const offerValidationCh7 = [
     .withMessage("Offer media is required"),
 ];
 
+export const offerValidationCh8 = [
+  // ...offerValidationCh6,
+  body("offerThumbnail")
+    .isString()
+    .withMessage("Offer cover image is required"),
+];
+
 // dynamic validation for each checkpoint
 const offerValidation = (checkpoint: number) => {
   switch (checkpoint) {

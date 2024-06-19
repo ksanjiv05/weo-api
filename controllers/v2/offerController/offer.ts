@@ -4,12 +4,14 @@
 import { Request, Response } from "express";
 import { validationResult } from "express-validator";
 import Offer, { IOffer } from "../../../models/offer.model";
+import Listed, { IListed } from "../../../models/listed.model";
+
 import logging from "../../../config/logging";
 import { responseObj } from "../../../helper/response";
 import { HTTP_STATUS_CODES } from "../../../config/statusCode";
 import { ERROR_CODES } from "../../../config/errorCode";
 import OfferData, { IOfferData } from "../../../models/offer.data.model";
-import { STATUS } from "../../../config/enums";
+import { OFFER_STATUS, STATUS } from "../../../config/enums";
 import { add } from "winston";
 import { IRequest } from "../../../interfaces/IRequest";
 
@@ -215,6 +217,7 @@ export const updateOfferData = async (req: Request, res: Response) => {
       {
         $set: {
           ...req.body,
+          // checkpoint
         },
       }
     );
@@ -309,6 +312,73 @@ export const updateOffer = async (req: Request, res: Response) => {
     });
   }
 };
+
+
+//
+export const toListOffer = async (req: IRequest, res: Response) => {
+  // const errors = validationResult(req);
+  // if (!errors.isEmpty()) {
+  //   return responseObj({
+  //     resObj: res,
+  //     type: "error",
+  //     statusCode: HTTP_STATUS_CODES.BAD_REQUEST,
+  //     msg: "fields are required",
+  //     error: errors.array({}),
+  //     data: null,
+  //     code: ERROR_CODES.FIELD_VALIDATION_REQUIRED_ERR,
+  //   });
+  // }
+
+  const { id } = req.params;
+  const offer = await Offer.findById(id);
+  if (!offer) {
+    return responseObj({
+      resObj: res,
+      type: "error",
+      statusCode: HTTP_STATUS_CODES.NOT_FOUND,
+      msg: "Offer not found",
+      error: "Offer not found",
+      data: null,
+      code: ERROR_CODES.NOT_FOUND,
+    });
+  }
+
+  try {
+    const newOfferListed = new Listed({
+      user: req.user._id,
+      offer: offer._id,
+      brand: offer.brand,
+      ownership: [],
+    });
+    newOfferListed.offer = id;
+    await newOfferListed.save();
+    offer.offerStatus = OFFER_STATUS.LIVE;
+    await offer.save();
+
+    return responseObj({
+      resObj: res,
+      type: "success",
+      statusCode: HTTP_STATUS_CODES.CREATED,
+      msg: "Offer Listed",
+      error: null,
+      data: newOfferListed,
+      code: ERROR_CODES.SUCCESS,
+    });
+  } catch (error: any) {
+    logging.error("Offer Listed Offer", error.message, error);
+
+    return responseObj({
+      resObj: res,
+      type: "error",
+      statusCode: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR,
+      msg: "Internal server error",
+      error: error.message ? error.message : "internal server error",
+      data: null,
+      code: ERROR_CODES.SERVER_ERR,
+    });
+  }
+};
+
 
 // Function to get the offer
 export const getOffers = async (req: Request, res: Response) => {

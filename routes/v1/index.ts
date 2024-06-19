@@ -9,6 +9,7 @@ import { auth } from "../../middleware/auth";
 import {
   getAiGeneratedChatResponse,
   getAiGeneratedImg,
+  getAiGeneratedLogo,
 } from "../../controllers/v1/aiController/ai";
 
 import {
@@ -48,6 +49,7 @@ router.use(collectRoute);
 // router.post("/static", upload.single("file"), uploadStaticFile);
 // router.post("/static/bulk", upload.array("files"), uploadStaticFiles);
 
+router.post("/ai/logo", getAiGeneratedLogo);
 router.post("/ai/images", getAiGeneratedImg);
 router.post("/ai/weo/chat", getAiGeneratedChatResponse);
 
