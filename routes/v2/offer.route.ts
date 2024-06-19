@@ -350,8 +350,14 @@ router.put("/offers/:id", auth, offerValidationCh1, updateOffer);
  *               offerAvailableDays:
  *                 type: array
  *                 items:
- *                   type: string
- *                 description: The days the offer is available
+ *                   type: object
+ *                   properties:
+ *                     days:
+ *                       type: number
+ *                       description: The day of the week
+ *                     time:
+ *                       type: string
+ *                       description: time of the day
  *     responses:
  *       '200':
  *         description: Offer updated successfully
