@@ -21,8 +21,8 @@ export interface IOfferData extends Document {
   // serviceTime: string; // time of service
   serviceStartDate: Date;
   serviceEndDate: Date;
-  serviceStartTime:number,
-  serviceEndTime:number,
+  serviceStartTime: number;
+  serviceEndTime: number;
 
   offerLiveTillSoldOut: boolean; // flag to show offer live till all items are sold
   offerAvailabilityStartDate: Date; // offer avaialable start days
@@ -99,7 +99,7 @@ const offerDataSchema: Schema = new Schema(
     offerAvailableDays: [
       {
         days: {
-          type: String,
+          type: Number,
         },
         time: {
           type: String,
