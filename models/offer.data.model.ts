@@ -30,7 +30,7 @@ export interface IOfferData extends Document {
   offerAvailabilityEndDate: Date; // offer available end days
   offerAvailableAllTime: boolean; //   to check if its avaialbe 24/7, if its false then offerAvaibilitydays will be considered
   offerAvailableDays: [{ days: string; time: string }]; // array of week days name along with time
-  totalOffersAvailable: number; // total offer available ( circulation and activation )
+
   offerReSellable: boolean; // is offer available for re selling
   offerLimitPerCustomer: number; // limitation on user to buy offers
   oRewardDeductPercentagePerSale: number; // percentage of O deduction from creator while collecting
@@ -118,9 +118,6 @@ const offerDataSchema: Schema = new Schema(
         },
       },
     ],
-    totalOffersAvailable: {
-      type: Number, //total offer to sell
-    },
     offerReSellable: {
       type: Boolean,
     },
@@ -155,6 +152,25 @@ const offerDataSchema: Schema = new Schema(
     timestamps: true,
   }
 );
+
+offerDataSchema.pre("save", function (next) {
+  const offerData = this as IOfferData;
+  console.log("pre offerData", offerData);
+  if (!offerData.offerId) {
+  }
+  return next();
+  // OfferData.findOne({ offerId: offerData.offerId })
+  //   .then((offerData) => {
+});
+
+offerDataSchema.post("save", function (next) {
+  const offerData = this as IOfferData;
+  console.log("------------------------------");
+  console.log("post offerData", offerData);
+  // next();
+  // OfferData.findOne({ offerId: offerData.offerId })
+  //   .then((offerData) => {
+});
 
 const OfferData = conn_v2.model<IOfferData>("OfferData", offerDataSchema);
 

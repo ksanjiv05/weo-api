@@ -3,7 +3,11 @@
 
 import express from "express";
 import { auth } from "../../middleware/auth";
-import { createListed } from "../../controllers/v2/listedController/listed";
+import {
+  createListed,
+  getAllListedBrands,
+  getAllListedOffersByBrand,
+} from "../../controllers/v2/listedController/listed";
 
 const router = express.Router();
 
@@ -41,5 +45,57 @@ const router = express.Router();
  *         description: Service unavailable
  */
 router.post("/listed", auth, createListed);
+
+// //brandName: 1,
+//           brandDescription: 1,
+//           brandLogo: 1,
+//           categoryId: 1,
+//           status: 1,
+//           checkpoint: 1,
+//           outlets: 1,
+//           totalPushedOffers: 1,
+//           offers: 1,
+
+/**
+ * @swagger
+ * /v2/listed/user/brand:
+ *   get:
+ *     summary: Get all brands
+ *     tags: [Listed]
+ *     responses:
+ *       200:
+ *         description: Get all brands
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 brandName:
+ *                   type: string
+ *                 brandDescription:
+ *                   type: string
+ *                 brandLogo:
+ *                   type: string
+ *                 categoryId:
+ *                   type: string
+ *                 status:
+ *                   type: number
+ *                 checkpoint:
+ *                   type: number
+ *                 outlets:
+ *                   type: array
+ *                 totalPushedOffers:
+ *                   type: number
+ *                 offers:
+ *                   type: array
+ *
+ *       500:
+ *         description: Internal server error
+ *       503:
+ *         description: Service unavailable
+ */
+
+router.get("/listed/user/brand", auth, getAllListedBrands);
+router.get("/listed/user/brand/:id", getAllListedOffersByBrand);
 
 export default router;
