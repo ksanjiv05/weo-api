@@ -12,4 +12,5 @@ export enum OFFER_STATUS {
   DELETED = 4,
   SOLD = 5,
   EXPIRED = 6,
+  REJECTED = 7,
 }

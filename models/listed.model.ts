@@ -13,6 +13,7 @@ export interface IListed extends Document {
   offer: any; // offer reference
   brand: any; // brand reference
   user: any;
+  totalOffers: number;
   ownership: [
     {
       owner: [

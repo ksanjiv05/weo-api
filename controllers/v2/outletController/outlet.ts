@@ -11,6 +11,8 @@ import { responseObj } from "../../../helper/response";
 import { HTTP_STATUS_CODES } from "../../../config/statusCode";
 import { ERROR_CODES } from "../../../config/errorCode";
 import { IRequest } from "../../../interfaces/IRequest";
+import mongoose from "mongoose";
+import { STATUS } from "../../../config/enums";
 
 // Define the functions
 
@@ -30,40 +32,74 @@ export const addOutlet = async (req: IRequest, res: Response) => {
         code: ERROR_CODES.FIELD_VALIDATION_REQUIRED_ERR,
       });
     }
-    const outlets: IOutlet[] = req.body;
 
-    // await Outlet.bulkWrite(
-    //   outlets.map((outlet) => {
-    //     const newOutlet = new Outlet(outlet);
-    //     return {
-    //       insertOne: {
-    //         document: newOutlet,
-    //       },
-    //     };
-    //   })
-    // );
+    //transaction
+    const session = await Outlet.startSession();
+    session.startTransaction();
 
-    await Outlet.insertMany(outlets);
+    try {
+      const outlets: IOutlet[] = req.body;
 
-    // Brand.updateOne({
-    //   _id: outlets[0].brand,
-    // }, {
-    //   $push: {
-    //     outlets: {
-    //       $each: resdocs.map((doc) => doc._id),
-    //     },
-    //   },
-    // }).exec();
+      // await Outlet.bulkWrite(
+      //   outlets.map((outlet) => {
+      //     const newOutlet = new Outlet(outlet);
+      //     return {
+      //       insertOne: {
+      //         document: newOutlet,
+      //       },
+      //     };
+      //   })
+      // );
 
-    return responseObj({
-      resObj: res,
-      type: "success",
-      statusCode: HTTP_STATUS_CODES.CREATED,
-      msg: "Outlet added successfully",
-      error: null,
-      data: null,
-      code: ERROR_CODES.SUCCESS,
-    });
+      await Outlet.insertMany(outlets, { session });
+      const bid = outlets[0].brand;
+      await Brand.updateOne(
+        { _id: bid },
+        {
+          $set: {
+            status: STATUS.LIVE,
+          },
+        },
+        { session }
+      );
+
+      await session.commitTransaction();
+      session.endSession();
+
+      // Brand.updateOne({
+      //   _id: outlets[0].brand,
+      // }, {
+      //   $push: {
+      //     outlets: {
+      //       $each: resdocs.map((doc) => doc._id),
+      //     },
+      //   },
+      // }).exec();
+
+      return responseObj({
+        resObj: res,
+        type: "success",
+        statusCode: HTTP_STATUS_CODES.CREATED,
+        msg: "Outlet added successfully",
+        error: null,
+        data: null,
+        code: ERROR_CODES.SUCCESS,
+      });
+    } catch (error: any) {
+      logging.error("Outlet Add", error.message, error);
+
+      await session.abortTransaction();
+      session.endSession();
+      return responseObj({
+        resObj: res,
+        type: "error",
+        statusCode: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR,
+        msg: "Internal server error",
+        error: error.message,
+        data: null,
+        code: ERROR_CODES.SERVER_ERR,
+      });
+    }
   } catch (error: any) {
     logging.error("Outlet Add", error.message, error);
 

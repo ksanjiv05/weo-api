@@ -62,12 +62,12 @@ export const offerValidationCh4 = [
   body("offerLiveTillSoldOut")
     .isBoolean()
     .withMessage("offer live till sold out is required"),
-  body("offerAvailabilityStartDate")
-    .isString()
-    .withMessage("offer availability start date is required"),
-  body("offerAvailabilityEndDate")
-    .isString()
-    .withMessage("offer availability end date is required"),
+  // body("offerAvailabilityStartDate")
+  //   .isString()
+  //   .withMessage("offer availability start date is required"),
+  // body("offerAvailabilityEndDate")
+  //   .isString()
+  //   .withMessage("offer availability end date is required"),
   body("offerAvailableAllTime")
     .isBoolean()
     .withMessage("offer available all time is required"),

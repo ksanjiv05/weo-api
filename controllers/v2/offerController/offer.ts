@@ -17,6 +17,8 @@ import { IRequest } from "../../../interfaces/IRequest";
 
 // Function to add the offer
 export const addOffer = async (req: IRequest, res: Response) => {
+  const session = await Offer.startSession();
+  session.startTransaction();
   try {
     const errors = validationResult(req);
 
@@ -32,6 +34,8 @@ export const addOffer = async (req: IRequest, res: Response) => {
       });
     }
 
+    // create session for transaction
+
     const { user } = req;
 
     const offer: IOffer = {
@@ -41,7 +45,15 @@ export const addOffer = async (req: IRequest, res: Response) => {
 
     const newOffer = new Offer(offer);
 
-    await newOffer.save();
+    const offerData: IOfferData = new OfferData({
+      offerId: newOffer._id,
+    });
+    await offerData.save({
+      session,
+    });
+
+    newOffer.offerDataPoints = [{ offerData: offerData._id, version: 1 }];
+    await newOffer.save({ session });
 
     if (!newOffer) {
       return responseObj({
@@ -54,7 +66,8 @@ export const addOffer = async (req: IRequest, res: Response) => {
         code: ERROR_CODES.SERVER_ERR,
       });
     }
-
+    await session.commitTransaction();
+    session.endSession();
     return responseObj({
       resObj: res,
       type: "success",
@@ -66,7 +79,8 @@ export const addOffer = async (req: IRequest, res: Response) => {
     });
   } catch (error: any) {
     logging.error("Add Offer", error.message, error);
-
+    await session.abortTransaction();
+    session.endSession();
     return responseObj({
       resObj: res,
       type: "error",
@@ -95,13 +109,13 @@ export const addOfferDataPoints = async (req: Request, res: Response) => {
         code: ERROR_CODES.FIELD_VALIDATION_REQUIRED_ERR,
       });
     }
-    console.log("error", errors);
+
     // create session for transaction
     const session = await Offer.startSession();
     session.startTransaction();
 
     try {
-      const { offerId } = req.body;
+      const { offerId, checkpoint } = req.body;
 
       const offer = await Offer.findById(offerId);
       if (!offer) {
@@ -116,9 +130,14 @@ export const addOfferDataPoints = async (req: Request, res: Response) => {
         });
       }
 
+      if (offer.checkpoint != 1 && offer.checkpoint >= checkpoint) {
+        updateOfferData(req, res);
+        return;
+      }
+
       delete req.body._id;
+
       const offerData: IOfferData = new OfferData({
-        // offerId: _id,
         ...req.body,
       });
       await offerData.save({
@@ -142,10 +161,9 @@ export const addOfferDataPoints = async (req: Request, res: Response) => {
 
       await offer.save({ session });
       // commit transaction
-      console.log("offerData", offerData);
       await session.commitTransaction();
       session.endSession();
-
+      console.log("_23__", req.body);
       return responseObj({
         resObj: res,
         type: "success",
@@ -211,29 +229,28 @@ export const updateOfferData = async (req: Request, res: Response) => {
     // const offer = await OfferData.findByIdAndUpdate(id, req.body, {
     //   new: false,
     // });
-    // console.log(req.body);
+
     const offer = await OfferData.updateOne(
       { _id: id },
       {
         $set: {
           ...req.body,
-          // checkpoint
         },
       }
     );
-    console.log(offer);
-    // if (!offer) {
-    //   return responseObj({
-    //     resObj: res,
-    //     type: "error",
-    //     statusCode: HTTP_STATUS_CODES.NOT_FOUND,
-    //     msg: "Offer not found",
-    //     error: null,
-    //     data: null,
-    //     code: ERROR_CODES.NOT_FOUND,
-    //   });
-    // }
-
+    console.log(offer, req.body);
+    if (req.body.checkpoint == 5) {
+      await Offer.updateOne(
+        {
+          _id: req.body?.offerId,
+        },
+        {
+          $set: {
+            totalOffersAvailable: req.body?.totalOffersAvailable,
+          },
+        }
+      );
+    }
     return responseObj({
       resObj: res,
       type: "success",
@@ -313,7 +330,6 @@ export const updateOffer = async (req: Request, res: Response) => {
   }
 };
 
-
 //
 export const toListOffer = async (req: IRequest, res: Response) => {
   // const errors = validationResult(req);
@@ -378,7 +394,6 @@ export const toListOffer = async (req: IRequest, res: Response) => {
     });
   }
 };
-
 
 // Function to get the offer
 export const getOffers = async (req: Request, res: Response) => {
