@@ -101,7 +101,7 @@ export const offerValidationCh6 = [
 
 export const offerValidationCh7 = [
   // ...offerValidationCh6,
-  body("OfferMedia")
+  body("offerMedia")
     .isArray({ min: 1, max: 5 })
     .withMessage("Offer media is required"),
 ];
