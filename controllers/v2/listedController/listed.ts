@@ -486,9 +486,10 @@ export const getAllListedOffersByBrand = async (
       {
         $group: {
           _id: "$_id",
+
           offerName: { $first: "$offerName" },
           offerDescription: { $first: "$offerDescription" },
-          // totalListed: "$offerDataDetails.totalOffersAvailable",
+          totalListed: { $first: "$totalOffersAvailable" },
           // sold: "$offerDataDetails.totalOfferSold",
           // totalOffersAvailable: {
           //   $sum: [
@@ -496,7 +497,35 @@ export const getAllListedOffersByBrand = async (
           //     "$offerDataDetails.totalOfferSold",
           //   ],
           // },
-          soldOffers: { $first: "$offerDataDetails.totalOfferSold" },
+          soldOffers: { $first: "$totalOfferSold" },
+          offerThumbnail: { $first: "$offerDataDetails.offerThumbnail" },
+          offerAvailabilityStartDate: {
+            $first: "$offerDataDetails.offerAvailabilityStartDate",
+          },
+          offerAvailabilityEndDate: {
+            $first: "$offerDataDetails.offerAvailabilityEndDate",
+          },
+          serviceStartDate: { $first: "$offerDataDetails.serviceStartDate" },
+          serviceEndDate: { $first: "$offerDataDetails.serviceEndDate" },
+          offerLiveTillSoldOut: {
+            $first: "$offerDataDetails.offerLiveTillSoldOut",
+          },
+        },
+      },
+      {
+        $project: {
+          _id: 1,
+          offerName: 1,
+          offerDescription: 1,
+          totalListed: 1,
+          soldOffers: 1,
+          offerThumbnail: 1,
+
+          offerAvailabilityStartDate: 1,
+          offerAvailabilityEndDate: 1,
+          serviceStartDate: 1,
+          serviceEndDate: 1,
+          offerLiveTillSoldOut: 1,
         },
       },
     ]);
