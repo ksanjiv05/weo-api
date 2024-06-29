@@ -12,7 +12,6 @@ import { HTTP_STATUS_CODES } from "../../../config/statusCode";
 import { ERROR_CODES } from "../../../config/errorCode";
 import OfferData, { IOfferData } from "../../../models/offer.data.model";
 import { OFFER_STATUS, STATUS } from "../../../config/enums";
-import { add } from "winston";
 import { IRequest } from "../../../interfaces/IRequest";
 
 // Function to add the offer
@@ -86,7 +85,7 @@ export const addOffer = async (req: IRequest, res: Response) => {
       type: "error",
       statusCode: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR,
       msg: "Internal server error",
-      error: error.message ? error.message : "internal server error",
+      error: error.message || "internal server error",
       data: null,
       code: ERROR_CODES.SERVER_ERR,
     });
@@ -183,7 +182,7 @@ export const addOfferDataPoints = async (req: Request, res: Response) => {
         type: "error",
         statusCode: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR,
         msg: "Internal server error",
-        error: error.message ? error.message : "internal server error",
+        error: error.message || "internal server error",
         data: null,
         code: ERROR_CODES.SERVER_ERR,
       });
@@ -196,7 +195,7 @@ export const addOfferDataPoints = async (req: Request, res: Response) => {
       type: "error",
       statusCode: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR,
       msg: "Internal server error",
-      error: error.message ? error.message : "internal server error",
+      error: error.message || "internal server error",
       data: null,
       code: ERROR_CODES.SERVER_ERR,
     });
@@ -204,6 +203,8 @@ export const addOfferDataPoints = async (req: Request, res: Response) => {
 };
 
 export const updateOfferData = async (req: Request, res: Response) => {
+  const session = await Offer.startSession();
+  session.startTransaction();
   try {
     const errors = validationResult(req);
 
@@ -218,6 +219,7 @@ export const updateOfferData = async (req: Request, res: Response) => {
         code: ERROR_CODES.FIELD_VALIDATION_REQUIRED_ERR,
       });
     }
+
     const { id } = req.params;
     const { status } = req.body;
 
@@ -226,16 +228,15 @@ export const updateOfferData = async (req: Request, res: Response) => {
       return;
     }
 
-    // const offer = await OfferData.findByIdAndUpdate(id, req.body, {
-    //   new: false,
-    // });
-
     const offer = await OfferData.updateOne(
       { _id: id },
       {
         $set: {
           ...req.body,
         },
+      },
+      {
+        session,
       }
     );
     console.log(offer, req.body);
@@ -248,9 +249,28 @@ export const updateOfferData = async (req: Request, res: Response) => {
           $set: {
             totalOffersAvailable: req.body?.totalOffersAvailable,
           },
+        },
+        {
+          session,
         }
       );
     }
+
+    await Offer.updateOne(
+      { _id: req.body?.offerId },
+      {
+        $set: {
+          checkpoint: req.body?.checkpoint,
+        },
+      },
+      {
+        session,
+      }
+    );
+
+    await session.commitTransaction();
+    session.endSession();
+
     return responseObj({
       resObj: res,
       type: "success",
@@ -261,6 +281,8 @@ export const updateOfferData = async (req: Request, res: Response) => {
       code: ERROR_CODES.SUCCESS,
     });
   } catch (error: any) {
+    await session.abortTransaction();
+    session.endSession();
     logging.error("Update Offer Data", error.message, error);
 
     return responseObj({
@@ -268,7 +290,7 @@ export const updateOfferData = async (req: Request, res: Response) => {
       type: "error",
       statusCode: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR,
       msg: "Internal server error",
-      error: error.message ? error.message : "internal server error",
+      error: error.message || "internal server error",
       data: null,
       code: ERROR_CODES.SERVER_ERR,
     });
@@ -323,7 +345,7 @@ export const updateOffer = async (req: Request, res: Response) => {
       type: "error",
       statusCode: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR,
       msg: "Internal server error",
-      error: error.message ? error.message : "internal server error",
+      error: error.message || "internal server error",
       data: null,
       code: ERROR_CODES.SERVER_ERR,
     });
@@ -388,7 +410,7 @@ export const toListOffer = async (req: IRequest, res: Response) => {
       type: "error",
       statusCode: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR,
       msg: "Internal server error",
-      error: error.message ? error.message : "internal server error",
+      error: error.message || "internal server error",
       data: null,
       code: ERROR_CODES.SERVER_ERR,
     });
@@ -396,9 +418,30 @@ export const toListOffer = async (req: IRequest, res: Response) => {
 };
 
 // Function to get the offer
-export const getOffers = async (req: Request, res: Response) => {
+export const getOffers = async (req: IRequest, res: Response) => {
   try {
-    const offer = await Offer.find({});
+    const {
+      offerStatus = OFFER_STATUS.LIVE,
+      page = 1,
+      perPage = 10,
+    } = req.query;
+    const { _id } = req.user;
+
+    const skip = (Number(page) - 1) * Number(perPage);
+
+    const offer = await Offer.find({
+      user: _id,
+      offerStatus,
+    })
+      .sort({ createdAt: -1 })
+      .populate("brand", "brandName")
+      // .populate({
+      //   path: "offerDataPoints",
+      //   populate: { path: "offerData", select: "installmentPeriod" },
+      // })
+      .skip(Number(skip))
+      .limit(Number(perPage))
+      .exec();
 
     if (!offer) {
       return responseObj({
@@ -429,7 +472,7 @@ export const getOffers = async (req: Request, res: Response) => {
       type: "error",
       statusCode: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR,
       msg: "Internal server error",
-      error: error.message ? error.message : "internal server error",
+      error: error.message || "internal server error",
       data: null,
       code: ERROR_CODES.SERVER_ERR,
     });
@@ -471,7 +514,7 @@ export const getOfferById = async (req: Request, res: Response) => {
       type: "error",
       statusCode: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR,
       msg: "Offer not found",
-      error: error.message ? error.message : "internal server error",
+      error: error.message || "internal server error",
       data: null,
       code: ERROR_CODES.SERVER_ERR,
     });
@@ -513,7 +556,7 @@ export const getOfferByUserId = async (req: IRequest, res: Response) => {
       type: "error",
       statusCode: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR,
       msg: "Offer not found",
-      error: error.message ? error.message : "internal server error",
+      error: error.message || "internal server error",
       data: null,
       code: ERROR_CODES.SERVER_ERR,
     });
@@ -558,7 +601,7 @@ export const deleteOffer = async (req: Request, res: Response) => {
       type: "error",
       statusCode: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR,
       msg: "Internal server error",
-      error: error.message ? error.message : "internal server error",
+      error: error.message || "internal server error",
       data: null,
       code: ERROR_CODES.SERVER_ERR,
     });
@@ -622,7 +665,7 @@ export const getOffersByLocation = async (req: Request, res: Response) => {
       type: "error",
       statusCode: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR,
       msg: "Offer not found",
-      error: error.message ? error.message : "internal server error",
+      error: error.message || "internal server error",
       data: null,
       code: ERROR_CODES.SERVER_ERR,
     });

@@ -17,6 +17,7 @@
   "author": "sanjiv",
   "license": "ISC",
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.606.0",
     "@json2csv/node": "^7.0.6",
     "@types/cors": "^2.8.13",
     "axios": "^1.4.0",

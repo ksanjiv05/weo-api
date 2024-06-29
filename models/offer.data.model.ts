@@ -166,7 +166,7 @@ offerDataSchema.pre("save", function (next) {
 offerDataSchema.post("save", function (next) {
   const offerData = this as IOfferData;
   console.log("------------------------------");
-  console.log("post offerData", offerData);
+  console.log("offer model", offerData);
   // next();
   // OfferData.findOne({ offerId: offerData.offerId })
   //   .then((offerData) => {
