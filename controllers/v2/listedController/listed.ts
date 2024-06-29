@@ -463,13 +463,114 @@ export const getAllListedOffersByBrand = async (
 ) => {
   try {
     const { id } = req.params;
-    console.log("id : ", id);
-    const of = await Offer.find({ brand: id });
-    console.log("of : ", of);
+
+    // const offers = await Offer.aggregate([
+    //   {
+    //     $match: {
+    //       brand: new mongoose.Types.ObjectId(id),
+    //       // offerStatus: OFFER_STATUS.LIVE,
+    //       $or: [
+    //         {
+    //           offerStatus: OFFER_STATUS.LIVE,
+    //         },
+    //         {
+    //           offerStatus: OFFER_STATUS.SOLD,
+    //         },
+    //       ],
+    //     },
+    //   },
+    //   {
+    //     $lookup: {
+    //       from: "offerdatas",
+    //       localField: "offerDataPoints.offerData",
+    //       foreignField: "_id",
+    //       as: "offerDataDetails",
+    //     },
+    //   },
+    //   {
+    //     $unwind: "$offerDataDetails",
+    //   },
+    //   {
+    //     $group: {
+    //       _id: "$_id",
+    //       offerName: { $first: "$offerName" },
+    //       offerDescription: { $first: "$offerDescription" },
+    //       totalOffersAvailable: { $first: "$totalOffersAvailable" },
+    //       soldOffers: { $first: "$totalOfferSold" },
+    //       offerThumbnail: { $first: "$offerDataDetails.offerThumbnail" },
+    //       offerAvailabilityStartDate: {
+    //         $first: "$offerDataDetails.offerAvailabilityStartDate",
+    //       },
+    //       offerAvailabilityEndDate: {
+    //         $first: "$offerDataDetails.offerAvailabilityEndDate",
+    //       },
+    //       serviceStartDate: { $first: "$offerDataDetails.serviceStartDate" },
+    //       serviceEndDate: { $first: "$offerDataDetails.serviceEndDate" },
+    //       offerLiveTillSoldOut: {
+    //         $first: "$offerDataDetails.offerLiveTillSoldOut",
+    //       },
+    //       offerStatus: { $first: "$offerStatus" },
+    //     },
+    //   },
+    //   {
+    //     $project: {
+    //       _id: 1,
+    //       offerName: 1,
+    //       offerDescription: 1,
+    //       soldOffers: 1,
+    //       offerThumbnail: 1,
+    //       offerAvailabilityStartDate: 1,
+    //       offerAvailabilityEndDate: 1,
+    //       serviceStartDate: 1,
+    //       serviceEndDate: 1,
+    //       offerLiveTillSoldOut: 1,
+    //       totalOffersAvailable: 1,
+    //       offerStatus: 1,
+    //     },
+    //   },
+    //   {
+    //     $group: {
+    //       // _id: null,
+    //       _id: "$offerStatus",
+    //       totalListed: { $sum: 1 },
+    //       offers: { $push: "$$ROOT" },
+    //       totalListedOffersCount: {
+    //         $sum: "$totalOffersAvailable",
+    //       },
+    //       soldStatusCount: {
+    //         $sum: {
+    //           $cond: [{ $eq: ["$offerStatus", OFFER_STATUS.SOLD] }, 1, 0],
+    //         },
+    //       },
+
+    //       // totalListedOffersSum: { $count: "$$ROOT" },
+    //       // pushedOfferCount: { $sum: "$totalPushedOffers" },
+    //     },
+    //   },
+    //   // { $group: { _id: "$offerStatus", count: { $sum: 1 } } },
+    //   {
+    //     $project: {
+    //       _id: 0,
+    //       offers: 1,
+    //       totalListed: 1,
+    //       offerStatus: 1,
+    //       totalListedOffersCount: 1,
+    //       soldStatusCount: 1,
+    //       // totalListedOffersSum: 1,
+    //       // pushedOfferCount: 1,
+    //     },
+    //   },
+    // ]);
+
     const offers = await Offer.aggregate([
       {
         $match: {
           brand: new mongoose.Types.ObjectId(id),
+          $or: [
+            { offerStatus: OFFER_STATUS.LIVE },
+            { offerStatus: OFFER_STATUS.SOLD },
+            { offerStatus: OFFER_STATUS.PUSHED },
+          ],
         },
       },
       {
@@ -486,17 +587,9 @@ export const getAllListedOffersByBrand = async (
       {
         $group: {
           _id: "$_id",
-
           offerName: { $first: "$offerName" },
           offerDescription: { $first: "$offerDescription" },
-          totalListed: { $first: "$totalOffersAvailable" },
-          // sold: "$offerDataDetails.totalOfferSold",
-          // totalOffersAvailable: {
-          //   $sum: [
-          //     "$offerDataDetails.totalOffersAvailable",
-          //     "$offerDataDetails.totalOfferSold",
-          //   ],
-          // },
+          totalOffersAvailable: { $first: "$totalOffersAvailable" },
           soldOffers: { $first: "$totalOfferSold" },
           offerThumbnail: { $first: "$offerDataDetails.offerThumbnail" },
           offerAvailabilityStartDate: {
@@ -510,6 +603,7 @@ export const getAllListedOffersByBrand = async (
           offerLiveTillSoldOut: {
             $first: "$offerDataDetails.offerLiveTillSoldOut",
           },
+          offerStatus: { $first: "$offerStatus" },
         },
       },
       {
@@ -517,18 +611,47 @@ export const getAllListedOffersByBrand = async (
           _id: 1,
           offerName: 1,
           offerDescription: 1,
-          totalListed: 1,
           soldOffers: 1,
           offerThumbnail: 1,
-
           offerAvailabilityStartDate: 1,
           offerAvailabilityEndDate: 1,
           serviceStartDate: 1,
           serviceEndDate: 1,
           offerLiveTillSoldOut: 1,
+          totalOffersAvailable: 1,
+          offerStatus: 1,
+        },
+      },
+      {
+        $group: {
+          _id: "$offerStatus",
+          totalListed: { $sum: 1 },
+          offers: { $push: "$$ROOT" },
+          totalListedOffersCount: { $sum: "$totalOffersAvailable" },
+          soldStatusCount: {
+            $sum: {
+              $cond: [{ $eq: ["$offerStatus", OFFER_STATUS.SOLD] }, 1, 0],
+            },
+          },
+          pushedStatusCount: {
+            $sum: {
+              $cond: [{ $eq: ["$offerStatus", OFFER_STATUS.PUSHED] }, 1, 0],
+            },
+          },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          offers: 1,
+          totalListed: 1,
+          totalListedOffersCount: 1,
+          soldStatusCount: 1,
+          pushedStatusCount: 1,
         },
       },
     ]);
+
     return responseObj({
       resObj: res,
       type: "success",

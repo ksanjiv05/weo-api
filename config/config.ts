@@ -35,3 +35,8 @@ export const STP_PUBLISHABLE_KEY = process.env.STP_PUBLISHABLE_KEY as string;
 
 import Stripe from "stripe";
 export const stripe = new Stripe(STP_SECRET_KEY);
+
+export const secretAccessKey = process.env.AWS_SECRET_ACCESS_KEY as string;
+export const accessKeyId = process.env.AWS_ACCESS_KEY_ID as string;
+export const region = process.env.REGION as string;
+export const bucketName = process.env.BUCKET_NAME as string;

@@ -10,6 +10,7 @@ import {
   addOfferDataPoints,
   updateOfferData,
   toListOffer,
+  getOffers,
 } from "../../controllers/v2/offerController/offer";
 import { auth } from "../../middleware/auth";
 import {
@@ -65,6 +66,8 @@ const router = express.Router();
  */
 
 router.post("/offers", auth, offerValidationCh1, addOffer);
+
+router.get("/offers", auth, getOffers);
 
 /**
  * @swagger

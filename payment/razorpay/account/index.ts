@@ -127,6 +127,22 @@ export const closeVirtualAccount = async (virtualId: string) => {
 
 //https://razorpay.com/docs/api/payments/route/account-apis-beta/
 
+/**
+ * Adds a bank account to the Razorpay account.
+ *
+ * @param {BankAccount} bankAccount - The bank account details.
+ * @param {string} bankAccount.name - The name of the account holder.
+ * @param {string} bankAccount.email - The email associated with the account.
+ * @param {string} bankAccount.business_name - The name of the business.
+ * @param {string} bankAccount.ifsc_code - The IFSC code of the bank.
+ * @param {string} bankAccount.beneficiary_name - The name of the beneficiary.
+ * @param {string} bankAccount.account_type - The type of the account.
+ * @param {string} bankAccount.account_number - The account number.
+ * @param {string} bankAccount.uid - The unique identifier of the account.
+ * @param {boolean} bankAccount.isUpdate - Flag indicating if the account is being updated.
+ * @return {Promise<{ status: boolean, data: any }>} - A promise that resolves to an object with the status and data of the request.
+ * @throws {Error} - If there is an error during the request.
+ */
 export const addBankAccount = async ({
   name,
   email,

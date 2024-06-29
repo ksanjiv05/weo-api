@@ -11,6 +11,7 @@ import { HTTP_STATUS_CODES } from "../../../config/statusCode";
 import { ERROR_CODES } from "../../../config/errorCode";
 import { IRequest } from "../../../interfaces/IRequest";
 import outletModel from "../../../models/outlet.model";
+import { STATUS } from "../../../config/enums";
 
 // Define the functions
 
@@ -85,7 +86,7 @@ export const addBrand = async (req: IRequest, res: Response) => {
 export const getBrands = async (req: IRequest, res: Response) => {
   try {
     //pagination
-    const { page = 1, perPage = 10, status = "" } = req.query;
+    const { page = 1, perPage = 10, status = STATUS.LIVE } = req.query;
     const user = req.user;
     // if (!user?.admin) {
     //   return responseObj({
@@ -380,7 +381,12 @@ export const getBrandsByUserId = async (req: Request, res: Response) => {
 
 export const getBrandsByLocation = async (req: Request, res: Response) => {
   try {
-    const { userLatitude, userLongitude, maxDistance }: any = req.query;
+    const {
+      userLatitude,
+      userLongitude,
+      maxDistance,
+      status = STATUS.LIVE,
+    }: any = req.query;
 
     if (!userLatitude || !userLongitude) {
       return responseObj({
@@ -414,6 +420,7 @@ export const getBrandsByLocation = async (req: Request, res: Response) => {
           localField: "brand",
           foreignField: "_id",
           as: "brandDetails",
+          pipeline: [{ $match: { status: status } }],
         },
       },
       {

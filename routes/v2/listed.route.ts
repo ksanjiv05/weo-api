@@ -46,16 +46,6 @@ const router = express.Router();
  */
 router.post("/listed", auth, createListed);
 
-// //brandName: 1,
-//           brandDescription: 1,
-//           brandLogo: 1,
-//           categoryId: 1,
-//           status: 1,
-//           checkpoint: 1,
-//           outlets: 1,
-//           totalPushedOffers: 1,
-//           offers: 1,
-
 /**
  * @swagger
  * /v2/listed/user/brand:
@@ -96,6 +86,122 @@ router.post("/listed", auth, createListed);
  */
 
 router.get("/listed/user/brand", auth, getAllListedBrands);
+
+/**
+ * @swagger
+ * openapi: 3.0.0
+ * info:
+ *   title: Offer Service API
+ *   description: API for managing offers
+ *   version: 1.0.0
+ * paths:
+ *   /listed/user/brand/{brandId}:
+ *     get:
+ *       summary: Get offers for a specific brand
+ *       description: Retrieve all offers for a specific brand along with the total count of sold status and other details.
+ *       parameters:
+ *         - name: brandId
+ *           in: path
+ *           required: true
+ *           schema:
+ *             type: string
+ *           description: The ID of the brand
+ *       responses:
+ *         '200':
+ *           description: A list of offers
+ *           content:
+ *             application/json:
+ *               schema:
+ *                 type: object
+ *                 properties:
+ *                   offers:
+ *                     type: array
+ *                     items:
+ *                       type: object
+ *                       properties:
+ *                         _id:
+ *                           type: string
+ *                           description: The offer ID
+ *                         offerName:
+ *                           type: string
+ *                           description: The name of the offer
+ *                         offerDescription:
+ *                           type: string
+ *                           description: The description of the offer
+ *                         soldOffers:
+ *                           type: integer
+ *                           description: The number of offers sold
+ *                         offerThumbnail:
+ *                           type: string
+ *                           description: Thumbnail URL of the offer
+ *                         offerAvailabilityStartDate:
+ *                           type: string
+ *                           format: date-time
+ *                           description: The start date of offer availability
+ *                         offerAvailabilityEndDate:
+ *                           type: string
+ *                           format: date-time
+ *                           description: The end date of offer availability
+ *                         serviceStartDate:
+ *                           type: string
+ *                           format: date-time
+ *                           description: The start date of the service
+ *                         serviceEndDate:
+ *                           type: string
+ *                           format: date-time
+ *                           description: The end date of the service
+ *                         offerLiveTillSoldOut:
+ *                           type: boolean
+ *                           description: Whether the offer is live until sold out
+ *                         totalOffersAvailable:
+ *                           type: integer
+ *                           description: The total number of offers available
+ *                   totalListed:
+ *                     type: integer
+ *                     description: Total number of offers listed
+ *                   totalListedOffersCount:
+ *                     type: integer
+ *                     description: The sum of total offers available
+ *                   soldStatusCount:
+ *                     type: integer
+ *                     description: The total count of offers with a "SOLD" status
+ *         '400':
+ *           description: Invalid brand ID supplied
+ *         '404':
+ *           description: Brand not found
+ * components:
+ *   schemas:
+ *     Offer:
+ *       type: object
+ *       properties:
+ *         _id:
+ *           type: string
+ *         offerName:
+ *           type: string
+ *         offerDescription:
+ *           type: string
+ *         soldOffers:
+ *           type: integer
+ *         offerThumbnail:
+ *           type: string
+ *         offerAvailabilityStartDate:
+ *           type: string
+ *           format: date-time
+ *         offerAvailabilityEndDate:
+ *           type: string
+ *           format: date-time
+ *         serviceStartDate:
+ *           type: string
+ *           format: date-time
+ *         serviceEndDate:
+ *           type: string
+ *           format: date-time
+ *         offerLiveTillSoldOut:
+ *           type: boolean
+ *         totalOffersAvailable:
+ *           type: integer
+ */
+
 router.get("/listed/user/brand/:id", getAllListedOffersByBrand);
 
 export default router;

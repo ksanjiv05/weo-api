@@ -43,7 +43,7 @@ const brandSchema: Schema = new Schema(
     },
     status: {
       type: Number,
-      enum: [0, 1, 2], // 0: PENDING, 1: LIVE, 2: ON_HOLD
+      // enum: [0, 1, 2], // 0: PENDING, 1: LIVE, 2: ON_HOLD
       required: true,
     },
     checkpoint: {
