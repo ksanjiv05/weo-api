@@ -3,6 +3,7 @@
 
 import mongoose, { Schema, Document } from "mongoose";
 import { conn_v2 } from "../db";
+import { STATUS } from "../config/enums";
 
 export interface IBrand extends Document {
   user: any;
@@ -45,6 +46,7 @@ const brandSchema: Schema = new Schema(
       type: Number,
       // enum: [0, 1, 2], // 0: PENDING, 1: LIVE, 2: ON_HOLD
       required: true,
+      default: STATUS.PENDING,
     },
     checkpoint: {
       type: Number,
@@ -70,6 +72,10 @@ brandSchema.pre<IBrand>("save", function (next) {
   brand.user = user._id;
   next();
 });
+
+// brandSchema.pre("remove", function (next) {
+
+// })
 
 // export the Brand model
 export default conn_v2.model<IBrand>("Brand", brandSchema);

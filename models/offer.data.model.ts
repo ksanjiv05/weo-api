@@ -45,6 +45,7 @@ export interface IOfferData extends Document {
   ]; // images/video
   offerThumbnail: string;
   checkpoint: number;
+  collectable: string;
 }
 
 const offerDataSchema: Schema = new Schema(
@@ -130,14 +131,17 @@ const offerDataSchema: Schema = new Schema(
     oRewardDeductPercentageLatePayment: {
       type: Number,
     },
-    offerMedia: [
-      {
-        index: Number,
-        mediaUrl: String,
-        mediaType: String,
-      },
-    ],
-    offerThumbnail: String,
+    offerMedia: {
+      type: [
+        {
+          index: Number,
+          mediaUrl: String,
+          mediaType: String,
+        },
+      ],
+      default: [],
+    },
+    offerThumbnail: { type: String, default: "" },
     status: {
       type: Number,
       enum: [0, 1, 2],
@@ -147,7 +151,13 @@ const offerDataSchema: Schema = new Schema(
       type: Number,
       default: 2,
     },
+    collectable: {
+      type: String,
+      lowercase: true,
+      default: "offline", // online or offline
+    },
   },
+
   {
     timestamps: true,
   }

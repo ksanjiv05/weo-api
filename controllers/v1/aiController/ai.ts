@@ -15,13 +15,23 @@ export const getAiGeneratedLogo = async (req: Request, res: Response) => {
       n = 1,
     } = req.body;
 
+    // const promptString = `
+    // Create a logo for a brand called '${title}' that specializes in '${description}'. The design should feature a sleek, modern aesthetic with a glass effect. The logo should showcase in glass orb, similar to a terrarium. The glass should have a realistic, reflective surface. The overall design should be clean, elegant, and visually striking, with an emphasis on transparency and luminosity. Ensure the brand name is prominently displayed within or around the glass orb, integrating seamlessly with the design.
+    // and also consider description.
+    // 'logo should be single and center aligned.'
+    // ${
+    //   titleInLogo ? `The brand name should be included in the logo design.` : ""
+    // }
+    // `;
+
     const promptString = `
-    Create a logo for a brand called '${title}' that specializes in '${description}'. The design should feature a sleek, modern aesthetic with a glass effect. The logo should showcase in glass orb, similar to a terrarium. The glass should have a realistic, reflective surface. The overall design should be clean, elegant, and visually striking, with an emphasis on transparency and luminosity. Ensure the brand name is prominently displayed within or around the glass orb, integrating seamlessly with the design.
-    and also consider description. 
-    'logo should be single and center aligned.'
-    ${
-      titleInLogo ? `The brand name should be included in the logo design.` : ""
-    }
+    Create a logo featuring a serene artist's studio with soft, warm lighting, including an artist
+     painting on a canvas surrounded by colorful paints and brushes. The scene should evoke creativity 
+     and artistic passion. Apply a spherical glass effect over the entire image. 
+     Include the brand name, ${title}, in a stylish, elegant font that complements the artistic theme. 
+     Ensure the brand name is prominently and harmoniously placed within the composition.
+      Additionally, incorporate elements that reflect ${description} to enhance the overall design.
+
     `;
 
     if (promptString == "")

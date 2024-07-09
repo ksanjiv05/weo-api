@@ -370,7 +370,7 @@ export const getAllListedBrands = async (req: IRequest, res: Response) => {
                 totalPushedOffers: {
                   $sum: {
                     $cond: [
-                      { $eq: ["$offerStatus", OFFER_STATUS.PUSHED] },
+                      { $eq: ["$offerStatus", OFFER_STATUS.PAUSED] },
                       1,
                       0,
                     ],
@@ -569,7 +569,7 @@ export const getAllListedOffersByBrand = async (
           $or: [
             { offerStatus: OFFER_STATUS.LIVE },
             { offerStatus: OFFER_STATUS.SOLD },
-            { offerStatus: OFFER_STATUS.PUSHED },
+            { offerStatus: OFFER_STATUS.PAUSED },
           ],
         },
       },
@@ -635,7 +635,7 @@ export const getAllListedOffersByBrand = async (
           },
           pushedStatusCount: {
             $sum: {
-              $cond: [{ $eq: ["$offerStatus", OFFER_STATUS.PUSHED] }, 1, 0],
+              $cond: [{ $eq: ["$offerStatus", OFFER_STATUS.PAUSED] }, 1, 0],
             },
           },
         },

@@ -11,6 +11,8 @@ import {
   updateOfferData,
   toListOffer,
   getOffers,
+  deleteOffers,
+  getOffersByLocation,
 } from "../../controllers/v2/offerController/offer";
 import { auth } from "../../middleware/auth";
 import {
@@ -68,6 +70,7 @@ const router = express.Router();
 router.post("/offers", auth, offerValidationCh1, addOffer);
 
 router.get("/offers", auth, getOffers);
+router.get("/offers/location", getOffersByLocation);
 
 /**
  * @swagger
@@ -550,7 +553,9 @@ router.put("/offers/data/:id/5", auth, offerValidationCh5, updateOfferData);
 router.put("/offers/data/:id/6", auth, offerValidationCh6, updateOfferData);
 router.put("/offers/data/:id/7", auth, offerValidationCh7, updateOfferData);
 router.put("/offers/data/:id/8", auth, offerValidationCh8, updateOfferData);
-router.put("/offers/listed/:id", auth, toListOffer);
+router.put("/offers", auth, toListOffer);
+
+router.delete("/offers", auth, deleteOffers);
 
 // router.put("/offers/data/:id/7", auth, validateOffer, updateOffer);
 
