@@ -2476,3 +2476,5 @@ info: POST /api/v1/brands 200 295ms
 {"level":"info","message":"GET /api/v2/offers/location?userLatitude=21.2096818&userLongitude=72.8301963&maxDistance=10 200 296ms","timestamp":"2024-07-09T07:20:57.329Z"}
 {"level":"info","message":"GET /api/v2/offers/location?userLatitude=13.001212&userLongitude=77.6769711&maxDistance=10 200 299ms","timestamp":"2024-07-09T07:22:59.226Z"}
 {"level":"info","message":"GET /api/v2/offers/location?userLatitude=13.001212&userLongitude=77.6769711&maxDistance=10 200 293ms","timestamp":"2024-07-09T07:24:04.662Z"}
+{"level":"info","message":"GET /api/v2/quantities?page=1&perPage=10 200 2304ms","timestamp":"2024-07-10T06:30:45.269Z"}
+{"level":"error","message":"GET /favicon.ico 404 3ms","timestamp":"2024-07-10T06:30:45.674Z"}
