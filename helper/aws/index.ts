@@ -20,7 +20,7 @@ export const deleteS3File = async (key: string) => {
   try {
     const input = {
       Bucket: bucketName,
-      Key: key,
+      Key: "offers/AsRYLjNCLyeWvvAykGofBNrPdQG2/AsRYLjNCLyeWvvAykGofBNrPdQG2665f40b76a232500d6550732667163249e77a0104d426ffe0.jpg",
     };
     const command = new DeleteObjectCommand(input);
     await client.send(command);
@@ -38,6 +38,7 @@ export const listS3Files = async () => {
     };
     const command = new ListObjectsCommand(input);
     const response = await client.send(command);
+
     return response.Contents;
   } catch (err) {
     console.log(err);
@@ -45,12 +46,17 @@ export const listS3Files = async () => {
   }
 };
 
-export const deleteS3Files = async (keys: string[]) => {
+export type KeyProps = {
+  Key: string;
+};
+
+export const deleteS3Files = async (keys: KeyProps[] | []) => {
   try {
+    if (keys.length === 0) return true;
     const input = {
       Bucket: bucketName,
       Delete: {
-        Objects: keys.map((key) => ({ Key: key })),
+        Objects: keys, //.map((key) => ({ Key: key })),
       },
     };
     const command = new DeleteObjectsCommand(input);

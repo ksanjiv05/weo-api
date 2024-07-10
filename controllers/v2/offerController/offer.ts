@@ -13,6 +13,9 @@ import { ERROR_CODES } from "../../../config/errorCode";
 import OfferData, { IOfferData } from "../../../models/offer.data.model";
 import { OFFER_STATUS, STATUS } from "../../../config/enums";
 import { IRequest } from "../../../interfaces/IRequest";
+import mongoose from "mongoose";
+import { KeyProps, deleteS3Files } from "../../../helper/aws";
+import outletModel from "../../../models/outlet.model";
 
 // Function to add the offer
 export const addOffer = async (req: IRequest, res: Response) => {
@@ -221,6 +224,17 @@ export const updateOfferData = async (req: Request, res: Response) => {
     }
 
     const { id } = req.params;
+    if (!id) {
+      return responseObj({
+        resObj: res,
+        type: "error",
+        statusCode: HTTP_STATUS_CODES.BAD_REQUEST,
+        msg: "offer id is required",
+        error: errors.array({}),
+        data: null,
+        code: ERROR_CODES.FIELD_VALIDATION_REQUIRED_ERR,
+      });
+    }
     const { status } = req.body;
 
     if (status === STATUS.LIVE) {
@@ -434,11 +448,11 @@ export const getOffers = async (req: IRequest, res: Response) => {
       offerStatus,
     })
       .sort({ createdAt: -1 })
-      .populate("brand", "brandName")
-      // .populate({
-      //   path: "offerDataPoints",
-      //   populate: { path: "offerData", select: "installmentPeriod" },
-      // })
+      .populate("brand", "brandName brandLogo")
+      .populate({
+        path: "offerDataPoints",
+        populate: { path: "offerData" },
+      })
       .skip(Number(skip))
       .limit(Number(perPage))
       .exec();
@@ -563,25 +577,26 @@ export const getOfferByUserId = async (req: IRequest, res: Response) => {
   }
 };
 
-// Function to delete the offer
 export const deleteOffer = async (req: Request, res: Response) => {
-  try {
-    const { id } = req.params;
-    const offer = await Offer.findOneAndUpdate(
-      { _id: id },
-      { isDeleted: true }
-    );
+  const session = await mongoose.startSession();
+  session.startTransaction();
 
-    if (!offer) {
-      return responseObj({
-        resObj: res,
-        type: "error",
-        statusCode: HTTP_STATUS_CODES.NOT_FOUND,
-        msg: "Offer not found",
-        error: null,
-        data: null,
-        code: ERROR_CODES.NOT_FOUND,
-      });
+  try {
+    const { id: offerId } = req.params;
+
+    const offerData = await OfferData.findOne({ offerId });
+
+    if (offerData) {
+      const deletedMediaStatus = await deleteS3Files(
+        offerData.offerMedia?.map(({ mediaUrl }) => ({ Key: mediaUrl }))
+      );
+      if (deletedMediaStatus) {
+        await OfferData.deleteOne({ offerId }, { session });
+        await Offer.deleteOne({ _id: offerId }, { session });
+
+        await session.commitTransaction();
+        session.endSession();
+      }
     }
 
     return responseObj({
@@ -594,7 +609,84 @@ export const deleteOffer = async (req: Request, res: Response) => {
       code: ERROR_CODES.SUCCESS,
     });
   } catch (error: any) {
-    logging.error("Delete Offer", error.message, error);
+    await session.abortTransaction();
+    session.endSession();
+
+    return responseObj({
+      resObj: res,
+      type: "error",
+      statusCode: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR,
+      msg: "Internal server error",
+      error: error.message || "internal server error",
+      data: null,
+      code: ERROR_CODES.SERVER_ERR,
+    });
+  }
+};
+
+export const deleteOffers = async (req: Request, res: Response) => {
+  const session = await Offer.startSession();
+  session.startTransaction();
+  try {
+    const ids = Object.values(req.query);
+
+    const offerData = await OfferData.find({ offerId: { $in: ids } });
+    console.log("delete", ids);
+    if (offerData.length > 0) {
+      console.log("offerData", offerData);
+      const keys = offerData
+        .flatMap(
+          (offer) =>
+            offer.offerMedia?.map((file) => ({
+              Key: file.mediaUrl.split("/").slice(3).join("/"),
+            })) || []
+        )
+        .concat(
+          offerData[0].offerThumbnail !== ""
+            ? {
+                Key: offerData[0].offerThumbnail.split("/").slice(3).join("/"),
+              }
+            : []
+        );
+
+      console.log("deletedMediaStatus", keys);
+      const deletedMediaStatus = await deleteS3Files(keys);
+
+      if (deletedMediaStatus) {
+        await Offer.deleteMany(
+          { _id: { $in: ids }, offerStatus: OFFER_STATUS.PENDING },
+          { session }
+        );
+        await OfferData.deleteMany({ offerId: { $in: ids } }, { session });
+
+        await session.commitTransaction();
+        session.endSession();
+
+        return responseObj({
+          resObj: res,
+          type: "success",
+          statusCode: HTTP_STATUS_CODES.SUCCESS,
+          msg: "Offers deleted successfully",
+          error: null,
+          data: null,
+          code: ERROR_CODES.SUCCESS,
+        });
+      }
+    }
+
+    return responseObj({
+      resObj: res,
+      type: "error",
+      statusCode: HTTP_STATUS_CODES.BAD_REQUEST,
+      msg: "please provide valid offer ids",
+      error: "please provide valid offer ids",
+      data: null,
+      code: ERROR_CODES.FIELD_VALIDATION_ERR,
+    });
+  } catch (error: any) {
+    await session.abortTransaction();
+    session.endSession();
+    logging.error("Delete Offers", error.message, error);
 
     return responseObj({
       resObj: res,
@@ -611,39 +703,100 @@ export const deleteOffer = async (req: Request, res: Response) => {
 // Function to get the offers by user location
 export const getOffersByLocation = async (req: Request, res: Response) => {
   try {
-    const { userLatitude, userLongitude, maxDistance } = req.query;
+    const {
+      userLatitude,
+      userLongitude,
+      maxDistance,
+      queryString = "",
+    }: any = req.query;
 
-    const offers = await Offer.aggregate([
+    const keywords = queryString
+      .split(" ")
+      .map((word: string) => new RegExp(word, "i"));
+    const lat = parseFloat(userLongitude);
+    const lng = parseFloat(userLatitude);
+
+    // const offers = await Offer.aggregate([
+    //   {
+    //     $lookup: {
+    //       from: "outlets",
+    //       localField: "outlets",
+    //       foreignField: "_id",
+    //       as: "outletDetails",
+    //     },
+    //   },
+    //   {
+    //     $unwind: "$outletDetails",
+    //   },
+    //   {
+    //     // $match: {
+    //     //   "outletDetails.location.coordinates": {
+    //     // $nearSphere: {
+    //     //   $geometry: {
+    //     //     type: "Point",
+    //     //     coordinates: [userLongitude, userLatitude],
+    //     //   },
+    //     //   $maxDistance: maxDistance,
+    //     // },
+
+    //     $geoNear: {
+    //       near: {
+    //         type: "Point",
+    //         coordinates: [lng, lat],
+    //       },
+    //       // distanceField: "distance",
+    //       // maxDistance: maxDistance ? parseInt(maxDistance) : 10000,
+    //       // spherical: true,
+    //       distanceField: "dist.calculated",
+    //       maxDistance: 10000,
+    //       query: { isEnabled: true },
+    //     },
+    //     // },
+    //     // },
+    //   },
+    //   {
+    //     $group: {
+    //       _id: "$_id",
+    //       offerName: { $first: "$offerName" },
+    //       offerDescription: { $first: "$offerDescription" },
+    //       outlets: { $push: "$outletDetails" },
+    //     },
+    //   },
+    // ]);
+
+    console.log("lat", lat, "lng", lng);
+
+    const offers = await outletModel.aggregate([
+      {
+        $geoNear: {
+          near: {
+            type: "Point",
+            coordinates: [lng, lat],
+          },
+          // distanceField: "distance",
+          distanceField: "dist.calculated",
+          spherical: true,
+          maxDistance: 10000,
+        },
+      },
       {
         $lookup: {
-          from: "outlets",
-          localField: "outlets",
-          foreignField: "_id",
-          as: "outletDetails",
-        },
-      },
-      {
-        $unwind: "$outletDetails",
-      },
-      {
-        $match: {
-          "outletDetails.location.coordinates": {
-            $nearSphere: {
-              $geometry: {
-                type: "Point",
-                coordinates: [userLongitude, userLatitude],
+          from: "offers",
+          let: { outlet_id: "$_id" },
+          pipeline: [
+            {
+              $match: {
+                // offerName:"Sdfgsdfg"
+                outlets: {
+                  $in: ["$$outlet_id"], //6673e16fbadb00687e3a64cd
+                  // $in: [ObjectId("6673e16fbadb00687e3a64cd")],
+                },
+                // offerName:"Poco f1"
+                // $text: { $search: "Poco Asdfasd" },
               },
-              $maxDistance: maxDistance,
             },
-          },
-        },
-      },
-      {
-        $group: {
-          _id: "$_id",
-          offerName: { $first: "$offerName" },
-          offerDescription: { $first: "$offerDescription" },
-          outlets: { $push: "$outletDetails" },
+          ],
+          as: "result",
         },
       },
     ]);
@@ -755,3 +908,5 @@ export const getOffersByLocation = async (req: Request, res: Response) => {
 //     },
 //   ])
 //   .toArray();
+
+//"https://weo-media-bucket.s3.amazonaws.com/offers/AsRYLjNCLyeWvvAykGofBNrPdQG2/AsRYLjNCLyeWvvAykGofBNrPdQG26673e067d6d45807903b36546673fc62f51bf45cbcac8d8b0.jpg".split("/").splice(3).join("/")

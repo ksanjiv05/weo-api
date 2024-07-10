@@ -6,6 +6,7 @@ import express from "express";
 import {
   addBrand,
   deleteBrand,
+  deleteBrands,
   getBrandById,
   getBrandByName,
   getBrands,
@@ -252,6 +253,7 @@ router.put("/brands/:id", auth, addBrandValidation, updateBrand);
  *         description: Brand not deleted
  */
 router.delete("/brands/:id", auth, deleteBrand);
+router.delete("/brands", auth, deleteBrands);
 
 /**
  * @swagger

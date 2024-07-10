@@ -103,7 +103,7 @@ export const getBrands = async (req: IRequest, res: Response) => {
     const skip = (Number(page) - 1) * Number(perPage);
 
     const filter = {
-      ...(status && { status }),
+      ...{ status: parseInt(status.toString()) },
       ...(!user.admin && { user: user._id }),
     };
 
@@ -340,6 +340,68 @@ export const deleteBrand = async (req: Request, res: Response) => {
       statusCode: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR,
       msg: "Brand not deleted",
       error: error.message,
+      data: null,
+      code: ERROR_CODES.SERVER_ERR,
+    });
+  }
+};
+
+export const deleteBrands = async (req: Request, res: Response) => {
+  const session = await Brand.startSession();
+  session.startTransaction();
+  try {
+    const ids = Object.values(req.query);
+
+    if (ids.length < 0) {
+      return responseObj({
+        resObj: res,
+        type: "error",
+        statusCode: HTTP_STATUS_CODES.BAD_REQUEST,
+        msg: "please provide valid offer ids",
+        error: "please provide valid offer ids",
+        data: null,
+        code: ERROR_CODES.FIELD_VALIDATION_ERR,
+      });
+    }
+
+    console.log("ids ", ids);
+
+    await Brand.deleteMany(
+      {
+        _id: { $in: ids },
+        status: STATUS.PENDING,
+      },
+      { session }
+    );
+    await outletModel.deleteMany(
+      {
+        brand: { $in: ids },
+      },
+      { session }
+    );
+    await session.commitTransaction();
+    session.endSession();
+
+    return responseObj({
+      resObj: res,
+      type: "success",
+      statusCode: HTTP_STATUS_CODES.SUCCESS,
+      msg: "Brands deleted successfully",
+      error: null,
+      data: null,
+      code: ERROR_CODES.SUCCESS,
+    });
+  } catch (error: any) {
+    await session.abortTransaction();
+    session.endSession();
+    logging.error("Delete Offers", error.message, error);
+
+    return responseObj({
+      resObj: res,
+      type: "error",
+      statusCode: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR,
+      msg: "Internal server error",
+      error: error.message || "internal server error",
       data: null,
       code: ERROR_CODES.SERVER_ERR,
     });

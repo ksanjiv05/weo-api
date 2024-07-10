@@ -3,6 +3,7 @@
 
 import mongoose, { Schema, Document } from "mongoose";
 import { conn_v2 } from "../db";
+import { OFFER_STATUS } from "../interfaces/IOffer";
 
 export interface IOffer extends Document {
   user: any; //creatorId
@@ -79,7 +80,7 @@ const offerSchema: Schema = new Schema(
     },
     offerStatus: {
       type: Number, //1:pending 2:listed, 3: pushed, 4: sold out, 5: expired
-      default: 1,
+      default: OFFER_STATUS.PENDING,
     },
     checkpoint: {
       type: Number,
@@ -92,6 +93,8 @@ const offerSchema: Schema = new Schema(
 offerSchema.index({ offerName: 1, brand: 1, user: 1 }, { unique: true });
 
 offerSchema.index({ offerName: "text", offerDescription: "text" });
+
+offerSchema.pre("deleteOne", async function (next) {});
 
 export default conn_v2.model<IOffer>("Offer", offerSchema);
 
