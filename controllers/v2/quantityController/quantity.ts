@@ -58,7 +58,7 @@ export const createQuantity = async (req: Request, res: Response) => {
 
 export const getQuantities = async (req: Request, res: Response) => {
   try {
-    const { page = 1, perPage = 10, name = "", all = false }:any = req.query;
+    const { page = 1, perPage = 10, name = "", all = false }: any = req.query;
 
     const skip = (Number(page) - 1) * Number(perPage);
     const quantities = all
@@ -71,7 +71,7 @@ export const getQuantities = async (req: Request, res: Response) => {
       statusCode: HTTP_STATUS_CODES.SUCCESS,
       msg: "Quantities fetched successfully",
       error: null,
-      data: { quantities, total: Math.round(count / parseInt(perPage)) },
+      data: { quantities, total: count },
       code: ERROR_CODES.SUCCESS,
     });
   } catch (error: any) {
