@@ -39,7 +39,7 @@ export const addCategory = async (req: IRequest, res: Response) => {
         data: null,
         code: ERROR_CODES.FIELD_VALIDATION_REQUIRED_ERR,
       });
-    if (parentCategoryId&&quantities.length === 0)
+    if (parentCategoryId && quantities.length === 0)
       return responseObj({
         resObj: res,
         type: "error",
