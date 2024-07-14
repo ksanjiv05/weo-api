@@ -44,7 +44,7 @@ const router = express.Router();
  *       503:
  *         description: Service unavailable
  */
-router.post("/listed", auth, createListed);
+router.post("/listed/:id", auth, createListed);
 
 /**
  * @swagger
