@@ -368,19 +368,6 @@ export const updateOffer = async (req: Request, res: Response) => {
 
 //
 export const toListOffer = async (req: IRequest, res: Response) => {
-  // const errors = validationResult(req);
-  // if (!errors.isEmpty()) {
-  //   return responseObj({
-  //     resObj: res,
-  //     type: "error",
-  //     statusCode: HTTP_STATUS_CODES.BAD_REQUEST,
-  //     msg: "fields are required",
-  //     error: errors.array({}),
-  //     data: null,
-  //     code: ERROR_CODES.FIELD_VALIDATION_REQUIRED_ERR,
-  //   });
-  // }
-
   const { id } = req.params;
   const offer = await Offer.findById(id);
   if (!offer) {

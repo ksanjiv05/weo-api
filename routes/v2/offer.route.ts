@@ -553,7 +553,7 @@ router.put("/offers/data/:id/5", auth, offerValidationCh5, updateOfferData);
 router.put("/offers/data/:id/6", auth, offerValidationCh6, updateOfferData);
 router.put("/offers/data/:id/7", auth, offerValidationCh7, updateOfferData);
 router.put("/offers/data/:id/8", auth, offerValidationCh8, updateOfferData);
-router.put("/offers", auth, toListOffer);
+router.put("/offers/listed/:id", auth, toListOffer);
 
 router.delete("/offers", auth, deleteOffers);
 
