@@ -144,7 +144,7 @@ router.post("/brands", auth, addBrandValidation, addBrand);
  */
 
 router.get("/brands", auth, getBrands);
-router.get("/brands/location", getBrandsByLocation);
+router.get("/brands/location", auth, getBrandsByLocation);
 
 /**
  * @swagger

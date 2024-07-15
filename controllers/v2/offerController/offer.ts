@@ -425,15 +425,22 @@ export const getOffers = async (req: IRequest, res: Response) => {
       offerStatus = OFFER_STATUS.LIVE,
       page = 1,
       perPage = 10,
+      brandId = null,
+      outlets = [],
     } = req.query;
     const { _id } = req.user;
+    console.log("requset", req.query);
 
     const skip = (Number(page) - 1) * Number(perPage);
 
-    const offer = await Offer.find({
+    const filter = {
       user: _id,
       offerStatus,
-    })
+      ...(brandId && { brand: brandId }),
+      ...(outlets && { outlets: { $in: outlets } }),
+    };
+
+    const offer = await Offer.find(filter)
       .sort({ createdAt: -1 })
       .populate("brand", "brandName brandLogo")
       .populate({

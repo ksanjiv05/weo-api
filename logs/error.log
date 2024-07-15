@@ -303,3 +303,17 @@ error: POST /api/v1/brands 400 7ms
 {"level":"error","message":"GET /api/v2/offers/location?userLatitude=21.2096818&userLongitude=72.8301963&maxDistance=10 500 281ms","timestamp":"2024-07-08T13:14:21.540Z"}
 {"level":"error","message":"GET /api/v2/offers/location?userLatitude=21.2096818&userLongitude=72.8301963&maxDistance=10 500 341ms","timestamp":"2024-07-08T13:21:19.951Z"}
 {"level":"error","message":"GET /favicon.ico 404 3ms","timestamp":"2024-07-10T06:30:45.674Z"}
+{"level":"error","message":"GET /api/v2/offers?offerStatus=1&page=1&perPage=10 429 1ms","timestamp":"2024-07-15T07:26:13.243Z"}
+{"level":"error","message":"GET /api/v2/offers?offerStatus=1&page=1&perPage=10 429 1ms","timestamp":"2024-07-15T07:26:13.296Z"}
+{"level":"error","message":"GET /api/v2/brands?status=1&page=1&perPage=10 429 1ms","timestamp":"2024-07-15T07:26:13.298Z"}
+{"level":"error","message":"GET /api/v2/brands/location?userLatitude=13.0256069&userLongitude=77.637094 429 1ms","timestamp":"2024-07-15T07:26:13.299Z"}
+{"level":"error","message":"GET /api/v2/brands 429 1ms","timestamp":"2024-07-15T07:26:13.300Z"}
+{"level":"error","message":"GET /api/v2/offers?offerStatus=1&page=1&perPage=10 429 0ms","timestamp":"2024-07-15T07:26:13.302Z"}
+{"level":"error","message":"GET /api/v2/offers?offerStatus=1&page=1&perPage=10 429 1ms","timestamp":"2024-07-15T07:26:13.304Z"}
+{"level":"error","message":"GET /api/v2/categories 429 0ms","timestamp":"2024-07-15T07:26:13.305Z"}
+{"level":"error","message":"GET /api/v2/offers?offerStatus=1&page=1&perPage=10 429 2ms","timestamp":"2024-07-15T07:26:13.345Z"}
+{"level":"error","message":"GET /api/v2/users?initData=true 429 0ms","timestamp":"2024-07-15T07:26:13.346Z"}
+{"level":"error","message":"GET /api/v2/services 429 0ms","timestamp":"2024-07-15T07:26:13.347Z"}
+{"level":"error","message":"GET /api/v2/services 429 1ms","timestamp":"2024-07-15T07:26:15.485Z"}
+{"level":"error","message":"PUT /api/v2/brands/6694c5cdf76d30df7594173a 429 1ms","timestamp":"2024-07-15T07:26:15.487Z"}
+{"level":"error","message":"GET /api/v2/offers?offerStatus=1&page=1&perPage=10&outlets=[66939a95da3d163e7a323e27] 500 381ms","timestamp":"2024-07-15T07:31:32.458Z"}
