@@ -11,7 +11,7 @@ import { HTTP_STATUS_CODES } from "../../../config/statusCode";
 import { ERROR_CODES } from "../../../config/errorCode";
 import { IRequest } from "../../../interfaces/IRequest";
 import outletModel from "../../../models/outlet.model";
-import { STATUS } from "../../../config/enums";
+import { OFFER_STATUS, STATUS } from "../../../config/enums";
 
 // Define the functions
 
@@ -469,10 +469,10 @@ export const getBrandsByLocation = async (req: Request, res: Response) => {
         $geoNear: {
           near: {
             type: "Point",
-            coordinates: [lng, lat],
+            coordinates: [lat, lng],
           },
           distanceField: "distance",
-          maxDistance: maxDistance ? parseInt(maxDistance) : 10000,
+          maxDistance: 10000,
           spherical: true,
         },
       },
@@ -482,19 +482,67 @@ export const getBrandsByLocation = async (req: Request, res: Response) => {
           localField: "brand",
           foreignField: "_id",
           as: "brandDetails",
-          pipeline: [{ $match: { status: status } }],
+          pipeline: [{ $match: { status: OFFER_STATUS.LIVE } }],
         },
       },
       {
         $unwind: "$brandDetails",
       },
+
+      {
+        $lookup: {
+          from: "offers",
+          localField: "brand",
+          foreignField: "brand",
+          as: "offers",
+          pipeline: [
+            {
+              $match: {
+                status: {
+                  $ne: 1, // 1: pending or draft
+                },
+              },
+            },
+            {
+              $group: {
+                _id: "$brand",
+                totalListedOffers: {
+                  $sum: {
+                    $cond: [
+                      {
+                        $eq: ["$offerStatus", 2],
+                      },
+                      1,
+                      0,
+                    ],
+                  },
+                },
+              },
+            },
+          ],
+        },
+      },
+      {
+        $addFields: {
+          totalListedOffers: {
+            $arrayElemAt: ["$offers.totalListedOffers", 0],
+          },
+        },
+      },
       {
         $group: {
           _id: "$brand",
-          brandName: { $first: "$brandDetails.brandName" },
-          brandDescription: { $first: "$brandDetails.brandDescription" },
-          brandLogo: { $first: "$brandDetails.brandLogo" },
+          brandName: {
+            $first: "$brandDetails.brandName",
+          },
+          brandDescription: {
+            $first: "$brandDetails.brandDescription",
+          },
+          brandLogo: {
+            $first: "$brandDetails.brandLogo",
+          },
           outlets: { $push: "$$ROOT" },
+          totalListedOffersSum: { $sum: "$totalListedOffers" },
         },
       },
     ]);
