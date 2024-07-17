@@ -325,3 +325,4 @@ error: POST /api/v1/brands 400 7ms
 {"level":"error","message":"GET /api/v2/outlets/location?userLatitude=13.0256069&userLongitude=77.637094 500 435ms","timestamp":"2024-07-17T11:04:04.951Z"}
 {"level":"error","message":"GET /api/v2/outlets/location?userLatitude=13.0256069&userLongitude=77.637094 500 5263ms","timestamp":"2024-07-17T11:05:06.646Z"}
 {"level":"error","message":"GET /api/v2/outlets/location?userLatitude=13.0256069&userLongitude=77.637094 500 435ms","timestamp":"2024-07-17T11:05:36.794Z"}
+{"level":"error","message":"GET /favicon.ico 404 1ms","timestamp":"2024-07-17T14:14:32.127Z"}
