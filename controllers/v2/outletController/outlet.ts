@@ -12,7 +12,7 @@ import { HTTP_STATUS_CODES } from "../../../config/statusCode";
 import { ERROR_CODES } from "../../../config/errorCode";
 import { IRequest } from "../../../interfaces/IRequest";
 import mongoose from "mongoose";
-import { STATUS } from "../../../config/enums";
+import { OFFER_STATUS, STATUS } from "../../../config/enums";
 
 // Define the functions
 
@@ -370,7 +370,7 @@ export const getOutletsByUserLocation = async (req: Request, res: Response) => {
       },
       {
         $sort: {
-          distance: 1,
+          distance: -1,
         },
       },
       {
@@ -382,7 +382,7 @@ export const getOutletsByUserLocation = async (req: Request, res: Response) => {
           pipeline: [
             {
               $match: {
-                status: STATUS.LIVE,
+                status: OFFER_STATUS.LIVE,
               },
             },
           ],
@@ -390,6 +390,59 @@ export const getOutletsByUserLocation = async (req: Request, res: Response) => {
       },
       {
         $unwind: "$brandDetails",
+      },
+      {
+        $lookup: {
+          from: "offers",
+          localField: "brand",
+          foreignField: "brand",
+          as: "offers",
+          pipeline: [
+            {
+              $match: {
+                status: {
+                  $ne: 1, // 1: pending or draft
+                },
+              },
+            },
+            {
+              $group: {
+                _id: "$brand",
+                totalListedOffers: {
+                  $sum: {
+                    $cond: [
+                      {
+                        $eq: ["$offerStatus", 2],
+                      },
+                      1,
+                      0,
+                    ],
+                  },
+                },
+              },
+            },
+          ],
+        },
+      },
+      {
+        $addFields: {
+          totalListedOffers: {
+            $arrayElemAt: ["$offers.totalListedOffers", 0],
+          },
+        },
+      },
+      {
+        $project: {
+          brand: 1,
+          outletName: 1,
+          address: 1,
+          operatingDays: 1,
+          serviceContacts: 1,
+          createdAt: 1,
+          brandDetails: 1,
+          totalListedOffers: 1,
+          distance: 1,
+        },
       },
     ]);
 
