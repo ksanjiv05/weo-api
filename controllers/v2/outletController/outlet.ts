@@ -350,16 +350,46 @@ export const deleteOutlet = async (req: Request, res: Response) => {
 
 export const getOutletsByUserLocation = async (req: Request, res: Response) => {
   try {
-    const { longitude, latitude, maxDistance = 1000 } = req.body;
+    const { userLatitude, userLongitude, maxDistance = 1000 } = req.body;
+
+    const lat = parseFloat(userLatitude);
+    const lng = parseFloat(userLongitude);
 
     const outlets = await Outlet.aggregate([
       {
         $geoNear: {
-          near: { type: "Point", coordinates: [longitude, latitude] },
+          near: {
+            type: "Point",
+            coordinates: [lat, lng],
+          },
           distanceField: "distance",
-          maxDistance: maxDistance, // 1 km
+          // distanceField: "dist.calculated",
+          maxDistance: 5000,
           spherical: true,
         },
+      },
+      {
+        $sort: {
+          distance: 1,
+        },
+      },
+      {
+        $lookup: {
+          from: "brands",
+          localField: "brand",
+          foreignField: "_id",
+          as: "brandDetails",
+          pipeline: [
+            {
+              $match: {
+                status: STATUS.LIVE,
+              },
+            },
+          ],
+        },
+      },
+      {
+        $unwind: "$brandDetails",
       },
     ]);
 

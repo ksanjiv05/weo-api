@@ -8,6 +8,7 @@ import {
   deleteOutlet,
   getOutletById,
   getOutlets,
+  getOutletsByUserLocation,
   updateOutlet,
 } from "../../controllers/v2/outletController/outlet";
 import { auth } from "../../middleware/auth";
@@ -289,5 +290,7 @@ router.get("/brand/outlets/:id", auth, getOutletById);
  */
 
 router.delete("/brand/outlets/:id", auth, deleteOutlet);
+
+router.get("/outlets/location", auth, getOutletsByUserLocation);
 
 export default router;
