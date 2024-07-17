@@ -350,7 +350,7 @@ export const deleteOutlet = async (req: Request, res: Response) => {
 
 export const getOutletsByUserLocation = async (req: Request, res: Response) => {
   try {
-    const { userLatitude, userLongitude, maxDistance = 1000 } = req.body;
+    const { userLatitude, userLongitude, maxDistance = 1000 }: any = req.query;
 
     const lat = parseFloat(userLatitude);
     const lng = parseFloat(userLongitude);

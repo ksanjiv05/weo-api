@@ -291,6 +291,6 @@ router.get("/brand/outlets/:id", auth, getOutletById);
 
 router.delete("/brand/outlets/:id", auth, deleteOutlet);
 
-router.get("/outlets/location", auth, getOutletsByUserLocation);
+router.get("/outlets/location", getOutletsByUserLocation);
 
 export default router;
