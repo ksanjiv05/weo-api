@@ -317,3 +317,11 @@ error: POST /api/v1/brands 400 7ms
 {"level":"error","message":"GET /api/v2/services 429 1ms","timestamp":"2024-07-15T07:26:15.485Z"}
 {"level":"error","message":"PUT /api/v2/brands/6694c5cdf76d30df7594173a 429 1ms","timestamp":"2024-07-15T07:26:15.487Z"}
 {"level":"error","message":"GET /api/v2/offers?offerStatus=1&page=1&perPage=10&outlets=[66939a95da3d163e7a323e27] 500 381ms","timestamp":"2024-07-15T07:31:32.458Z"}
+{"level":"error","message":"GET /api/v2/outlets/location?userLatitude=13.0256069&userLongitude=77.637094 403 15ms","timestamp":"2024-07-17T10:57:09.631Z"}
+{"level":"error","message":"GET /favicon.ico 404 4ms","timestamp":"2024-07-17T10:57:09.944Z"}
+{"level":"error","message":"GET /api/v2/outlets/location?userLatitude=13.0256069&userLongitude=77.637094 403 4ms","timestamp":"2024-07-17T10:57:26.018Z"}
+{"level":"error","message":"GET /api/v2/outlets/location?userLatitude=13.0256069&userLongitude=77.637094 500 378ms","timestamp":"2024-07-17T10:57:50.227Z"}
+{"level":"error","message":"GET /api/v2/outlets/location?userLatitude=13.0256069&userLongitude=77.637094 500 354ms","timestamp":"2024-07-17T10:59:45.627Z"}
+{"level":"error","message":"GET /api/v2/outlets/location?userLatitude=13.0256069&userLongitude=77.637094 500 435ms","timestamp":"2024-07-17T11:04:04.951Z"}
+{"level":"error","message":"GET /api/v2/outlets/location?userLatitude=13.0256069&userLongitude=77.637094 500 5263ms","timestamp":"2024-07-17T11:05:06.646Z"}
+{"level":"error","message":"GET /api/v2/outlets/location?userLatitude=13.0256069&userLongitude=77.637094 500 435ms","timestamp":"2024-07-17T11:05:36.794Z"}

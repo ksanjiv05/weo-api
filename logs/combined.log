@@ -2729,3 +2729,14 @@ info: POST /api/v1/brands 200 295ms
 {"level":"info","message":"GET /api/v2/offers?offerStatus=2&outlets[]=66939963da3d163e7a323e08 200 775ms","timestamp":"2024-07-15T11:36:14.798Z"}
 {"level":"info","message":"GET /api/v2/brands/location?userLatitude=13.0256069&userLongitude=77.637094 200 538ms","timestamp":"2024-07-15T11:38:00.283Z"}
 {"level":"info","message":"GET /api/v2/offers?offerStatus=2&outlets[]=66939963da3d163e7a323e08 200 789ms","timestamp":"2024-07-15T11:38:00.599Z"}
+{"level":"error","message":"GET /api/v2/outlets/location?userLatitude=13.0256069&userLongitude=77.637094 403 15ms","timestamp":"2024-07-17T10:57:09.631Z"}
+{"level":"error","message":"GET /favicon.ico 404 4ms","timestamp":"2024-07-17T10:57:09.944Z"}
+{"level":"error","message":"GET /api/v2/outlets/location?userLatitude=13.0256069&userLongitude=77.637094 403 4ms","timestamp":"2024-07-17T10:57:26.018Z"}
+{"level":"error","message":"GET /api/v2/outlets/location?userLatitude=13.0256069&userLongitude=77.637094 500 378ms","timestamp":"2024-07-17T10:57:50.227Z"}
+{"level":"error","message":"GET /api/v2/outlets/location?userLatitude=13.0256069&userLongitude=77.637094 500 354ms","timestamp":"2024-07-17T10:59:45.627Z"}
+{"level":"info","message":"GET /api/v2/outlets/location?userLatitude=13.0256069&userLongitude=77.637094 200 7053ms","timestamp":"2024-07-17T11:03:07.428Z"}
+{"level":"error","message":"GET /api/v2/outlets/location?userLatitude=13.0256069&userLongitude=77.637094 500 435ms","timestamp":"2024-07-17T11:04:04.951Z"}
+{"level":"error","message":"GET /api/v2/outlets/location?userLatitude=13.0256069&userLongitude=77.637094 500 5263ms","timestamp":"2024-07-17T11:05:06.646Z"}
+{"level":"error","message":"GET /api/v2/outlets/location?userLatitude=13.0256069&userLongitude=77.637094 500 435ms","timestamp":"2024-07-17T11:05:36.794Z"}
+{"level":"info","message":"GET /api/v2/outlets/location?userLatitude=13.0256069&userLongitude=77.637094 200 6735ms","timestamp":"2024-07-17T11:06:38.153Z"}
+{"level":"info","message":"GET /api/v2/outlets/location?userLatitude=13.0256069&userLongitude=77.637094 200 322ms","timestamp":"2024-07-17T11:07:40.688Z"}
