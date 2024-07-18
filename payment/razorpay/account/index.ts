@@ -1,3 +1,74 @@
+import axios from "axios";
+import instance from "..";
+import { BankAccount } from "../../../types";
+
+/**
+ * Adds a bank account to the Razorpay account.
+ *
+ * @param {BankAccount} bankAccount - The bank account details.
+ * @param {string} bankAccount.name - The name of the account holder.
+ * @param {string} bankAccount.email - The email associated with the account.
+ * @param {string} bankAccount.business_name - The name of the business.
+ * @param {string} bankAccount.ifsc_code - The IFSC code of the bank.
+ * @param {string} bankAccount.beneficiary_name - The name of the beneficiary.
+ * @param {string} bankAccount.account_type - The type of the account.
+ * @param {string} bankAccount.account_number - The account number.
+ * @param {string} bankAccount.uid - The unique identifier of the account.
+ * @param {boolean} bankAccount.isUpdate - Flag indicating if the account is being updated.
+ * @return {Promise<{ status: boolean, data: any }>} - A promise that resolves to an object with the status and data of the request.
+ * @throws {Error} - If there is an error during the request.
+ */
+export const addBankAccount = async ({
+  name,
+  email,
+  business_name,
+  ifsc_code,
+  beneficiary_name,
+  account_type,
+  account_number,
+  uid,
+  isUpdate,
+}: BankAccount) => {
+  try {
+    const config = {
+      auth: {
+        username: process.env.RAZORPAY_KEY_ID,
+        password: process.env.RAZORPAY_KEY_SECRET,
+      },
+    };
+    const res = await axios.post(
+      "https://api.razorpay.com/v1/beta/accounts",
+      {
+        name,
+        email,
+        tnc_accepted: true,
+        account_details: {
+          business_name,
+          business_type: "individual",
+        },
+        bank_account: {
+          ifsc_code,
+          beneficiary_name,
+          account_type,
+          account_number,
+        },
+      },
+      {
+        headers: {
+          Authorization: "Basic " + process.env.RAZ_TOKEN,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    return { status: true, data: res.data };
+  } catch (error: any) {
+    console.log(error.response.data);
+    return { status: false, data: null };
+  }
+};
+
+
 // instance.virtualAccounts.create({
 //     "receivers": {
 //       "types": [
@@ -20,9 +91,6 @@
 //     }
 //   })
 
-import axios from "axios";
-import instance from "..";
-import { BankAccout } from "../../../types";
 // ifsc: string,
 //   account_number: string,
 //   description: string,
@@ -127,70 +195,6 @@ export const closeVirtualAccount = async (virtualId: string) => {
 
 //https://razorpay.com/docs/api/payments/route/account-apis-beta/
 
-/**
- * Adds a bank account to the Razorpay account.
- *
- * @param {BankAccount} bankAccount - The bank account details.
- * @param {string} bankAccount.name - The name of the account holder.
- * @param {string} bankAccount.email - The email associated with the account.
- * @param {string} bankAccount.business_name - The name of the business.
- * @param {string} bankAccount.ifsc_code - The IFSC code of the bank.
- * @param {string} bankAccount.beneficiary_name - The name of the beneficiary.
- * @param {string} bankAccount.account_type - The type of the account.
- * @param {string} bankAccount.account_number - The account number.
- * @param {string} bankAccount.uid - The unique identifier of the account.
- * @param {boolean} bankAccount.isUpdate - Flag indicating if the account is being updated.
- * @return {Promise<{ status: boolean, data: any }>} - A promise that resolves to an object with the status and data of the request.
- * @throws {Error} - If there is an error during the request.
- */
-export const addBankAccount = async ({
-  name,
-  email,
-  business_name,
-  ifsc_code,
-  beneficiary_name,
-  account_type,
-  account_number,
-  uid,
-  isUpdate,
-}: BankAccout) => {
-  try {
-    const config = {
-      auth: {
-        username: process.env.RAZORPAY_KEY_ID,
-        password: process.env.RAZORPAY_KEY_SECRET,
-      },
-    };
-    const res = await axios.post(
-      "https://api.razorpay.com/v1/beta/accounts",
-      {
-        name,
-        email,
-        tnc_accepted: true,
-        account_details: {
-          business_name,
-          business_type: "individual",
-        },
-        bank_account: {
-          ifsc_code,
-          beneficiary_name,
-          account_type,
-          account_number,
-        },
-      },
-      {
-        headers: {
-          Authorization: "Basic " + process.env.RAZ_TOKEN,
-          "Content-Type": "application/json",
-        },
-      }
-    );
 
-    return { status: true, data: res.data };
-  } catch (error: any) {
-    console.log(error.response.data);
-    return { status: false, data: null };
-  }
-};
 
 //https://github.com/razorpay/razorpay-node/blob/master/documents/plans.md

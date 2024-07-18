@@ -465,193 +465,200 @@ export const getBrandsByLocation = async (req: Request, res: Response) => {
     const lng = parseFloat(userLongitude);
 
     const brands = await outletModel.aggregate(
-    //   [
-    //   {
-    //     $geoNear: {
-    //       near: {
-    //         type: "Point",
-    //         coordinates: [lat, lng],
-    //       },
-    //       // distanceField: "distance",
-    //       distanceField: "dist.calculated",
-    //       maxDistance: 10000,
-    //       spherical: true,
-    //     },
-    //   },
-    //   { $sort: { "dist.calculated": 1 } },
-    //   {
-    //     $lookup: {
-    //       from: "brands",
-    //       localField: "brand",
-    //       foreignField: "_id",
-    //       as: "brandDetails",
-    //       pipeline: [{ $match: { status: OFFER_STATUS.LIVE } }],
-    //     },
-    //   },
-    //   {
-    //     $unwind: "$brandDetails",
-    //   },
+      //   [
+      //   {
+      //     $geoNear: {
+      //       near: {
+      //         type: "Point",
+      //         coordinates: [lat, lng],
+      //       },
+      //       // distanceField: "distance",
+      //       distanceField: "dist.calculated",
+      //       maxDistance: 10000,
+      //       spherical: true,
+      //     },
+      //   },
+      //   { $sort: { "dist.calculated": 1 } },
+      //   {
+      //     $lookup: {
+      //       from: "brands",
+      //       localField: "brand",
+      //       foreignField: "_id",
+      //       as: "brandDetails",
+      //       pipeline: [{ $match: { status: OFFER_STATUS.LIVE } }],
+      //     },
+      //   },
+      //   {
+      //     $unwind: "$brandDetails",
+      //   },
 
-    //   {
-    //     $lookup: {
-    //       from: "offers",
-    //       localField: "brand",
-    //       foreignField: "brand",
-    //       as: "offers",
-    //       pipeline: [
-    //         {
-    //           $match: {
-    //             status: {
-    //               $ne: 1, // 1: pending or draft
-    //             },
-    //           },
-    //         },
-    //         {
-    //           $group: {
-    //             _id: "$brand",
-    //             totalListedOffers: {
-    //               $sum: {
-    //                 $cond: [
-    //                   {
-    //                     $eq: ["$offerStatus", 2],
-    //                   },
-    //                   1,
-    //                   0,
-    //                 ],
-    //               },
-    //             },
-    //           },
-    //         },
-    //       ],
-    //     },
-    //   },
-    //   {
-    //     $addFields: {
-    //       totalListedOffers: {
-    //         $arrayElemAt: ["$offers.totalListedOffers", 0],
-    //       },
-    //     },
-    //   },
-    //   {
-    //     $group: {
-    //       _id: "$brand",
-    //       brandName: {
-    //         $first: "$brandDetails.brandName",
-    //       },
-    //       brandDescription: {
-    //         $first: "$brandDetails.brandDescription",
-    //       },
-    //       brandLogo: {
-    //         $first: "$brandDetails.brandLogo",
-    //       },
-    //       outlets: { $push: "$$ROOT" },
-    //       totalListedOffersSum: { $sum: "$totalListedOffers" },
-    //     },
-    //   },
-    // ]
-    [
-  {
-    $geoNear: {
-      near: {
-        type: "Point",
-        coordinates: [lat, lng],
-      },
-      distanceField: "distance",
-      // distanceField: "dist.calculated",
-      maxDistance: 5000,
-      spherical: true,
-    },
-  },
-  {$sort: {
-    "distance": 1
-  }},
-  {
-    $lookup: {
-      from: "brands",
-      localField: "brand",
-      foreignField: "_id",
-      as: "brandDetails",
-      pipeline: [
+      //   {
+      //     $lookup: {
+      //       from: "offers",
+      //       localField: "brand",
+      //       foreignField: "brand",
+      //       as: "offers",
+      //       pipeline: [
+      //         {
+      //           $match: {
+      //             status: {
+      //               $ne: 1, // 1: pending or draft
+      //             },
+      //           },
+      //         },
+      //         {
+      //           $group: {
+      //             _id: "$brand",
+      //             totalListedOffers: {
+      //               $sum: {
+      //                 $cond: [
+      //                   {
+      //                     $eq: ["$offerStatus", 2],
+      //                   },
+      //                   1,
+      //                   0,
+      //                 ],
+      //               },
+      //             },
+      //           },
+      //         },
+      //       ],
+      //     },
+      //   },
+      //   {
+      //     $addFields: {
+      //       totalListedOffers: {
+      //         $arrayElemAt: ["$offers.totalListedOffers", 0],
+      //       },
+      //     },
+      //   },
+      //   {
+      //     $group: {
+      //       _id: "$brand",
+      //       brandName: {
+      //         $first: "$brandDetails.brandName",
+      //       },
+      //       brandDescription: {
+      //         $first: "$brandDetails.brandDescription",
+      //       },
+      //       brandLogo: {
+      //         $first: "$brandDetails.brandLogo",
+      //       },
+      //       outlets: { $push: "$$ROOT" },
+      //       totalListedOffersSum: { $sum: "$totalListedOffers" },
+      //     },
+      //   },
+      // ]
+      [
         {
-          $match: {
-            status: STATUS.LIVE,
+          $geoNear: {
+            near: {
+              type: "Point",
+              coordinates: [lat, lng],
+            },
+            distanceField: "distance",
+            // distanceField: "dist.calculated",
+            maxDistance: 5000,
+            spherical: true,
           },
         },
-      ],
-    },
-  },
-  {
-    $unwind: "$brandDetails",
-  },
-  {
-    $lookup: {
-      from: "offers",
-      localField: "brand",
-      foreignField: "brand",
-      as: "offers",
-      pipeline: [
+        {
+          $sort: {
+            distance: 1,
+          },
+        },
+        {
+          $lookup: {
+            from: "brands",
+            localField: "brand",
+            foreignField: "_id",
+            as: "brandDetails",
+            pipeline: [
+              {
+                $match: {
+                  status: STATUS.LIVE,
+                },
+              },
+            ],
+          },
+        },
+        {
+          $unwind: "$brandDetails",
+        },
+        {
+          $lookup: {
+            from: "offers",
+            localField: "brand",
+            foreignField: "brand",
+            as: "offers",
+            pipeline: [
+              {
+                $match: {
+                  status: {
+                    $ne: 1, // 1: pending or draft
+                  },
+                },
+              },
+              {
+                $group: {
+                  _id: "$brand",
+                  totalListedOffers: {
+                    $sum: {
+                      $cond: [
+                        {
+                          $eq: ["$offerStatus", OFFER_STATUS.LIVE],
+                        },
+                        1,
+                        0,
+                      ],
+                    },
+                  },
+                },
+              },
+            ],
+          },
+        },
         {
           $match: {
-            status: {
-              $ne: 1, // 1: pending or draft
+            "offers.0": { $exists: true },
+            "offers.0.totalListedOffers": { $ne: 0 },
+          },
+        },
+        {
+          $addFields: {
+            totalListedOffers: {
+              $arrayElemAt: ["$offers.totalListedOffers", 0],
             },
           },
         },
         {
           $group: {
             _id: "$brand",
-            totalListedOffers: {
-              $sum: {
-                $cond: [
-                  {
-                    $eq: ["$offerStatus", OFFER_STATUS.LIVE],
-                  },
-                  1,
-                  0,
-                ],
-              },
+            distance: { $first: "$distance" },
+            brandName: {
+              $first: "$brandDetails.brandName",
+            },
+            brandDescription: {
+              $first: "$brandDetails.brandDescription",
+            },
+            brandLogo: {
+              $first: "$brandDetails.brandLogo",
+            },
+            outlets: {
+              $push: "$$ROOT",
+            },
+            totalListedOffersSum: {
+              $sum: "$totalListedOffers",
             },
           },
         },
-      ],
-    },
-  },
-  {
-    $addFields: {
-      totalListedOffers: {
-        $arrayElemAt: [
-          "$offers.totalListedOffers",
-          0,
-        ],
-      },
-    },
-  },
-  {
-    $group: {
-      _id: "$brand",
-      distance:{$first:"$distance"},
-      brandName: {
-        $first: "$brandDetails.brandName",
-      },
-      brandDescription: {
-        $first: "$brandDetails.brandDescription",
-      },
-      brandLogo: {
-        $first: "$brandDetails.brandLogo",
-      },
-      outlets: {
-        $push: "$$ROOT",
-      },
-      totalListedOffersSum: {
-        $sum: "$totalListedOffers",
-      },
-    },
-  },
-  {$sort: {
-    "distance": 1
-  }},
-]
-  );
+        {
+          $sort: {
+            distance: 1,
+          },
+        },
+      ]
+    );
 
     return responseObj({
       resObj: res,
