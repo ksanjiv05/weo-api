@@ -2742,3 +2742,6 @@ info: POST /api/v1/brands 200 295ms
 {"level":"info","message":"GET /api/v2/outlets/location?userLatitude=13.0256069&userLongitude=77.637094 200 322ms","timestamp":"2024-07-17T11:07:40.688Z"}
 {"level":"info","message":"GET /api/v2/outlets/location?userLatitude=13.0256069&userLongitude=77.637094 200 365ms","timestamp":"2024-07-17T14:14:31.664Z"}
 {"level":"error","message":"GET /favicon.ico 404 1ms","timestamp":"2024-07-17T14:14:32.127Z"}
+{"level":"info","message":"GET /api/v2/outlets/location?userLatitude=21.2096818&userLongitude=72.8301963&maxDistance=10 200 291ms","timestamp":"2024-07-18T02:55:01.985Z"}
+{"level":"error","message":"GET /favicon.ico 404 2ms","timestamp":"2024-07-18T02:55:02.417Z"}
+{"level":"info","message":"GET /api/v2/outlets/location?userLatitude=13.0158279&userLongitude=77.6429558 200 274ms","timestamp":"2024-07-18T02:55:33.129Z"}

@@ -355,6 +355,97 @@ export const getOutletsByUserLocation = async (req: Request, res: Response) => {
     const lat = parseFloat(userLatitude);
     const lng = parseFloat(userLongitude);
 
+    // const outlets = await Outlet.aggregate([
+    //   {
+    //     $geoNear: {
+    //       near: {
+    //         type: "Point",
+    //         coordinates: [lat, lng],
+    //       },
+    //       distanceField: "distance",
+    //       // distanceField: "dist.calculated",
+    //       maxDistance: 5000,
+    //       spherical: true,
+    //     },
+    //   },
+    //   {
+    //     $sort: {
+    //       distance: -1,
+    //     },
+    //   },
+    //   {
+    //     $lookup: {
+    //       from: "brands",
+    //       localField: "brand",
+    //       foreignField: "_id",
+    //       as: "brandDetails",
+    //       pipeline: [
+    //         {
+    //           $match: {
+    //             status: OFFER_STATUS.LIVE,
+    //           },
+    //         },
+    //       ],
+    //     },
+    //   },
+    //   {
+    //     $unwind: "$brandDetails",
+    //   },
+    //   {
+    //     $lookup: {
+    //       from: "offers",
+    //       localField: "brand",
+    //       foreignField: "brand",
+    //       as: "offers",
+    //       pipeline: [
+    //         {
+    //           $match: {
+    //             status: {
+    //               $ne: 1, // 1: pending or draft
+    //             },
+    //           },
+    //         },
+    //         {
+    //           $group: {
+    //             _id: "$brand",
+    //             totalListedOffers: {
+    //               $sum: {
+    //                 $cond: [
+    //                   {
+    //                     $eq: ["$offerStatus", 2],
+    //                   },
+    //                   1,
+    //                   0,
+    //                 ],
+    //               },
+    //             },
+    //           },
+    //         },
+    //       ],
+    //     },
+    //   },
+    //   {
+    //     $addFields: {
+    //       totalListedOffers: {
+    //         $arrayElemAt: ["$offers.totalListedOffers", 0],
+    //       },
+    //     },
+    //   },
+    //   {
+    //     $project: {
+    //       brand: 1,
+    //       outletName: 1,
+    //       address: 1,
+    //       operatingDays: 1,
+    //       serviceContacts: 1,
+    //       createdAt: 1,
+    //       brandDetails: 1,
+    //       totalListedOffers: 1,
+    //       distance: 1,
+    //     },
+    //   },
+    // ]);
+
     const outlets = await Outlet.aggregate([
       {
         $geoNear: {
@@ -363,14 +454,8 @@ export const getOutletsByUserLocation = async (req: Request, res: Response) => {
             coordinates: [lat, lng],
           },
           distanceField: "distance",
-          // distanceField: "dist.calculated",
           maxDistance: 5000,
           spherical: true,
-        },
-      },
-      {
-        $sort: {
-          distance: -1,
         },
       },
       {
@@ -382,26 +467,29 @@ export const getOutletsByUserLocation = async (req: Request, res: Response) => {
           pipeline: [
             {
               $match: {
-                status: OFFER_STATUS.LIVE,
+                status: STATUS.LIVE,
               },
             },
           ],
         },
       },
+      { $unwind: "$brandDetails" },
       {
-        $unwind: "$brandDetails",
+        $addFields: {
+          brandName: "$brandName",
+          brandDescription: "$brandDescription",
+          brandLogo: "$brandLogo",
+        },
       },
       {
         $lookup: {
           from: "offers",
-          localField: "brand",
-          foreignField: "brand",
-          as: "offers",
+          let: { outletId: "$_id" },
           pipeline: [
             {
               $match: {
-                status: {
-                  $ne: 1, // 1: pending or draft
+                $expr: {
+                  $in: ["$$outletId", "$outlets"],
                 },
               },
             },
@@ -412,7 +500,7 @@ export const getOutletsByUserLocation = async (req: Request, res: Response) => {
                   $sum: {
                     $cond: [
                       {
-                        $eq: ["$offerStatus", 2],
+                        $eq: ["$offerStatus", OFFER_STATUS.LIVE],
                       },
                       1,
                       0,
@@ -422,26 +510,12 @@ export const getOutletsByUserLocation = async (req: Request, res: Response) => {
               },
             },
           ],
+          as: "offers",
         },
       },
       {
-        $addFields: {
-          totalListedOffers: {
-            $arrayElemAt: ["$offers.totalListedOffers", 0],
-          },
-        },
-      },
-      {
-        $project: {
-          brand: 1,
-          outletName: 1,
-          address: 1,
-          operatingDays: 1,
-          serviceContacts: 1,
-          createdAt: 1,
-          brandDetails: 1,
-          totalListedOffers: 1,
-          distance: 1,
+        $match: {
+          "offers.0": { $exists: true },
         },
       },
     ]);
