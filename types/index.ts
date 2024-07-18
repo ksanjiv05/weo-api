@@ -1,4 +1,4 @@
-export type BankAccout = {
+export type BankAccount = {
   ifsc_code: string;
   uid: string;
   email: string;

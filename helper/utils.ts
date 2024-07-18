@@ -135,3 +135,32 @@ export const generateKeyPair = () => {
 
   return { publicKey, privateKey };
 };
+
+
+
+
+
+// Function to generate SHA-256 hash
+/**
+ * Verifies the SHA-256 hash of the provided data.
+ *
+ * @param {string} data - The data to be hashed .
+ * @return {string} Returns  the generated hash.
+ */
+export const generateHash=(data:string) =>{
+  return crypto.createHash('sha256').update(data).digest('hex');
+}
+
+// Function to verify SHA-256 hash
+/**
+ * Verifies the SHA-256 hash of the provided data.
+ *
+ * @param {string} data - The data to be hashed and verified.
+ * @param {string} hash - The hash to be compared with the generated hash.
+ * @return {boolean} Returns true if the generated hash matches the provided hash, false otherwise.
+ */
+export const verifyHash=(data:string, hash:string) =>{
+  const dataHash = generateHash(data);
+  return dataHash === hash;
+}
+

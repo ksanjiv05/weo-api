@@ -516,6 +516,7 @@ export const getOutletsByUserLocation = async (req: Request, res: Response) => {
       {
         $match: {
           "offers.0": { $exists: true },
+          "offers.0.totalListedOffers": { $ne: 0 },
         },
       },
       { $unwind: "$offers" },

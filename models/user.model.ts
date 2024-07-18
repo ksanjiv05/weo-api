@@ -85,7 +85,15 @@ export interface IUser extends Document {
   oEarned?: Number;
   fcmToken?: String;
 
-  kyc: [{ type: Schema.Types.ObjectId; ref: "KYC" }];
+  kyc: [
+    {
+      panCardImage: string;
+      govtIdFrontImage: string;
+      govtIdBackImage: string;
+      passportImage: string;
+      drivingLicenseImage: string;
+    }
+  ];
   wishLists: [{ type: Schema.Types.ObjectId; ref: "Offer" }];
   likes: [{ type: Schema.Types.ObjectId; ref: "Offer" }];
 
@@ -94,7 +102,13 @@ export interface IUser extends Document {
     facebookURL: String;
     xURL: String;
   };
-  bankAccounts: [{ type: Schema.Types.ObjectId; ref: "BankAccount" }];
+  bankAccounts: [
+    {
+      accountId: string;
+      isPrimary: boolean;
+      accountHolderName: string;
+    }
+  ];
   successRate: Number;
   lastLogin: Date;
   lastActive: Date;
