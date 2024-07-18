@@ -476,9 +476,9 @@ export const getOutletsByUserLocation = async (req: Request, res: Response) => {
       { $unwind: "$brandDetails" },
       {
         $addFields: {
-          brandName: "$brandName",
-          brandDescription: "$brandDescription",
-          brandLogo: "$brandLogo",
+          brandName: "$brandDetails.brandName",
+          brandDescription: "$brandDetails.brandDescription",
+          brandLogo: "$brandDetails.brandLogo",
         },
       },
       {
@@ -518,6 +518,27 @@ export const getOutletsByUserLocation = async (req: Request, res: Response) => {
           "offers.0": { $exists: true },
         },
       },
+      { $unwind: "$offers" },
+      {
+        $addFields: {
+          totalListedOffers: "$offers.totalListedOffers",
+        },
+      },
+      {
+        $project: {
+          offers: 0,
+          brandDetails: 0,
+        },
+      },
+      // {
+      //   $project: {
+      //     _id: 1,
+      //     outletName: 1,
+      //     address: 1,
+      //     distance: 1,
+      //     offers: 1
+      //   }
+      // }
     ]);
 
     return responseObj({
