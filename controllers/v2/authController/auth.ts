@@ -7,6 +7,8 @@ import { validationResult } from "express-validator";
 import { adminApp } from "../../../firebase";
 import { ERROR_CODES } from "../../../config/errorCode";
 import { IRequest } from "../../../interfaces/IRequest";
+import { addWallet } from "../../../helper/user";
+import { IWallet } from "../../../models/wallet.model";
 
 export const register = async (req: Request, res: Response) => {
   try {
@@ -23,9 +25,17 @@ export const register = async (req: Request, res: Response) => {
         code: ERROR_CODES.FIELD_VALIDATION_REQUIRED_ERR,
       });
     }
-    // req.body.creatorName = req.body.phone;
+    console.log("---req.body---", req.body);
     const newUser = new User(req.body);
     await newUser.save();
+
+    const walletObj: IWallet | any = {
+      user: newUser._id,
+      name: newUser.name,
+      balance: 0,
+      currency: req.body.currency,
+    };
+    addWallet(walletObj);
 
     return responseObj({
       resObj: res,

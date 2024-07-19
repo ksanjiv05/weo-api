@@ -15,7 +15,7 @@ import {
   register,
   updateCreatorName,
   updateUser,
-} from "../../controllers/v1/authController/auth";
+} from "../../controllers/v2/authController/auth";
 
 const router = express.Router();
 
