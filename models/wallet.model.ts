@@ -1,17 +1,23 @@
 import mongoose, { Document, Schema } from "mongoose";
 import { conn_v2 } from "../db";
 import { generateHash } from "../helper/utils";
-interface IWallet extends Document {
-  uid: string;
+import logging from "../config/logging";
+export interface IWallet extends Document {
+  user: string;
   name: string;
   balance: number;
   currency: string;
-  verifyString: string;
+  verifyString?: string;
 }
 
-const walletSchema = new Schema(
+const walletSchema: Schema = new Schema(
   {
-    user: { type: mongoose.Types.ObjectId, ref: "User", required: true },
+    user: {
+      type: mongoose.Types.ObjectId,
+      ref: "User",
+      unique: true,
+      required: true,
+    },
     name: { type: String, required: true },
     balance: { type: Number, required: true },
     currency: { type: String, required: true },
@@ -22,14 +28,20 @@ const walletSchema = new Schema(
   }
 );
 
-walletSchema.index({ user: 1 }, { unique: true });
+// walletSchema.index({ user: 1 }, { unique: true });
 
-walletSchema.pre("save", function (next) {
-  const wallet = this;
-  const toBeVerifyString =
-    wallet.balance.toString() + "-" + wallet.user.toString();
-  wallet.verifyString = generateHash(toBeVerifyString);
-  next();
-});
+// walletSchema.pre<IWallet>("save", function (next) {
+//   logging.info("walletSchema.pre", "", this);
+//   const wallet = this;
+//   const toBeVerifyString =
+//     wallet.balance.toString() + "-" + wallet.name.toString();
+//   wallet.verifyString = generateHash(toBeVerifyString);
+//   logging.info("toBeVerifyString", "", wallet);
+//   next();
+// });
+
+// walletSchema.post<IWallet>("save", function () {
+//   logging.info("Mongo", "Wallet just saved: ");
+// });
 
 export default conn_v2.model<IWallet>("Wallet", walletSchema);

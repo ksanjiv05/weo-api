@@ -24,6 +24,7 @@ export const openai = new OpenAI({
 export const RAZORPAY_KEY_ID: string = process.env.RAZORPAY_KEY_ID as string;
 export const RAZORPAY_KEY_SECRET: string = process.env
   .RAZORPAY_KEY_SECRET as string;
+export  const RAZORPAY_WEBHOOK_SIGNATURE = process.env.RAZORPAY_WEBHOOK_SIGNATURE as string;
 
 export const STATIC_FILE_PATH: string =
   process.env.NODE_ENV == "dev"

@@ -16,6 +16,7 @@ import serviceRoute from "./service.tool.route";
 import userRoute from "./user.route";
 import offerRoute from "./offer.route";
 import listedRoute from "./listed.route";
+import transactionRoute from "./transaction.route";
 import {
   getAiGeneratedChatResponse,
   getAiGeneratedImg,
@@ -33,6 +34,7 @@ routerV2.use(outletRoute);
 routerV2.use(serviceRoute);
 routerV2.use(offerRoute);
 routerV2.use(listedRoute);
+routerV2.use(transactionRoute);
 
 routerV2.post("/ai/logo", auth, getAiGeneratedLogo);
 routerV2.post("/ai/images", auth, getAiGeneratedImg);

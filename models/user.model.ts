@@ -35,6 +35,14 @@ const userSchema: Schema = new Schema(
       passportImage: String,
       drivingLicenseImage: String,
     },
+    countryCode: {
+      type: String,
+      lowercase: true,
+    },
+    currency: {
+      type: String,
+      lowercase: true,
+    },
     wishLists: [{ type: Schema.Types.ObjectId, ref: "Offer" }],
     likes: [{ type: Schema.Types.ObjectId, ref: "Offer" }],
 
@@ -84,6 +92,9 @@ export interface IUser extends Document {
   phone?: string;
   oEarned?: Number;
   fcmToken?: String;
+
+  countryCode?: string;
+  currency?: string;
 
   kyc: [
     {

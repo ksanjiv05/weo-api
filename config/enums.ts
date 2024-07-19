@@ -15,4 +15,9 @@ export enum OFFER_STATUS {
   REJECTED = 7,
 }
 
+export enum ORDER_TYPE {
+  TOPUP = 1,
+  PURCHASE = 2,
+}
+
 // paused
