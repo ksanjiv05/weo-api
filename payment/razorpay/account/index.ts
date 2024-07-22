@@ -1,6 +1,6 @@
 import axios from "axios";
 import instance from "..";
-import { BankAccount } from "../../../types";
+import { BankAccount, ContactProps } from "../../../types";
 
 /**
  * Adds a bank account to the Razorpay account.
@@ -68,6 +68,96 @@ export const addBankAccount = async ({
   }
 };
 
+export const addFundAccount = async ({
+  name,
+  email,
+  contact,
+  business_name,
+  ifsc_code,
+  beneficiary_name,
+  account_type = "vendor",
+  account_number,
+  uid,
+  isUpdate,
+}: BankAccount) => {
+  try {
+    const contactRes = await addContact({
+      name,
+      email,
+      contact,
+      type: account_type,
+      reference_id: uid,
+      notes: {
+        name: business_name,
+        user: uid,
+      },
+    });
+    if (contactRes) {
+      const res = await axios.post(
+        "https://api.razorpay.com/v1/fund_accounts",
+        {
+          contact_id: contactRes.id,
+          account_type: "bank_account",
+          bank_account: {
+            name: beneficiary_name,
+            ifsc: ifsc_code,
+            account_number: account_number,
+          },
+        },
+        {
+          headers: {
+            Authorization: "Basic " + process.env.RAZ_TOKEN,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      return { status: true, data: res.data };
+    } else return { status: false, data: null };
+  } catch (error: any) {
+    console.log(error.response.data);
+    return { status: false, data: null };
+  }
+};
+
+export const addContact = async ({
+  name,
+  email,
+  contact,
+  type,
+  reference_id,
+  notes,
+}: ContactProps) => {
+  try {
+    const config = {
+      auth: {
+        username: process.env.RAZORPAY_KEY_ID,
+        password: process.env.RAZORPAY_KEY_SECRET,
+      },
+    };
+    const res = await axios.post(
+      "https://api.razorpay.com/v1/contacts",
+      {
+        name,
+        email,
+        contact,
+        type,
+        reference_id,
+        notes,
+      },
+      {
+        headers: {
+          Authorization: "Basic " + process.env.RAZ_TOKEN,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    return res.data;
+  } catch (error: any) {
+    console.log(error.message);
+    return null;
+  }
+};
 
 // instance.virtualAccounts.create({
 //     "receivers": {
@@ -194,7 +284,5 @@ export const closeVirtualAccount = async (virtualId: string) => {
 //https://github.com/razorpay/razorpay-node/blob/master/documents/upi.md#create-a-recurring-payment
 
 //https://razorpay.com/docs/api/payments/route/account-apis-beta/
-
-
 
 //https://github.com/razorpay/razorpay-node/blob/master/documents/plans.md

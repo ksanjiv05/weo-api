@@ -1,7 +1,14 @@
 import { Response } from "express";
 import { responseObj } from "../../../helper/response";
 import { IRequest } from "../../../interfaces/IRequest";
-import { addBankAccount } from "../../../payment/razorpay/account";
+import {
+  addBankAccount,
+  addFundAccount,
+} from "../../../payment/razorpay/account";
+import logging from "../../../config/logging";
+import { HTTP_STATUS_CODES } from "../../../config/statusCode";
+import { ERROR_CODES } from "../../../config/errorCode";
+import Wallet from "../../../models/wallet.model";
 
 export const newBankAccount = async (req: IRequest, res: Response) => {
   try {
@@ -10,7 +17,7 @@ export const newBankAccount = async (req: IRequest, res: Response) => {
       accountNumber,
       ifsc,
       business_name = "default",
-      accountType = "savings",
+      accountType = "bank_account",
     } = req.body;
     if (!accountNumber || !ifsc) {
       return responseObj({
@@ -22,7 +29,18 @@ export const newBankAccount = async (req: IRequest, res: Response) => {
         data: null,
       });
     }
-    const account = await addBankAccount({
+    // const account = await addBankAccount({
+    //   ifsc_code: ifsc,
+    //   uid: user._id,
+    //   email: user.email,
+    //   business_name: business_name === "default" ? user.name : business_name,
+    //   beneficiary_name: user.name,
+    //   account_type: accountType,
+    //   account_number: accountNumber,
+    //   name: user.name,
+    // });
+
+    const account = await addFundAccount({
       ifsc_code: ifsc,
       uid: user._id,
       email: user.email,
@@ -31,6 +49,7 @@ export const newBankAccount = async (req: IRequest, res: Response) => {
       account_type: accountType,
       account_number: accountNumber,
       name: user.name,
+      contact: user.phone,
     });
 
     if (!account.status) {
@@ -136,6 +155,55 @@ export const changePrimaryBankAccount = async (
     });
   }
 };
+
+export const getWallet = async (req: IRequest, res: Response) => {
+  try {
+    const { user } = req;
+    const wallet = await Wallet.findOne({ user: user._id });
+    return responseObj({
+      resObj: res,
+      type: "success",
+      statusCode: HTTP_STATUS_CODES.SUCCESS,
+      msg: "wallet details fetched successfully",
+      error: null,
+      data: wallet,
+    });
+  } catch (error: any) {
+    logging.error(
+      "Wallet Details",
+      "Unable to get wallet details ",
+      error.message
+    );
+    return responseObj({
+      resObj: res,
+      type: "error",
+      statusCode: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR,
+      msg: "Unable to get wallet details",
+      error: error.message ? error.message : error,
+      data: null,
+      code: ERROR_CODES.SERVER_ERR,
+    });
+  }
+};
+
+// export const addFundAccount = async (req: IRequest, res: Response) => {
+//   try {
+//   } catch (error: any) {
+//     console.log(error);
+//     logging.error("Order Create", "Unable to create order ", error.message);
+//     return responseObj({
+//       resObj: res,
+//       type: "error",
+//       statusCode: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR,
+//       msg: "Unable to create order",
+//       error: error.message ? error.message : error,
+//       data: null,
+//       code: ERROR_CODES.SERVER_ERR,
+//     });
+//   }
+// };
+
+export const getWalletDetails = async (req: IRequest, res: Response) => {};
 
 // export const newWalletAddress = async (req: IRequest, res: Response) => {
 //   try {
