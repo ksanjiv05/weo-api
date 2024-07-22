@@ -10,3 +10,59 @@ https://razorpay.com/docs/api/x/payouts/create/bank-account/
 https://razorpay.com/docs/api/x/payouts/create/bank-account/
 
 requirement razorpay x account and good if we have razorpay current account
+
+
+
+{
+   "entity": "event",
+   "account_id": "acc_ForkjZe7QQQhI3",
+   "event": "payment.authorized",
+   "contains": [
+      "payment"
+   ],
+   "payload": {
+      "payment": {
+         "entity": {
+            "id": "pay_OamIhB6mOvq9Zs",
+            "entity": "payment",
+            "amount": 10000,
+            "currency": "INR",
+            "status": "authorized",
+            "order_id": "order_OamISS0kDCoMq6",
+            "invoice_id": null,
+            "international": false,
+            "method": "upi",
+            "amount_refunded": 0,
+            "refund_status": null,
+            "captured": false,
+            "description": "Payment For Offer",
+            "card_id": null,
+            "bank": null,
+            "wallet": null,
+            "vpa": "navneeth.kk@okicici",
+            "email": "navneeth@example.com",
+            "contact": "+919876543210",
+            "notes": {
+               "type": 1,
+               "user": "65efd60968853585bbb96322"
+            },
+            "fee": null,
+            "tax": null,
+            "error_code": null,
+            "error_description": null,
+            "error_source": null,
+            "error_step": null,
+            "error_reason": null,
+            "acquirer_data": {
+               "rrn": "700715432440",
+               "upi_transaction_id": "F6EB7CB6FDE7A1B98270DF27DD5B727D"
+            },
+            "created_at": 1721454820,
+            "upi": {
+               "vpa": "navneeth.kk@okicici"
+            }
+         }
+      }
+   },
+   "created_at": 1721454821
+}

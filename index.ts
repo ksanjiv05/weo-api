@@ -17,8 +17,6 @@ import { swaggerOptions, swaggerOptionsV2 } from "./config/swagger";
 import loggingMiddleware from "./middleware/logger";
 import routerV2 from "./routes/v2";
 import { createSuperAdmin } from "./scripts/createAdmin";
-import { generateHash } from "./helper/utils";
-import { addWallet } from "./helper/user";
 import webhookRouterV2 from "./routes/v2/webhook";
 
 //end scripts

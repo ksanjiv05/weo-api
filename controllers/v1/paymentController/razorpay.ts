@@ -61,6 +61,7 @@ export const createSellerAccount = async (req: Request, res: Response) => {
       account_type: "saving",
       account_number: "0000000000000001",
       name: "sanjiv",
+      contact: "",
     });
 
     return responseObj({

@@ -1,5 +1,6 @@
 import Wallet, { IWallet } from "../../models/wallet.model";
 import logger from "../logger";
+import { oGenerate } from "../oCalculator/v2";
 import { generateHash } from "../utils";
 
 export const addWallet = async (walletProps: IWallet) => {
@@ -12,6 +13,22 @@ export const addWallet = async (walletProps: IWallet) => {
     return true;
   } catch (err) {
     logger.error("AddWallet", err);
+    return false;
+  }
+};
+
+export const walletTopUp = async ({
+  amount,
+  user,
+}: {
+  amount: number;
+  user: string;
+}) => {
+  try {
+    await Wallet.updateOne({ user }, { $inc: { balance: amount } });
+    return true;
+  } catch (err) {
+    logger.error("BalanceUpdate", err);
     return false;
   }
 };

@@ -16,6 +16,10 @@ import {
   updateCreatorName,
   updateUser,
 } from "../../controllers/v2/authController/auth";
+import {
+  getWallet,
+  newBankAccount,
+} from "../../controllers/v2/userController/user";
 
 const router = express.Router();
 
@@ -428,8 +432,14 @@ const router = express.Router();
  */
 
 router.post("/users", auth, userDataValidateCheckPointA, register);
+router.post("/users/bank_account", auth, newBankAccount);
+
+router.get("/users", auth, getUserProfile);
+router.get("/users/all", auth, getUsers);
 router.get("/users/exist", isExistingUser);
 router.get("/users/exist/:creatorName", auth, isUserNameAvailable);
+router.get("/users/wallet", auth, getWallet);
+
 router.put(
   "/users/creatorName",
   auth,
@@ -437,9 +447,8 @@ router.put(
   updateCreatorName
 );
 router.put("/users/:id", auth, userDataValidateCheckPointB, updateUser);
-router.get("/users", auth, getUserProfile);
+
 router.delete("/users/:id", auth, deleteUserProfile);
-router.get("/users/all", auth, getUsers);
 
 export default router;
 

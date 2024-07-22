@@ -5,6 +5,7 @@ import { HTTP_STATUS_CODES } from "../../../config/statusCode";
 import logging from "../../../config/logging";
 import { IRequest } from "../../../interfaces/IRequest";
 import { ORDER_TYPE } from "../../../config/enums";
+import { ERROR_CODES } from "../../../config/errorCode";
 
 export const newPurchaseOrder = async (req: IRequest, res: Response) => {
   try {
@@ -25,6 +26,7 @@ export const newPurchaseOrder = async (req: IRequest, res: Response) => {
         msg: "we are not support this currencies KWD, JPY, BHD and OMR",
         error: null,
         data: null,
+        code: ERROR_CODES.SERVER_ERR,
       });
     }
 
@@ -42,6 +44,7 @@ export const newPurchaseOrder = async (req: IRequest, res: Response) => {
         msg: "order created successfully",
         error: null,
         data: order,
+        code: ERROR_CODES.SUCCESS,
       });
     return responseObj({
       resObj: res,
@@ -50,6 +53,7 @@ export const newPurchaseOrder = async (req: IRequest, res: Response) => {
       msg: "Unable to create order",
       error: null,
       data: null,
+      code: ERROR_CODES.SERVER_ERR,
     });
   } catch (error: any) {
     console.log(error);
@@ -61,6 +65,7 @@ export const newPurchaseOrder = async (req: IRequest, res: Response) => {
       msg: "Unable to create order",
       error: error.message ? error.message : error,
       data: null,
+      code: ERROR_CODES.SERVER_ERR,
     });
   }
 };
@@ -83,13 +88,14 @@ export const newTopUpOrder = async (req: IRequest, res: Response) => {
         msg: "Top up not allowed for this currencies KWD, JPY, BHD and OMR",
         error: null,
         data: null,
+        code: ERROR_CODES.FIELD_VALIDATION_ERR,
       });
     }
     const order = await createOrder({
       amount: amount * 100,
       receipt: req.user._id,
       notes: { user: req.user._id, type: ORDER_TYPE.TOPUP },
-      currency,
+      currency: currency.toUpperCase(),
     });
     if (order)
       return responseObj({
@@ -99,6 +105,7 @@ export const newTopUpOrder = async (req: IRequest, res: Response) => {
         msg: "order created successfully",
         error: null,
         data: order,
+        code: ERROR_CODES.SUCCESS,
       });
     return responseObj({
       resObj: res,
@@ -107,10 +114,11 @@ export const newTopUpOrder = async (req: IRequest, res: Response) => {
       msg: "Unable to create order",
       error: null,
       data: order,
+      code: ERROR_CODES.SERVER_ERR,
     });
   } catch (error: any) {
     console.log(error);
-    logging.error("Order Create", "Unable to create order ", error);
+    logging.error("Order Create", "Unable to create order ", error.message);
     return responseObj({
       resObj: res,
       type: "error",
@@ -118,6 +126,7 @@ export const newTopUpOrder = async (req: IRequest, res: Response) => {
       msg: "Unable to create order",
       error: error.message ? error.message : error,
       data: null,
+      code: ERROR_CODES.SERVER_ERR,
     });
   }
 };

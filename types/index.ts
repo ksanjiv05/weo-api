@@ -2,12 +2,22 @@ export type BankAccount = {
   ifsc_code: string;
   uid: string;
   email: string;
+  contact: string;
   business_name: string;
   beneficiary_name: string;
   account_type: string;
   account_number: string;
   name: string;
   isUpdate?: boolean;
+};
+
+export type ContactProps = {
+  name: string;
+  email: string;
+  contact: string;
+  type: string;
+  reference_id: string;
+  notes: any;
 };
 
 export type VirtualAccount = {
