@@ -78,32 +78,36 @@ export const addFundAccount = async ({
   account_type = "vendor",
   account_number,
   uid,
+  contactId,
   isUpdate,
 }: BankAccount) => {
   try {
-    const contactRes = await addContact({
-      name,
-      email,
-      contact,
-      type: account_type,
-      reference_id: uid,
-      notes: {
-        name: business_name,
-        user: uid,
-      },
-    });
-    if (contactRes) {
+    let contactRes = null;
+    if (!contactId)
+      contactRes = await addContact({
+        name,
+        email,
+        contact,
+        type: account_type,
+        reference_id: uid,
+        notes: {
+          name: business_name,
+          user: uid,
+        },
+      });
+    if (contactId || contactRes) {
+      const payload = {
+        contact_id: contactId || contactRes.id,
+        account_type: "bank_account",
+        bank_account: {
+          name: beneficiary_name,
+          ifsc: ifsc_code,
+          account_number: account_number,
+        },
+      };
       const res = await axios.post(
         "https://api.razorpay.com/v1/fund_accounts",
-        {
-          contact_id: contactRes.id,
-          account_type: "bank_account",
-          bank_account: {
-            name: beneficiary_name,
-            ifsc: ifsc_code,
-            account_number: account_number,
-          },
-        },
+        payload,
         {
           headers: {
             Authorization: "Basic " + process.env.RAZ_TOKEN,
@@ -111,11 +115,13 @@ export const addFundAccount = async ({
           },
         }
       );
+      console.log("payload", payload);
       return { status: true, data: res.data };
     } else return { status: false, data: null };
   } catch (error: any) {
     console.log(error.response.data);
-    return { status: false, data: null };
+    // return { status: false, data: null };
+    throw error;
   }
 };
 
@@ -151,11 +157,11 @@ export const addContact = async ({
         },
       }
     );
-
+    console.log("constact data", res.data);
     return res.data;
   } catch (error: any) {
     console.log(error.message);
-    return null;
+    throw error;
   }
 };
 

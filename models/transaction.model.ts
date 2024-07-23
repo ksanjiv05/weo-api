@@ -11,6 +11,7 @@ import { conn_v2 } from "../db";
 export interface ITransaction extends Document {
   user: string;
   transactionId: string;
+  accountId: string;
   orderId: string | null;
   paymentId: string | null;
   transferId: string | null;
@@ -59,6 +60,7 @@ const transactionSchema = new Schema(
     transactionId: { type: String },
     orderId: { type: String },
     paymentId: { type: String },
+    accountId: { type: String },
     transferId: { type: String, required: false },
     transactionType: { type: String },
     transactionMethod: {
@@ -74,7 +76,7 @@ const transactionSchema = new Schema(
     transactionAmount: { type: Number, required: true },
     currency: { type: String, required: true },
     transactionStatus: { type: String, required: true },
-    transactionDate: { type: Date, required: true },
+    transactionDate: { type: Number, required: true },
     transactionDescription: { type: String },
     transactionFrom: { type: String, required: true },
     transactionTo: { type: String, required: true },

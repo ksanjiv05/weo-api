@@ -73,6 +73,7 @@ const offerSchema: Schema = new Schema(
 
     totalOffersAvailable: {
       type: Number, //total offer to sell
+      min: 0,
     },
     totalOfferSold: {
       type: Number,

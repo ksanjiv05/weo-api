@@ -8,7 +8,7 @@ import { walletTopUp } from "../../../helper/user";
 
 export const paymentWebhook = async (req: any, res: any) => {
   try {
-    console.log("purchaseOrderWebhook", JSON.stringify(req.body));
+    // console.log("purchaseOrderWebhook", JSON.stringify(req.body));
     const signature = req.headers["x-razorpay-signature"];
     // const eventId = req.headers["x-razorpay-event-id"]; // should be unique in per payment
     // console.log("eventId", eventId);
@@ -19,17 +19,25 @@ export const paymentWebhook = async (req: any, res: any) => {
     );
 
     if (isValid) {
-      const { event, payload } = req.body;
+      const { event, payload, account_id } = req.body;
       let status = false;
       switch (event) {
         case PAYMENT_EVENTS.AUTHORIZED:
-          status = await handlePayment(payload);
+          status = await handlePayment({
+            payload,
+            account_id,
+            isPaymentSuccess: true,
+          });
           break;
         case PAYMENT_EVENTS.CAPTURED:
           // await handleCapturedPayment(payload);
           break;
         case PAYMENT_EVENTS.FAILED:
-          status = await handlePayment(payload);
+          status = await handlePayment({
+            payload,
+            account_id,
+            isPaymentSuccess: false,
+          });
           break;
         default:
           // console.log(`Unhandled event: ${event}`);
@@ -41,7 +49,7 @@ export const paymentWebhook = async (req: any, res: any) => {
         return res.status(400).send("payment log not created");
       }
     }
-
+    console.log("__++__");
     res.status(400).send("payment log not created");
   } catch (error) {
     console.log(error);
@@ -51,7 +59,7 @@ export const paymentWebhook = async (req: any, res: any) => {
 
 async function handlePayment(paymentLogPayload: any) {
   try {
-    const { account_id, payload } = paymentLogPayload;
+    const { account_id, payload, isPaymentSuccess = false } = paymentLogPayload;
     const {
       id,
       amount,
@@ -77,10 +85,10 @@ async function handlePayment(paymentLogPayload: any) {
       error_source,
       error_step,
       error_reason,
-    }: IPayment = payload?.payment.entity;
+    }: IPayment = payload.payment.entity;
     const newTransaction = new Transaction({
-      user: "",
-      transactionId: "",
+      user: notes.user,
+      transactionId: id,
       orderId: order_id,
       paymentId: id,
       transferId: "",
@@ -93,7 +101,7 @@ async function handlePayment(paymentLogPayload: any) {
       currency,
       transactionStatus: status,
       transactionDate: created_at,
-      transactionFrom: "user",
+      transactionFrom: notes.user,
       transactionTo: account_id,
       acquirerData: acquirer_data,
       fee,
@@ -113,7 +121,7 @@ async function handlePayment(paymentLogPayload: any) {
       wallet,
     });
     await newTransaction.save();
-    if (notes && notes.type === ORDER_TYPE.TOPUP) {
+    if (isPaymentSuccess && notes && notes.type === ORDER_TYPE.TOPUP) {
       walletTopUp({
         amount: amount,
         user: notes?.user,

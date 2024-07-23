@@ -12,12 +12,19 @@ import Offer from "../../../models/offer.model";
 import Outlet from "../../../models/outlet.model";
 import Brand from "../../../models/brand.model";
 import mongoose from "mongoose";
+import { OFFER_STATUS } from "../../../config/enums";
+import OfferData, { IOfferData } from "../../../models/offer.data.model";
+import Wallet from "../../../models/wallet.model";
+import { IRequest } from "../../../interfaces/IRequest";
+import { oGenerate } from "../../../helper/oCalculator/v2";
+import { getExchangeRate } from "../../../helper/exchangeRate";
+import { BASE_CURRENCY } from "../../../config/config";
 
 // define function for create Collected
 //TODO: created Collected logic not implemented yet
 
 //
-export const createCollected = async (req: Request, res: Response) => {
+export const collectOffer = async (req: IRequest, res: Response) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return responseObj({
@@ -31,8 +38,15 @@ export const createCollected = async (req: Request, res: Response) => {
     });
   }
 
-  const { id } = req.params;
-  const offer = await Offer.findById(id);
+  // offerPriceAmount: number; // price of the offer
+  // offerPriceMinAmount: number; // min negotiable amount
+
+  const { id, quantity = 1, amount, offerDataId } = req.body;
+  const offer = await Offer.findOne({
+    _id: id,
+    offerStatus: OFFER_STATUS.LIVE,
+    totalOffersAvailable: { $gte: quantity },
+  });
   if (!offer) {
     return responseObj({
       resObj: res,
@@ -44,11 +58,72 @@ export const createCollected = async (req: Request, res: Response) => {
       code: ERROR_CODES.NOT_FOUND,
     });
   }
-
+  const session = await mongoose.startSession();
+  session.startTransaction();
   try {
+    const offerDataPoint: IOfferData | null = await OfferData.findOne({
+      _id: offerDataId,
+    });
+
+    if (!offerDataPoint) {
+      return responseObj({
+        resObj: res,
+        type: "error",
+        statusCode: HTTP_STATUS_CODES.NOT_FOUND,
+        msg: "Offer not not found",
+        error: "Offer not not found",
+        data: null,
+        code: ERROR_CODES.NOT_FOUND,
+      });
+    }
+    if (!(offerDataPoint.offerPriceMinAmount * quantity > amount)) {
+      return responseObj({
+        resObj: res,
+        type: "error",
+        statusCode: HTTP_STATUS_CODES.NOT_FOUND,
+        msg: "Offer purposed amount is declined",
+        error: "Offer purposed amount is declined",
+        data: null,
+        code: ERROR_CODES.NOT_FOUND,
+      });
+    }
+
     const newOfferCollected = new Collected(req.body);
     newOfferCollected.offer = id;
-    await newOfferCollected.save();
+
+    offer.totalOffersAvailable = offer.totalOffersAvailable - quantity;
+    offer.totalOfferSold = offer.totalOfferSold + quantity;
+    const uid = req.user._id;
+
+    const wallet = await Wallet.findOne({ user: uid });
+    if (!wallet) {
+      return responseObj({
+        resObj: res,
+        type: "error",
+        statusCode: HTTP_STATUS_CODES.NOT_FOUND,
+        msg: "Wallet not found",
+        error: "Wallet not found",
+        data: null,
+        code: ERROR_CODES.NOT_FOUND,
+      });
+    }
+
+    wallet.balance = wallet.balance - amount * 100;
+    const exchangeRate = await getExchangeRate(wallet.currency, BASE_CURRENCY);
+    const amountAfterExchange = amount * exchangeRate;
+    const { toDistribute, totalO } = await oGenerate({
+      amount: amountAfterExchange,
+      discount: 0,
+    });
+
+    wallet.oBalance = wallet.oBalance + toDistribute / 2;
+
+    await offer.save({ session });
+    await wallet.save({ session });
+    await newOfferCollected.save({ session });
+
+    await session.commitTransaction();
+    session.endSession();
     return responseObj({
       resObj: res,
       type: "success",
@@ -59,6 +134,8 @@ export const createCollected = async (req: Request, res: Response) => {
       code: ERROR_CODES.SUCCESS,
     });
   } catch (error: any) {
+    await session.abortTransaction();
+    session.endSession();
     logging.error("Collected Offer", error.message, error);
 
     return responseObj({

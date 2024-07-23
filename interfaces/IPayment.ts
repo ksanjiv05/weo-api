@@ -23,6 +23,7 @@ interface AcquirerData {
 
 export interface IPayment {
   id: string;
+  account_id: string;
   entity: string;
   amount: number;
   currency: string;

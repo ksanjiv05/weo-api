@@ -3,7 +3,6 @@
 
 import mongoose, { Schema, Document } from "mongoose";
 import { conn_v2 } from "../db";
-import { number } from "joi";
 
 export interface IOfferData extends Document {
   offerId: string;
@@ -24,6 +23,7 @@ export interface IOfferData extends Document {
   serviceEndDate: Date;
   serviceStartTime: number;
   serviceEndTime: number;
+  currency: string;
 
   offerLiveTillSoldOut: boolean; // flag to show offer live till all items are sold
   offerAvailabilityStartDate: Date; // offer avaialable start days
@@ -81,6 +81,11 @@ const offerDataSchema: Schema = new Schema(
     },
     minimumOfferUnitItem: {
       type: Number,
+    },
+
+    currency: {
+      type: String,
+      default: "INR",
     },
     serviceStartTime: {
       type: String,
