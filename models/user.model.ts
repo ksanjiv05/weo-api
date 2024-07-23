@@ -56,6 +56,9 @@ const userSchema: Schema = new Schema(
         accountId: String,
         isPrimary: Boolean,
         accountHolderName: String,
+        bankName: String,
+        contactId: String,
+        lastFourDigits: String,
       },
     ],
     successRate: Number,
@@ -118,6 +121,9 @@ export interface IUser extends Document {
       accountId: string;
       isPrimary: boolean;
       accountHolderName: string;
+      bankName: string;
+      lastFourDigits: string;
+      contactId: string;
     }
   ];
   successRate: Number;

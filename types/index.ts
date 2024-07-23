@@ -9,6 +9,7 @@ export type BankAccount = {
   account_number: string;
   name: string;
   isUpdate?: boolean;
+  contactId: string | undefined | null;
 };
 
 export type ContactProps = {

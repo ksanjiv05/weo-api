@@ -20,4 +20,8 @@ export enum ORDER_TYPE {
   PURCHASE = 2,
 }
 
+export enum O_EVENTS {
+  COLLECTED = "collected",
+}
+
 // paused

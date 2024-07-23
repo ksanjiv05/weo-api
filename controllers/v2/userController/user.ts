@@ -16,8 +16,10 @@ export const newBankAccount = async (req: IRequest, res: Response) => {
     const {
       accountNumber,
       ifsc,
-      business_name = "default",
-      accountType = "bank_account",
+      businessName = "default",
+      accountType = "vendor", //vendor | employee|customer|self
+      bankName = "",
+      accountHolderName = "",
     } = req.body;
     if (!accountNumber || !ifsc) {
       return responseObj({
@@ -29,6 +31,9 @@ export const newBankAccount = async (req: IRequest, res: Response) => {
         data: null,
       });
     }
+
+    const contactId =
+      user.bankAccounts.length > 0 ? user.bankAccounts[0]?.contactId : null;
     // const account = await addBankAccount({
     //   ifsc_code: ifsc,
     //   uid: user._id,
@@ -44,35 +49,42 @@ export const newBankAccount = async (req: IRequest, res: Response) => {
       ifsc_code: ifsc,
       uid: user._id,
       email: user.email,
-      business_name: business_name === "default" ? user.name : business_name,
-      beneficiary_name: user.name,
+      business_name:
+        businessName === "default" ? accountHolderName : businessName,
+      beneficiary_name: accountHolderName,
       account_type: accountType,
       account_number: accountNumber,
-      name: user.name,
+      name: accountHolderName,
       contact: user.phone,
+      contactId: contactId,
     });
+    console.log("create bank account", account);
 
     if (!account.status) {
       return responseObj({
         resObj: res,
         type: "error",
-        statusCode: 500,
+        statusCode: 400,
         msg: "Unable to create account",
         error: account.data,
         data: null,
+        code: ERROR_CODES.FIELD_VALIDATION_REQUIRED_ERR,
       });
     }
 
     const { id = "" } = account.data;
 
-    user.accounts = [
-      ...user.accounts,
+    user.bankAccounts = [
+      ...user.bankAccounts,
       {
         accountId: id,
         isPrimary: false,
-        accountHolderName: user.name,
+        accountHolderName: accountHolderName,
+        bankName: bankName,
+        lastFourDigits: accountNumber.substring(accountNumber.length - 4),
       },
     ];
+    console.log("create bank account", user);
     await user.save();
 
     return responseObj({
@@ -82,8 +94,10 @@ export const newBankAccount = async (req: IRequest, res: Response) => {
       msg: "account created successfully",
       error: null,
       data: account,
+      code: ERROR_CODES.SUCCESS,
     });
   } catch (error: any) {
+    logging.error("Create Bank Account", error.message, error);
     return responseObj({
       resObj: res,
       type: "error",
@@ -91,6 +105,7 @@ export const newBankAccount = async (req: IRequest, res: Response) => {
       msg: "Unable to create account",
       error: error.message ? error.message : error,
       data: null,
+      code: ERROR_CODES.SERVER_ERR,
     });
   }
 };

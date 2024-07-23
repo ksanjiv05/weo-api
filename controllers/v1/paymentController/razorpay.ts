@@ -62,6 +62,7 @@ export const createSellerAccount = async (req: Request, res: Response) => {
       account_number: "0000000000000001",
       name: "sanjiv",
       contact: "",
+      contactId: undefined,
     });
 
     return responseObj({

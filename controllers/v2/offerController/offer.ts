@@ -96,7 +96,7 @@ export const addOffer = async (req: IRequest, res: Response) => {
 };
 
 // Function to add the offer
-export const addOfferDataPoints = async (req: Request, res: Response) => {
+export const addOfferDataPoints = async (req: IRequest, res: Response) => {
   try {
     const errors = validationResult(req);
 
@@ -138,9 +138,11 @@ export const addOfferDataPoints = async (req: Request, res: Response) => {
       }
 
       delete req.body._id;
+      const currency = req.user.currency;
 
       const offerData: IOfferData = new OfferData({
         ...req.body,
+        currency,
       });
       await offerData.save({
         session,

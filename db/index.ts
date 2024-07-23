@@ -32,7 +32,9 @@ class MongoDbInitConnection {
         }
       );
 
-      this.connection.on("connected", () => console.log("connected"));
+      this.connection.on("connected", () =>
+        console.log("connected", this.connection.host, " - ", dbName)
+      );
       this.connection.on("open", () => console.log("open"));
       this.connection.on("disconnected", () => console.log("disconnected"));
     } catch (error) {
