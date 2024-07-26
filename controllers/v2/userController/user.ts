@@ -9,6 +9,7 @@ import logging from "../../../config/logging";
 import { HTTP_STATUS_CODES } from "../../../config/statusCode";
 import { ERROR_CODES } from "../../../config/errorCode";
 import Wallet from "../../../models/wallet.model";
+import { fundTransfer } from "../../../payment/razorpay/transfer";
 
 export const newBankAccount = async (req: IRequest, res: Response) => {
   try {
@@ -174,7 +175,7 @@ export const changePrimaryBankAccount = async (
 export const getWallet = async (req: IRequest, res: Response) => {
   try {
     const { user } = req;
-    const wallet = await Wallet.findOne({ user: user._id });
+    const wallet = await Wallet.findOne({ user: user._id }).populate("user");
     return responseObj({
       resObj: res,
       type: "success",
@@ -194,6 +195,65 @@ export const getWallet = async (req: IRequest, res: Response) => {
       type: "error",
       statusCode: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR,
       msg: "Unable to get wallet details",
+      error: error.message ? error.message : error,
+      data: null,
+      code: ERROR_CODES.SERVER_ERR,
+    });
+  }
+};
+
+export const withdrawFunds = async (req: IRequest, res: Response) => {
+  try {
+    const { user } = req;
+    const { amount, accountId } = req.body;
+    if (!amount) {
+      return responseObj({
+        resObj: res,
+        type: "error",
+        statusCode: HTTP_STATUS_CODES.BAD_REQUEST,
+        msg: "amount is required",
+        error: null,
+        data: null,
+      });
+    }
+    const wallet = await Wallet.findOne({ user: user._id });
+    if (!wallet) {
+      return responseObj({
+        resObj: res,
+        type: "error",
+        statusCode: HTTP_STATUS_CODES.BAD_REQUEST,
+        msg: "wallet not found",
+        error: null,
+        data: null,
+      });
+    }
+    wallet.balance = wallet.balance - amount * 100;
+
+    const status = await fundTransfer({
+      user: user._id,
+      account: accountId,
+      amount: amount * 100,
+      currency: "INR",
+      name: user.name,
+      purpose: "withdraw",
+    });
+    await wallet.save();
+    return responseObj({
+      resObj: res,
+      type: "success",
+      statusCode: HTTP_STATUS_CODES.SUCCESS,
+      msg: "funds withdrawn successfully",
+      error: null,
+      data: wallet,
+    });
+  } catch (error: any) {
+    console.log(error);
+    logging.error("Order Create", "Unable to create order ", error.message);
+    return responseObj({
+      resObj: res,
+      type: "error",
+      statusCode: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR,
+      msg: "Unable to create order",
       error: error.message ? error.message : error,
       data: null,
       code: ERROR_CODES.SERVER_ERR,

@@ -658,7 +658,7 @@ export const getAllListedOffersByBrand = async (
       statusCode: HTTP_STATUS_CODES.SUCCESS,
       msg: "Listed Offer",
       error: null,
-      data: offers,
+      data: offers.length > 0 ? offers[0] : null,
       code: ERROR_CODES.SUCCESS,
     });
   } catch (error: any) {

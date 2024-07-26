@@ -161,3 +161,16 @@ export const verifyHash = (data: string, hash: string) => {
   const dataHash = generateHash(data);
   return dataHash === hash;
 };
+
+/**
+ * Take the difference between the dates and divide by milliseconds per day.
+ * Round to nearest whole number to deal with DST.
+ */
+export function getDaysBetweenTwoDate(startDate: any, endDate: any) {
+  const endTime = new Date(endDate).getTime()
+  const startTime = new Date(startDate).getTime()
+  console.log(endTime,"--",startTime)
+  return Math.round(
+    (endTime -startTime ) / (1000 * 60 * 60 * 24)
+  );
+}

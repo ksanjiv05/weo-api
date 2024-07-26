@@ -24,4 +24,12 @@ export enum O_EVENTS {
   COLLECTED = "collected",
 }
 
+export enum OFFER_COLLECTION_EVENTS {
+  COLLECTED = "collected",
+  RESOLD = "resold",
+  EXPIRED = "expired",
+  DELIVERED = "delivered",
+  COMPLETED = "completed",
+}
+
 // paused

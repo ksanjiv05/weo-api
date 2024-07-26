@@ -429,19 +429,18 @@ export const getOffers = async (req: IRequest, res: Response) => {
       perPage = 10,
       brandId = null,
       outlets = [],
-    } = req.query;
+    }: any = req.query;
     const { _id } = req.user;
-    console.log("requset", req.query);
 
     const skip = (Number(page) - 1) * Number(perPage);
 
     const filter = {
       user: _id,
-      offerStatus,
+      offerStatus: Number(offerStatus),
       ...(brandId && { brand: brandId }),
-      ...(outlets && { outlets: { $in: outlets } }),
+      ...(outlets?.length > 0 && { outlets: { $in: outlets } }),
     };
-
+    console.log("offer query", filter);
     const offer = await Offer.find(filter)
       .sort({ createdAt: -1 })
       .populate("brand", "brandName brandLogo")
@@ -808,6 +807,61 @@ export const getOffersByLocation = async (req: Request, res: Response) => {
     });
   } catch (error: any) {
     logging.error("Get Offer by location", error.message, error);
+
+    return responseObj({
+      resObj: res,
+      type: "error",
+      statusCode: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR,
+      msg: "Offer not found",
+      error: error.message || "internal server error",
+      data: null,
+      code: ERROR_CODES.SERVER_ERR,
+    });
+  }
+};
+
+export const getOfferByOutletId = async (req: Request, res: Response) => {
+  try {
+    const id = req.params.id;
+    const { page = 1, perPage = 10 } = req.query;
+
+    const skip = (Number(page) - 1) * Number(perPage);
+    if (!id || id === "") {
+      return responseObj({
+        resObj: res,
+        type: "error",
+        statusCode: HTTP_STATUS_CODES.BAD_REQUEST,
+        msg: "Please provide outlet id",
+        error: null,
+        data: null,
+        code: ERROR_CODES.FIELD_VALIDATION_REQUIRED_ERR,
+      });
+    }
+
+    const offer = await Offer.find({
+      offerStatus: OFFER_STATUS.LIVE,
+      outlets: { $in: [id] },
+    })
+      .sort({ createdAt: -1 })
+      .populate("brand", "brandName brandLogo")
+      .populate({
+        path: "offerDataPoints",
+        populate: { path: "offerData" },
+      })
+      .populate("outlets")
+      .skip(skip)
+      .limit(Number(perPage));
+    return responseObj({
+      resObj: res,
+      type: "success",
+      statusCode: HTTP_STATUS_CODES.SUCCESS,
+      msg: "your offer details",
+      error: null,
+      data: offer,
+      code: ERROR_CODES.SUCCESS,
+    });
+  } catch (error: any) {
+    logging.error("Get Offer by outlet id", error.message, error);
 
     return responseObj({
       resObj: res,

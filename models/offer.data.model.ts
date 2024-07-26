@@ -45,7 +45,7 @@ export interface IOfferData extends Document {
   ]; // images/video
   offerThumbnail: string;
   checkpoint: number;
-  collectable: string;
+  // collectable: string;
 }
 
 const offerDataSchema: Schema = new Schema(
@@ -156,11 +156,11 @@ const offerDataSchema: Schema = new Schema(
       type: Number,
       default: 2,
     },
-    collectable: {
-      type: String,
-      lowercase: true,
-      default: "offline", // online or offline
-    },
+    // collectable: {
+    //   type: String,
+    //   lowercase: true,
+    //   default: "offline", // online or offline
+    // },
   },
 
   {

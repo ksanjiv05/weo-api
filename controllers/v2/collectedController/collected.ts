@@ -12,87 +12,144 @@ import Offer from "../../../models/offer.model";
 import Outlet from "../../../models/outlet.model";
 import Brand from "../../../models/brand.model";
 import mongoose from "mongoose";
-import { OFFER_STATUS } from "../../../config/enums";
+import { O_EVENTS, OFFER_STATUS } from "../../../config/enums";
 import OfferData, { IOfferData } from "../../../models/offer.data.model";
 import Wallet from "../../../models/wallet.model";
 import { IRequest } from "../../../interfaces/IRequest";
 import { oGenerate } from "../../../helper/oCalculator/v2";
 import { getExchangeRate } from "../../../helper/exchangeRate";
-import { BASE_CURRENCY } from "../../../config/config";
+import {
+  BASE_CURRENCY,
+  oNetworkConfig,
+  oNetworkConfigLoad,
+} from "../../../config/config";
+import oLogModel, { IOLog } from "../../../models/oLog.model";
+import { getDaysBetweenTwoDate } from "../../../helper/utils";
 
 // define function for create Collected
 //TODO: created Collected logic not implemented yet
 
 //
 export const collectOffer = async (req: IRequest, res: Response) => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return responseObj({
-      resObj: res,
-      type: "error",
-      statusCode: HTTP_STATUS_CODES.BAD_REQUEST,
-      msg: "fields are required",
-      error: errors.array({}),
-      data: null,
-      code: ERROR_CODES.FIELD_VALIDATION_REQUIRED_ERR,
-    });
-  }
-
   // offerPriceAmount: number; // price of the offer
   // offerPriceMinAmount: number; // min negotiable amount
 
-  const { id, quantity = 1, amount, offerDataId } = req.body;
-  const offer = await Offer.findOne({
-    _id: id,
-    offerStatus: OFFER_STATUS.LIVE,
-    totalOffersAvailable: { $gte: quantity },
-  });
-  if (!offer) {
-    return responseObj({
-      resObj: res,
-      type: "error",
-      statusCode: HTTP_STATUS_CODES.NOT_FOUND,
-      msg: "Offer not found",
-      error: "Offer not found",
-      data: null,
-      code: ERROR_CODES.NOT_FOUND,
-    });
-  }
+  const {
+    id,
+    noOfOffers = 1,
+    quantity,
+    duration,
+    amount,
+    offerDataId,
+  } = req.body;
+  console.log("collect ", req.body);
+
   const session = await mongoose.startSession();
   session.startTransaction();
   try {
+    const offer = await Offer.findOne({
+      _id: id,
+      offerStatus: OFFER_STATUS.LIVE,
+      totalOffersAvailable: { $gte: noOfOffers },
+    });
+    if (!offer) {
+      return responseObj({
+        resObj: res,
+        type: "error",
+        statusCode: HTTP_STATUS_CODES.NOT_FOUND,
+        msg: "Offer not found",
+        error: "Offer not found",
+        data: null,
+        code: ERROR_CODES.NOT_FOUND,
+      });
+    }
+
     const offerDataPoint: IOfferData | null = await OfferData.findOne({
       _id: offerDataId,
+      minimumOfferUnitItem: { $lte: quantity },
+      // $and: [
+      //   {
+      //     offerPriceMinAmount: { $gte: amount },
+      //   },
+      //   {
+      //     minimumOfferUnitItem: { $gte: quantity },
+      //   },
+      // ],
     });
+    console.log(
+      "offerDataPoint",
+      offerDataPoint?.minimumOfferUnitItem,
+      quantity
+    );
 
     if (!offerDataPoint) {
       return responseObj({
         resObj: res,
         type: "error",
-        statusCode: HTTP_STATUS_CODES.NOT_FOUND,
-        msg: "Offer not not found",
-        error: "Offer not not found",
+        statusCode: HTTP_STATUS_CODES.BAD_REQUEST,
+        msg: "Negotiation not meet criteria",
+        error: "Negotiation not meet criteria",
         data: null,
         code: ERROR_CODES.NOT_FOUND,
       });
     }
-    if (!(offerDataPoint.offerPriceMinAmount * quantity > amount)) {
+
+    const oneQtyOfferValue =
+      offerDataPoint.offerPriceAmount / offerDataPoint.totalOfferUnitItem;
+    const offerValueAfterDiscount =
+      (noOfOffers *
+        oneQtyOfferValue *
+        quantity *
+        offerDataPoint.offerPriceMinPercentage) /
+      100;
+    // const offerRevisedValue = oneQtyOfferValue * quantity * noOfOffers;
+
+    const serviceEndDate = offerDataPoint.serviceEndDate;
+    const serviceStartDate = offerDataPoint.serviceStartDate;
+
+    const serviceDays = getDaysBetweenTwoDate(serviceStartDate, serviceEndDate);
+
+    console.log("________________________");
+    console.log("actual  value", {
+      offerValueAfterDiscount,
+      serviceDays,
+    });
+
+    console.log("_________your_______________");
+
+    console.log({
+      amount,
+      duration,
+    });
+
+    if (serviceDays >= duration && offerValueAfterDiscount >= amount) {
       return responseObj({
         resObj: res,
         type: "error",
-        statusCode: HTTP_STATUS_CODES.NOT_FOUND,
-        msg: "Offer purposed amount is declined",
-        error: "Offer purposed amount is declined",
+        statusCode: HTTP_STATUS_CODES.BAD_REQUEST,
+        msg: "Negotiation not meet criteria",
+        error: "Negotiation not meet criteria",
         data: null,
-        code: ERROR_CODES.NOT_FOUND,
+        code: ERROR_CODES.FIELD_VALIDATION_ERR,
       });
     }
+    // if (!(offerDataPoint.offerPriceMinAmount * noOfOffers > amount)) {
+    //   return responseObj({
+    //     resObj: res,
+    //     type: "error",
+    //     statusCode: HTTP_STATUS_CODES.BAD_REQUEST,
+    //     msg: "Offer purposed amount is declined",
+    //     error: "Offer purposed amount is declined",
+    //     data: null,
+    //     code: ERROR_CODES.FIELD_VALIDATION_ERR,
+    //   });
+    // }
 
     const newOfferCollected = new Collected(req.body);
     newOfferCollected.offer = id;
 
-    offer.totalOffersAvailable = offer.totalOffersAvailable - quantity;
-    offer.totalOfferSold = offer.totalOfferSold + quantity;
+    offer.totalOffersAvailable = offer.totalOffersAvailable - noOfOffers;
+    offer.totalOfferSold = offer.totalOfferSold + noOfOffers;
     const uid = req.user._id;
 
     const wallet = await Wallet.findOne({ user: uid });
@@ -100,16 +157,27 @@ export const collectOffer = async (req: IRequest, res: Response) => {
       return responseObj({
         resObj: res,
         type: "error",
-        statusCode: HTTP_STATUS_CODES.NOT_FOUND,
+        statusCode: HTTP_STATUS_CODES.BAD_REQUEST,
         msg: "Wallet not found",
         error: "Wallet not found",
         data: null,
-        code: ERROR_CODES.NOT_FOUND,
+        code: ERROR_CODES.FIELD_VALIDATION_ERR,
+      });
+    }
+    if (wallet.balance < amount * noOfOffers) {
+      return responseObj({
+        resObj: res,
+        type: "error",
+        statusCode: HTTP_STATUS_CODES.BAD_REQUEST,
+        msg: "Insufficient balance",
+        error: "Insufficient balance",
+        data: null,
+        code: ERROR_CODES.FIELD_VALIDATION_ERR,
       });
     }
 
     wallet.balance = wallet.balance - amount * 100;
-    const exchangeRate = await getExchangeRate(wallet.currency, BASE_CURRENCY);
+    const exchangeRate = 83.33; //await getExchangeRate(wallet.currency, BASE_CURRENCY);
     const amountAfterExchange = amount * exchangeRate;
     const { toDistribute, totalO } = await oGenerate({
       amount: amountAfterExchange,
@@ -118,9 +186,54 @@ export const collectOffer = async (req: IRequest, res: Response) => {
 
     wallet.oBalance = wallet.oBalance + toDistribute / 2;
 
+    const newOLog = new oLogModel({
+      event: O_EVENTS.COLLECTED,
+      amount: amountAfterExchange,
+      offerId: id,
+      seller: { id: offer.user, oQuantity: toDistribute / 2 },
+      buyer: { id: req.user._id, oQuantity: toDistribute / 2 },
+      discount: 0,
+      quantity: noOfOffers,
+
+      oPriceRate: oNetworkConfig.price,
+      oAgainstPrice: oNetworkConfig.oAgainstPrice,
+      oGenerated: totalO,
+      atPlatformCutOffRate: oNetworkConfig.atPlatformCutOffRate,
+      atRateCutOffFromDiscount: oNetworkConfig.atRateCutOffFromDiscount,
+      toPlatformCutOffRateFromDiscount:
+        oNetworkConfig.toPlatformCutOffRateFromDiscount,
+      toPlatformCutOffRate: oNetworkConfig.toPlatformCutOffRate,
+    });
+
+    console.log("newOLog", newOLog);
+
+    // {
+    //   owner: [
+    //     {
+    //       ownerId: { type: Schema.Types.ObjectId, ref: "User" },
+    //       isCurrentOwner: { type: Boolean, default: true },
+    //     },
+    //   ],
+    //   transaction: { type: Schema.Types.ObjectId, ref: "Transaction" },
+    //   offer_access_codes: [
+    //     {
+    //       code: { type: String },
+    //       status: { type: String },
+    //     },
+    //   ],
+    //   deliveryCount: { type: Number, default: 0 },
+    //   currentInstallment: { type: Number, default: 0 },
+    //   totalInstallment: { type: Number, default: 0 },
+    //   installmentDueDate: { type: String },
+    //   offerActivationDate: { type: String },
+    //   offerExpiryDate: { type: String },
+    //   quantity: String,
+    // },
+
     await offer.save({ session });
     await wallet.save({ session });
     await newOfferCollected.save({ session });
+    await newOLog.save({ session });
 
     await session.commitTransaction();
     session.endSession();

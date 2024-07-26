@@ -60,6 +60,7 @@ const ListedSchema: Schema = new Schema({
           status: { type: String },
         },
       ],
+      isFullPayment: { type: Boolean, default: false },
       deliveryCount: { type: Number, default: 0 },
       currentInstallment: { type: Number, default: 0 },
       totalInstallment: { type: Number, default: 0 },

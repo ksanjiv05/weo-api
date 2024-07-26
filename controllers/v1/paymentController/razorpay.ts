@@ -8,8 +8,7 @@ import {
   createVirtualAccount,
 } from "../../../payment/razorpay/account";
 import {
-  createDirectTransfer,
-  transfer,
+
 } from "../../../payment/razorpay/transfer";
 import instance from "../../../payment/razorpay";
 import { createRefund } from "../../../payment/razorpay/refund";
@@ -94,18 +93,18 @@ export const createSellerAccount = async (req: Request, res: Response) => {
 export const initiateTransfer = async (req: Request, res: Response) => {
   try {
     const { paymentId, account, amount, currency, name } = req.body;
-    const transfer = await createDirectTransfer({
-      account,
-      amount,
-      currency,
-    });
+    // const transfer = await createDirectTransfer({
+    //   account,
+    //   amount,
+    //   currency,
+    // });
     return responseObj({
       resObj: res,
       type: "success",
       statusCode: HTTP_STATUS_CODES.SUCCESS,
       msg: "transfer initiated successfully",
       error: null,
-      data: transfer,
+      data: null,
     });
   } catch (error: any) {
     console.log(error);

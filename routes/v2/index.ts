@@ -17,12 +17,15 @@ import userRoute from "./user.route";
 import offerRoute from "./offer.route";
 import listedRoute from "./listed.route";
 import transactionRoute from "./transaction.route";
+import oRoute from "./o.route";
+import collectRoute from "./collect.route";
 import {
   getAiGeneratedChatResponse,
   getAiGeneratedImg,
   getAiGeneratedLogo,
 } from "../../controllers/v1/aiController/ai";
 import { auth } from "../../middleware/auth";
+import { oNetworkConfig } from "../../config/config";
 //category routes
 
 routerV2.use(userRoute);
@@ -35,6 +38,8 @@ routerV2.use(serviceRoute);
 routerV2.use(offerRoute);
 routerV2.use(listedRoute);
 routerV2.use(transactionRoute);
+routerV2.use(oRoute);
+routerV2.use(collectRoute);
 
 routerV2.post("/ai/logo", auth, getAiGeneratedLogo);
 routerV2.post("/ai/images", auth, getAiGeneratedImg);
