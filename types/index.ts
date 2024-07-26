@@ -64,11 +64,13 @@ export type OfferSubscription = {
 };
 
 export type TransferFromPayment = {
-  paymentId: string;
+  user:string,
+  paymentId?: string;
   account: string;
   amount: number;
   currency: string;
   name: string;
+  purpose: string;
 };
 
 export type TransferFromAmount = {

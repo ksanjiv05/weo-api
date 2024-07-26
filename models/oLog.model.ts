@@ -4,7 +4,8 @@ export interface IOLog {
   event: string;
   amount: number;
   discount: number;
-  offerId: string;
+  offer: string;
+  brand: string;
   seller: string;
   buyer: string;
 
@@ -28,9 +29,16 @@ const oLogSchema = new mongoose.Schema(
     },
     amount: Number,
     discount: Number,
-    offerId: { type: mongoose.Types.ObjectId, ref: "Offer" },
-    seller: { type: mongoose.Types.ObjectId, ref: "User" },
-    buyer: { type: mongoose.Types.ObjectId, ref: "User" },
+    offer: { type: mongoose.Types.ObjectId, ref: "Offer" },
+    brand: { type: mongoose.Types.ObjectId, ref: "Brand" },
+    seller: {
+      id: { type: mongoose.Types.ObjectId, ref: "User" },
+      oQuantity: Number,
+    },
+    buyer: {
+      id: { type: mongoose.Types.ObjectId, ref: "User" },
+      oQuantity: Number,
+    },
     quantity: Number,
     oPriceRate: Number,
     oAgainstPrice: Number,

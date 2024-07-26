@@ -13,6 +13,7 @@ import {
   getOffers,
   deleteOffers,
   getOffersByLocation,
+  getOfferByOutletId,
 } from "../../controllers/v2/offerController/offer";
 import { auth } from "../../middleware/auth";
 import {
@@ -71,6 +72,7 @@ router.post("/offers", auth, offerValidationCh1, addOffer);
 
 router.get("/offers", auth, getOffers);
 router.get("/offers/location", getOffersByLocation);
+router.get("/offers/outlets/:id", auth, getOfferByOutletId);
 
 /**
  * @swagger
