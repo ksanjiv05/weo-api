@@ -384,10 +384,10 @@ export const getNumberOfAttempts = async (req: IRequest, res: Response) => {
 
 export const getCollectedOffers = async (req: IRequest, res: Response) => {
   try {
-    const collectedOffers = await oLogModel.aggregate([
+    const collectedOffers = await Collected.aggregate([
       {
         $match: {
-          user: req.user._id,
+          user: new mongoose.Types.ObjectId(req.user._id),
         },
       },
       {

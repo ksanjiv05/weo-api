@@ -3742,3 +3742,10 @@ info: POST /api/v1/brands 200 295ms
 {"level":"info","message":"GET /api/v2/collects/attempt?offerId=66992e06ab355f9abe7ad775 200 547ms","timestamp":"2024-07-27T12:25:55.066Z"}
 {"level":"info","message":"POST /api/v2/collects 201 4344ms","timestamp":"2024-07-27T12:26:04.240Z"}
 {"level":"info","message":"GET /api/v2/collects 200 398ms","timestamp":"2024-07-27T12:31:14.912Z"}
+{"level":"info","message":"GET /api/v2/collects 200 1433ms","timestamp":"2024-07-27T12:33:10.666Z"}
+{"level":"info","message":"GET /api/v2/collects 200 1356ms","timestamp":"2024-07-27T12:34:46.243Z"}
+{"level":"info","message":"GET /api/v2/collects 200 552ms","timestamp":"2024-07-27T12:34:53.128Z"}
+{"level":"info","message":"GET /api/v2/collects 200 972ms","timestamp":"2024-07-27T12:35:39.801Z"}
+{"level":"info","message":"GET /api/v2/collects 200 552ms","timestamp":"2024-07-27T12:35:45.272Z"}
+{"level":"info","message":"GET /api/v2/collects 200 1010ms","timestamp":"2024-07-27T12:36:21.057Z"}
+{"level":"info","message":"GET /api/v2/collects 200 534ms","timestamp":"2024-07-27T12:38:04.489Z"}
