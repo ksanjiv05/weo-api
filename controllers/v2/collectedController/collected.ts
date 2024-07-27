@@ -384,7 +384,7 @@ export const getNumberOfAttempts = async (req: IRequest, res: Response) => {
 
 export const getCollectedOffers = async (req: IRequest, res: Response) => {
   try {
-    const collectedOffers = oLogModel.aggregate([
+    const collectedOffers = await oLogModel.aggregate([
       {
         $match: {
           user: req.user._id,
