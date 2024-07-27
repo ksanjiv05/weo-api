@@ -3,7 +3,7 @@
 
 import mongoose, { Schema, Document } from "mongoose";
 import { conn_v2 } from "../db";
-import { OFFER_STATUS } from "../interfaces/IOffer";
+import { OFFER_STATUS } from "../config/enums";
 
 export interface IOffer extends Document {
   user: any; //creatorId

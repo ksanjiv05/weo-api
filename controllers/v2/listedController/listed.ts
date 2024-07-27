@@ -46,6 +46,11 @@ export const createListed = async (req: IRequest, res: Response) => {
   }
 
   try {
+    let offerDataArr = offer.offerDataPoints;
+    const maxVersionObject = offerDataArr.reduce(
+      (max, obj) => (obj.version > max.version ? obj : max),
+      offerDataArr[0]
+    );
     const newOfferListed = new Listed({
       user: req.user._id,
       offer: offer._id,
