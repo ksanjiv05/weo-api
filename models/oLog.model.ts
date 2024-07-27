@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { conn_v2 } from "../db";
 
 export interface IOLog {
   event: string;
@@ -56,4 +57,4 @@ const oLogSchema = new mongoose.Schema(
 //TODO : add index for unique
 // oLogSchema.index({ event: 1 }, { unique: true });
 
-export default mongoose.model<IOLog>("OLog", oLogSchema);
+export default conn_v2.model<IOLog>("OLog", oLogSchema);

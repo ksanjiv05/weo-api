@@ -88,3 +88,5 @@ app.use(
 );
 
 // createSuperAdmin();
+//TODO:
+// filter offer for finder user not able to see own offer or collected

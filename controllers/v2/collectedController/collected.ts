@@ -12,7 +12,11 @@ import Offer from "../../../models/offer.model";
 import Outlet from "../../../models/outlet.model";
 import Brand from "../../../models/brand.model";
 import mongoose from "mongoose";
-import { O_EVENTS, OFFER_STATUS } from "../../../config/enums";
+import {
+  O_EVENTS,
+  OFFER_COLLECTION_EVENTS,
+  OFFER_STATUS,
+} from "../../../config/enums";
 import OfferData, { IOfferData } from "../../../models/offer.data.model";
 import Wallet from "../../../models/wallet.model";
 import { IRequest } from "../../../interfaces/IRequest";
@@ -20,11 +24,16 @@ import { oGenerate } from "../../../helper/oCalculator/v2";
 import { getExchangeRate } from "../../../helper/exchangeRate";
 import {
   BASE_CURRENCY,
+  negotiationConfig,
   oNetworkConfig,
   oNetworkConfigLoad,
 } from "../../../config/config";
 import oLogModel, { IOLog } from "../../../models/oLog.model";
 import { getDaysBetweenTwoDate } from "../../../helper/utils";
+import { v4 } from "uuid";
+import listedModel from "../../../models/listed.model";
+import Ownership from "../../../models/ownership.model";
+import NegotiationAttempt from "../../../models/negotiationAttempt.model";
 
 // define function for create Collected
 //TODO: created Collected logic not implemented yet
@@ -41,10 +50,12 @@ export const collectOffer = async (req: IRequest, res: Response) => {
     duration,
     amount,
     offerDataId,
+    isFullPayment = false,
+    noOfInstallments = 1,
+    negotiationAttemptInstance = null,
   } = req.body;
-  console.log("collect ", req.body);
 
-  const session = await mongoose.startSession();
+  const session = await Collected.startSession();
   session.startTransaction();
   try {
     const offer = await Offer.findOne({
@@ -56,11 +67,16 @@ export const collectOffer = async (req: IRequest, res: Response) => {
       return responseObj({
         resObj: res,
         type: "error",
-        statusCode: HTTP_STATUS_CODES.NOT_FOUND,
+        statusCode: HTTP_STATUS_CODES.BAD_REQUEST,
         msg: "Offer not found",
         error: "Offer not found",
-        data: null,
-        code: ERROR_CODES.NOT_FOUND,
+        data: {
+          remainingAttempts: negotiationAttemptInstance
+            ? negotiationConfig.maxAttempts -
+              negotiationAttemptInstance?.noOfAttempts
+            : negotiationConfig.maxAttempts,
+        },
+        code: ERROR_CODES.FIELD_VALIDATION_ERR,
       });
     }
 
@@ -89,8 +105,13 @@ export const collectOffer = async (req: IRequest, res: Response) => {
         statusCode: HTTP_STATUS_CODES.BAD_REQUEST,
         msg: "Negotiation not meet criteria",
         error: "Negotiation not meet criteria",
-        data: null,
-        code: ERROR_CODES.NOT_FOUND,
+        data: {
+          remainingAttempts: negotiationAttemptInstance
+            ? negotiationConfig.maxAttempts -
+              negotiationAttemptInstance?.noOfAttempts
+            : negotiationConfig.maxAttempts,
+        },
+        code: ERROR_CODES.FIELD_VALIDATION_ERR,
       });
     }
 
@@ -129,7 +150,12 @@ export const collectOffer = async (req: IRequest, res: Response) => {
         statusCode: HTTP_STATUS_CODES.BAD_REQUEST,
         msg: "Negotiation not meet criteria",
         error: "Negotiation not meet criteria",
-        data: null,
+        data: {
+          remainingAttempts: negotiationAttemptInstance
+            ? negotiationConfig.maxAttempts -
+              negotiationAttemptInstance?.noOfAttempts
+            : negotiationConfig.maxAttempts,
+        },
         code: ERROR_CODES.FIELD_VALIDATION_ERR,
       });
     }
@@ -145,8 +171,14 @@ export const collectOffer = async (req: IRequest, res: Response) => {
     //   });
     // }
 
-    const newOfferCollected = new Collected(req.body);
-    newOfferCollected.offer = id;
+    const newOfferCollected = new Collected({
+      offer: id,
+      brand: offer.brand,
+      user: req.user._id,
+      offerDataId: offerDataId,
+      offerName: offer.offerName,
+      offerThumbnail: offerDataPoint.offerThumbnail,
+    });
 
     offer.totalOffersAvailable = offer.totalOffersAvailable - noOfOffers;
     offer.totalOfferSold = offer.totalOfferSold + noOfOffers;
@@ -160,39 +192,56 @@ export const collectOffer = async (req: IRequest, res: Response) => {
         statusCode: HTTP_STATUS_CODES.BAD_REQUEST,
         msg: "Wallet not found",
         error: "Wallet not found",
-        data: null,
+        data: {
+          remainingAttempts: negotiationAttemptInstance
+            ? negotiationConfig.maxAttempts -
+              negotiationAttemptInstance?.noOfAttempts
+            : negotiationConfig.maxAttempts,
+        },
         code: ERROR_CODES.FIELD_VALIDATION_ERR,
       });
     }
-    if (wallet.balance < amount * noOfOffers) {
+    if (wallet.balance < amount * noOfOffers * 100) {
       return responseObj({
         resObj: res,
         type: "error",
         statusCode: HTTP_STATUS_CODES.BAD_REQUEST,
         msg: "Insufficient balance",
         error: "Insufficient balance",
-        data: null,
+        data: {
+          remainingAttempts: negotiationAttemptInstance
+            ? negotiationConfig.maxAttempts -
+              negotiationAttemptInstance?.noOfAttempts
+            : negotiationConfig.maxAttempts,
+        },
         code: ERROR_CODES.FIELD_VALIDATION_ERR,
       });
     }
 
-    wallet.balance = wallet.balance - amount * 100;
-    const exchangeRate = 83.33; //await getExchangeRate(wallet.currency, BASE_CURRENCY);
+    wallet.balance = wallet.balance - amount * noOfOffers * 100;
+    const exchangeRate = await getExchangeRate(wallet.currency, BASE_CURRENCY);
     const amountAfterExchange = amount * exchangeRate;
     const { toDistribute, totalO } = await oGenerate({
       amount: amountAfterExchange,
-      discount: 0,
+      discount: offerDataPoint.offerPriceMinPercentage,
     });
 
-    wallet.oBalance = wallet.oBalance + toDistribute / 2;
+    const deductOBalance =
+      req.body?.negotiationAttemptInstance &&
+      req.body.negotiationAttemptInstance.noOfAttempts >
+        negotiationConfig.freeAttempts
+        ? negotiationConfig.oCharge
+        : 0;
+
+    wallet.oBalance = wallet.oBalance + toDistribute / 2 - deductOBalance;
 
     const newOLog = new oLogModel({
       event: O_EVENTS.COLLECTED,
-      amount: amountAfterExchange,
+      amount: amount * noOfOffers,
       offerId: id,
       seller: { id: offer.user, oQuantity: toDistribute / 2 },
       buyer: { id: req.user._id, oQuantity: toDistribute / 2 },
-      discount: 0,
+      discount: offerDataPoint.offerPriceMinPercentage,
       quantity: noOfOffers,
 
       oPriceRate: oNetworkConfig.price,
@@ -205,38 +254,65 @@ export const collectOffer = async (req: IRequest, res: Response) => {
       toPlatformCutOffRate: oNetworkConfig.toPlatformCutOffRate,
     });
 
-    console.log("newOLog", newOLog);
+    const newOwnerShip = new Ownership({
+      owner: [
+        {
+          ownerId: req.user._id,
+          isCurrentOwner: true,
+        },
+      ],
+      transactions: [newOLog._id],
+      offer_access_codes: [
+        {
+          code: newOfferCollected._id,
+          status: OFFER_COLLECTION_EVENTS.COLLECTED,
+        },
+      ],
+      isFullPayment,
+      offerExpiryDate: offerDataPoint.serviceEndDate,
+      currentInstallment: amount * noOfOffers,
+      totalInstallment: isFullPayment
+        ? amount
+        : noOfInstallments * amount * noOfOffers,
+      noOfInstallments: isFullPayment ? 1 : noOfInstallments,
+      pendingInstallment: noOfInstallments - 1,
+      quantity: noOfOffers,
+      oEarned: toDistribute / 2,
+    });
 
-    // {
-    //   owner: [
-    //     {
-    //       ownerId: { type: Schema.Types.ObjectId, ref: "User" },
-    //       isCurrentOwner: { type: Boolean, default: true },
-    //     },
-    //   ],
-    //   transaction: { type: Schema.Types.ObjectId, ref: "Transaction" },
-    //   offer_access_codes: [
-    //     {
-    //       code: { type: String },
-    //       status: { type: String },
-    //     },
-    //   ],
-    //   deliveryCount: { type: Number, default: 0 },
-    //   currentInstallment: { type: Number, default: 0 },
-    //   totalInstallment: { type: Number, default: 0 },
-    //   installmentDueDate: { type: String },
-    //   offerActivationDate: { type: String },
-    //   offerExpiryDate: { type: String },
-    //   quantity: String,
-    // },
+    await listedModel.updateOne(
+      { offer: id },
+      {
+        // $push: {
+        //   ownership: newOwnerShip._id,
+        // },
+        $addToSet: {
+          ownership: newOwnerShip._id,
+        },
+      },
+      {
+        session,
+      }
+    );
 
-    await offer.save({ session });
+    newOfferCollected.ownership = newOwnerShip._id;
+    await newOwnerShip.save({ session });
+    console.log("--0--");
+    console.log("--1--");
+
     await wallet.save({ session });
-    await newOfferCollected.save({ session });
-    await newOLog.save({ session });
+    console.log("--2--");
 
+    await newOfferCollected.save({ session });
+    console.log("--3--");
+    await newOLog.save({ session });
+    console.log("--4--");
+    await offer.save({ session });
+    console.log("--5 --", offer);
+    debugger;
     await session.commitTransaction();
-    session.endSession();
+    await session.endSession();
+    console.log("--6--");
     return responseObj({
       resObj: res,
       type: "success",
@@ -247,9 +323,50 @@ export const collectOffer = async (req: IRequest, res: Response) => {
       code: ERROR_CODES.SUCCESS,
     });
   } catch (error: any) {
+    debugger;
     await session.abortTransaction();
-    session.endSession();
+    await session.endSession();
+    if (negotiationAttemptInstance) {
+      negotiationAttemptInstance.noOfAttempts -= 1;
+      await negotiationAttemptInstance.save();
+    }
     logging.error("Collected Offer", error.message, error);
+
+    return responseObj({
+      resObj: res,
+      type: "error",
+      statusCode: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR,
+      msg: "Internal server error",
+      error: error.message ? error.message : "internal server error",
+      data: null,
+      code: ERROR_CODES.SERVER_ERR,
+    });
+  }
+};
+
+export const getNumberOfAttempts = async (req: IRequest, res: Response) => {
+  try {
+    const offerId = req.query.offerId;
+    console.log({
+      offer: offerId,
+      user: req.user._id,
+    });
+    const attempts = await NegotiationAttempt.findOne({
+      offer: offerId,
+      user: req.user._id,
+    });
+
+    return responseObj({
+      resObj: res,
+      type: "success",
+      statusCode: HTTP_STATUS_CODES.SUCCESS,
+      msg: "Collected Offer",
+      error: null,
+      data: { attempts, oChargeForReTry: 10 },
+      code: ERROR_CODES.SUCCESS,
+    });
+  } catch (error: any) {
+    logging.error("Try to Attempt Offer", error.message, error);
 
     return responseObj({
       resObj: res,
@@ -265,22 +382,83 @@ export const collectOffer = async (req: IRequest, res: Response) => {
 
 // define function for get Collected offer
 
-export const getCollectedOffers = async (req: Request, res: Response) => {
+export const getCollectedOffers = async (req: IRequest, res: Response) => {
   try {
-    //add filter for Collected offer by nearby outlet
-    const { brandId } = req.params;
-
-    const offers = await Offer.find({ brand: brandId }).populate(
-      "offerDataPoints"
-    );
-
+    const collectedOffers = oLogModel.aggregate([
+      {
+        $match: {
+          user: req.user._id,
+        },
+      },
+      {
+        $lookup: {
+          from: "brands",
+          localField: "brand",
+          foreignField: "_id",
+          as: "brands",
+          pipeline: [
+            {
+              $project: {
+                brandName: 1,
+                brandLogo: 1,
+              },
+            },
+          ],
+        },
+      },
+      {
+        $addFields: {
+          brandDetails: {
+            $first: "$brands",
+          },
+        },
+      },
+      {
+        $lookup: {
+          from: "ownerships",
+          localField: "ownership",
+          foreignField: "_id",
+          as: "ownerships",
+          // pipeline: [
+          //   {
+          //     $lookup: {
+          //       from: "ologs",
+          //       localField: "transaction",
+          //       foreignField: "_id",
+          //       as: "logs",
+          //     },
+          //   },
+          //   {
+          //     $addFields: {
+          //       earndO: {
+          //         $first: "$logs.buyer.oQuantity",
+          //       },
+          //     },
+          //   },
+          // ],
+        },
+      },
+      {
+        $addFields: {
+          ownershipDetails: {
+            $first: "$ownerships",
+          },
+        },
+      },
+      {
+        $project: {
+          brands: 0,
+          ownerships: 0,
+        },
+      },
+    ]);
     return responseObj({
       resObj: res,
       type: "success",
       statusCode: HTTP_STATUS_CODES.SUCCESS,
       msg: "Collected Offer",
       error: null,
-      data: offers,
+      data: collectedOffers,
       code: ERROR_CODES.SUCCESS,
     });
   } catch (error: any) {

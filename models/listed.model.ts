@@ -13,32 +13,7 @@ export interface IListed extends Document {
   offer: any; // offer reference
   brand: any; // brand reference
   user: any;
-  totalOffers: number;
-  ownership: [
-    {
-      owner: [
-        {
-          ownerId: string; // user ref
-          isCurrentOwner: boolean;
-        }
-      ]; // user reference
-      transaction: string;
-      offer_access_codes: [
-        {
-          code: string; // access code combination of //offer id and sum number(0001 - 9999)
-          status: string; //pending //delivered
-          transaction: any; // transaction reference
-        }
-      ];
-      deliveryCount: number;
-      currentInstallment: number;
-      totalInstallment: number;
-      installmentDueDate: string;
-      offerActivationDate: string;
-      offerExpiryDate: string;
-      quantity: number;
-    }
-  ]; // order reference
+  ownership: any; // order reference
 }
 
 const ListedSchema: Schema = new Schema({
@@ -47,27 +22,8 @@ const ListedSchema: Schema = new Schema({
   user: { type: Schema.Types.ObjectId, ref: "User" },
   ownership: [
     {
-      owner: [
-        {
-          ownerId: { type: Schema.Types.ObjectId, ref: "User" },
-          isCurrentOwner: { type: Boolean, default: true },
-        },
-      ],
-      transaction: { type: Schema.Types.ObjectId, ref: "Transaction" },
-      offer_access_codes: [
-        {
-          code: { type: String },
-          status: { type: String },
-        },
-      ],
-      isFullPayment: { type: Boolean, default: false },
-      deliveryCount: { type: Number, default: 0 },
-      currentInstallment: { type: Number, default: 0 },
-      totalInstallment: { type: Number, default: 0 },
-      installmentDueDate: { type: String },
-      offerActivationDate: { type: String },
-      offerExpiryDate: { type: String },
-      quantity: String,
+      type: Schema.Types.ObjectId,
+      ref: "Ownership",
     },
   ],
 });

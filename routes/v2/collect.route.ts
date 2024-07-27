@@ -1,12 +1,16 @@
 import express from "express";
 import { auth } from "../../middleware/auth";
-import { collectOffer } from "../../controllers/v2/collectedController/collected";
+import {
+  collectOffer,
+  getCollectedOffers,
+  getNumberOfAttempts,
+} from "../../controllers/v2/collectedController/collected";
+import { negotiationAttempt } from "../../middleware/negotiationAttempt";
 
 const router = express.Router();
 
-// collect routes
-//create order
-
-router.post("/collects", auth, collectOffer);
+router.post("/collects", auth, negotiationAttempt, collectOffer);
+router.get("/collects/attempt", auth, getNumberOfAttempts);
+router.get("/collects", auth, getCollectedOffers);
 
 export default router;

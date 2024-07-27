@@ -54,4 +54,10 @@ export const oNetworkConfig = {
   toPlatformCutOffRate: 10,
 };
 
+export const negotiationConfig = {
+  maxAttempts: 2,
+  oCharge: 10,
+  freeAttempts: 1,
+}
+
 export const oNetworkConfigLoad = async () => {};

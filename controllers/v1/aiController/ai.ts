@@ -54,7 +54,7 @@ export const getAiGeneratedLogo = async (req: Request, res: Response) => {
     const response = await openai.images.generate({
       model: "dall-e-3",
       prompt: promptString,
-      n: 1,
+      n: n,
       size: "1024x1024",
     });
     // console.log("response", response);
@@ -104,7 +104,7 @@ export const getAiGeneratedImg = async (req: Request, res: Response) => {
     const response = await openai.images.generate({
       model: "dall-e-3",
       prompt: promptString,
-      n: 1,
+      n: n,
       size: "1024x1024",
     });
     // console.log("response", response);
