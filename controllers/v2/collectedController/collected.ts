@@ -53,6 +53,7 @@ export const collectOffer = async (req: IRequest, res: Response) => {
     isFullPayment = false,
     noOfInstallments = 1,
     negotiationAttemptInstance = null,
+    outletId = null,
   } = req.body;
 
   const session = await Collected.startSession();
@@ -178,6 +179,7 @@ export const collectOffer = async (req: IRequest, res: Response) => {
       offerDataId: offerDataId,
       offerName: offer.offerName,
       offerThumbnail: offerDataPoint.offerThumbnail,
+      outlet: outletId,
     });
 
     offer.totalOffersAvailable = offer.totalOffersAvailable - noOfOffers;
@@ -276,7 +278,7 @@ export const collectOffer = async (req: IRequest, res: Response) => {
         : noOfInstallments * amount * noOfOffers,
       noOfInstallments: isFullPayment ? 1 : noOfInstallments,
       pendingInstallment: noOfInstallments - 1,
-      quantity: noOfOffers,
+      quantity: quantity,
       oEarned: toDistribute / 2,
     });
 
@@ -459,6 +461,105 @@ export const getCollectedOffers = async (req: IRequest, res: Response) => {
       msg: "Collected Offer",
       error: null,
       data: collectedOffers,
+      code: ERROR_CODES.SUCCESS,
+    });
+  } catch (error: any) {
+    logging.error("Collected Offer", error.message, error);
+    return responseObj({
+      resObj: res,
+      type: "error",
+      statusCode: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR,
+      msg: "Internal server error",
+      error: error.message ? error.message : "internal server error",
+      data: null,
+      code: ERROR_CODES.SERVER_ERR,
+    });
+  }
+};
+
+export const getCollectedOfferDetails = async (
+  req: IRequest,
+  res: Response
+) => {
+  try {
+    const { id } = req.params;
+    const collectedOffer = await Collected.aggregate([
+      {
+        $match: {
+          _id: new mongoose.Types.ObjectId(id),
+        },
+      },
+      {
+        $lookup: {
+          from: "offerdatas",
+          localField: "offerDataId",
+          foreignField: "_id",
+          as: "offerDatas",
+        },
+      },
+      {
+        $addFields: {
+          offerDataDetails: {
+            $first: "$offerDatas",
+          },
+        },
+      },
+      {
+        $lookup: {
+          from: "ownerships",
+          localField: "ownership",
+          foreignField: "_id",
+          as: "ownerships",
+          pipeline: [
+            {
+              $lookup: {
+                from: "ologs",
+                localField: "transactions",
+                foreignField: "_id",
+                as: "transactions",
+              },
+            },
+          ],
+        },
+      },
+      {
+        $addFields: {
+          ownershipDetails: {
+            $first: "$ownerships",
+          },
+        },
+      },
+      {
+        $lookup: {
+          from: "outlets",
+          localField: "outlet",
+          foreignField: "_id",
+          as: "outlets",
+        },
+      },
+      {
+        $addFields: {
+          outletDetails: {
+            $first: "$outlets",
+          },
+        },
+      },
+      {
+        $project: {
+          offerDatas: 0,
+          ownerships: 0,
+          offerDataId: 0,
+          ownership: 0,
+        },
+      },
+    ]);
+    return responseObj({
+      resObj: res,
+      type: "success",
+      statusCode: HTTP_STATUS_CODES.SUCCESS,
+      msg: "Collected Offer",
+      error: null,
+      data: collectedOffer,
       code: ERROR_CODES.SUCCESS,
     });
   } catch (error: any) {

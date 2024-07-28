@@ -17,6 +17,7 @@ export interface ICollected extends Document {
   offerName: string;
   offerThumbnail: string;
   ownership: any; // order reference
+  outlet: any;
 }
 
 const CollectedSchema: Schema = new Schema({
@@ -30,6 +31,7 @@ const CollectedSchema: Schema = new Schema({
     type: Schema.Types.ObjectId,
     ref: "Ownership",
   },
+  outlet: { type: Schema.Types.ObjectId, ref: "Outlet" },
 });
 
 // CollectedSchema.index({ offer: 1, brand: 1, user: 1 }, { unique: true });
