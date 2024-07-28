@@ -581,3 +581,4 @@ error: POST /api/v1/brands 400 7ms
 {"level":"error","message":"POST /api/v2/collects 404 1008ms","timestamp":"2024-07-27T12:08:14.023Z"}
 {"level":"error","message":"POST /api/v2/collects 400 1086ms","timestamp":"2024-07-27T12:18:44.950Z"}
 {"level":"error","message":"POST /api/v2/collects 400 1606ms","timestamp":"2024-07-27T12:23:38.390Z"}
+{"level":"error","message":"GET /api/v2/collects/attempt?offerId=66992e06ab355f9abe7ad775 500 503ms","timestamp":"2024-07-28T14:55:07.456Z"}
