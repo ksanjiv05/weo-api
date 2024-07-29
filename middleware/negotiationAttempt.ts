@@ -11,6 +11,7 @@ export const negotiationAttempt = async (req: any, res: any, next: any) => {
     offer: id,
     user: user._id,
   });
+  console.log("negotiationAttempt",negotiation, negotiationAttempt);
   if (!negotiation) {
     req.body.negotiationAttemptInstance = negotiationAttempt;
     next();
@@ -41,7 +42,7 @@ export const negotiationAttempt = async (req: any, res: any, next: any) => {
       });
 
       await newNegotiationAttempt.save();
-      req.body.negotiationAttemptInstance = negotiationAttempt;
+      req.body.negotiationAttemptInstance = newNegotiationAttempt;
       next();
     }
   }

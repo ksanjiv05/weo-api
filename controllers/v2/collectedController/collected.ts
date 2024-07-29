@@ -29,7 +29,12 @@ import {
   oNetworkConfigLoad,
 } from "../../../config/config";
 import oLogModel, { IOLog } from "../../../models/oLog.model";
-import { getDaysBetweenTwoDate } from "../../../helper/utils";
+import {
+  encrypt,
+  encryptText,
+  generateQR,
+  getDaysBetweenTwoDate,
+} from "../../../helper/utils";
 import { v4 } from "uuid";
 import listedModel from "../../../models/listed.model";
 import Ownership from "../../../models/ownership.model";
@@ -64,6 +69,19 @@ export const collectOffer = async (req: IRequest, res: Response) => {
       offerStatus: OFFER_STATUS.LIVE,
       totalOffersAvailable: { $gte: noOfOffers },
     });
+    const remainingAttempts = negotiationAttemptInstance
+      ? negotiationConfig.maxAttempts - negotiationAttemptInstance?.noOfAttempts
+      : negotiationConfig.maxAttempts;
+    const remainingFreeAttempts = negotiationAttemptInstance
+      ? negotiationConfig.freeAttempts -
+        negotiationAttemptInstance?.noOfAttempts
+      : negotiationConfig.freeAttempts;
+    console.log(
+      "remainingAttempts --- ",
+      negotiationAttemptInstance,
+      remainingAttempts,
+      negotiationConfig.maxAttempts - negotiationAttemptInstance?.noOfAttempts
+    );
     if (!offer) {
       return responseObj({
         resObj: res,
@@ -72,10 +90,8 @@ export const collectOffer = async (req: IRequest, res: Response) => {
         msg: "Offer not found",
         error: "Offer not found",
         data: {
-          remainingAttempts: negotiationAttemptInstance
-            ? negotiationConfig.maxAttempts -
-              negotiationAttemptInstance?.noOfAttempts
-            : negotiationConfig.maxAttempts,
+          remainingAttempts,
+          remainingFreeAttempts,
         },
         code: ERROR_CODES.FIELD_VALIDATION_ERR,
       });
@@ -104,13 +120,11 @@ export const collectOffer = async (req: IRequest, res: Response) => {
         resObj: res,
         type: "error",
         statusCode: HTTP_STATUS_CODES.BAD_REQUEST,
-        msg: "Negotiation not meet criteria",
-        error: "Negotiation not meet criteria",
+        msg: "Offer not found",
+        error: "Offer not found",
         data: {
-          remainingAttempts: negotiationAttemptInstance
-            ? negotiationConfig.maxAttempts -
-              negotiationAttemptInstance?.noOfAttempts
-            : negotiationConfig.maxAttempts,
+          remainingAttempts,
+          remainingFreeAttempts,
         },
         code: ERROR_CODES.FIELD_VALIDATION_ERR,
       });
@@ -152,10 +166,8 @@ export const collectOffer = async (req: IRequest, res: Response) => {
         msg: "Negotiation not meet criteria",
         error: "Negotiation not meet criteria",
         data: {
-          remainingAttempts: negotiationAttemptInstance
-            ? negotiationConfig.maxAttempts -
-              negotiationAttemptInstance?.noOfAttempts
-            : negotiationConfig.maxAttempts,
+          remainingAttempts,
+          remainingFreeAttempts,
         },
         code: ERROR_CODES.FIELD_VALIDATION_ERR,
       });
@@ -357,6 +369,26 @@ export const getNumberOfAttempts = async (req: IRequest, res: Response) => {
       offer: offerId,
       user: req.user._id,
     });
+    if (!attempts) {
+      return responseObj({
+        resObj: res,
+        type: "success",
+        statusCode: HTTP_STATUS_CODES.SUCCESS,
+        msg: "Collected Offer",
+        error: null,
+        data: {
+          attempts: {
+            offer: offerId,
+            user: req.user._id,
+            noOfAttempts: 0,
+          },
+          remainingAttempts: negotiationConfig.maxAttempts,
+          remainingFreeAttempts: negotiationConfig.freeAttempts,
+          oChargeForReTry: 10,
+        },
+        code: ERROR_CODES.SUCCESS,
+      });
+    }
 
     return responseObj({
       resObj: res,
@@ -364,7 +396,14 @@ export const getNumberOfAttempts = async (req: IRequest, res: Response) => {
       statusCode: HTTP_STATUS_CODES.SUCCESS,
       msg: "Collected Offer",
       error: null,
-      data: { attempts, oChargeForReTry: 10 },
+      data: {
+        attempts,
+        remainingAttempts:
+          negotiationConfig.maxAttempts - attempts.noOfAttempts,
+        remainingFreeAttempts:
+          negotiationConfig.freeAttempts - attempts.noOfAttempts,
+        oChargeForReTry: 10,
+      },
       code: ERROR_CODES.SUCCESS,
     });
   } catch (error: any) {
@@ -719,6 +758,72 @@ export const getAllCollectedBrands = async (req: Request, res: Response) => {
       type: "error",
       statusCode: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR,
       msg: "Brands not found",
+      error: error.message ? error.message : "internal server error",
+      data: null,
+      code: ERROR_CODES.SERVER_ERR,
+    });
+  }
+};
+
+export const getCollectedOfferQr = async (req: IRequest, res: Response) => {
+  try {
+    const id = req.params.id;
+    const collectedOffer = await Collected.findOne({ _id: id }).populate(
+      "ownership"
+    );
+    if (!collectedOffer) {
+      return responseObj({
+        resObj: res,
+        type: "error",
+        statusCode: HTTP_STATUS_CODES.BAD_REQUEST,
+        msg: "Collected offer not found",
+        error: null,
+        data: null,
+        code: ERROR_CODES.NOT_FOUND,
+      });
+    }
+
+    const status = collectedOffer?.ownership?.offer_access_codes.find(
+      (code: any) =>
+        code.code === id && code.status === OFFER_COLLECTION_EVENTS.COLLECTED
+    );
+
+    if (!status) {
+      return responseObj({
+        resObj: res,
+        type: "error",
+        statusCode: HTTP_STATUS_CODES.BAD_REQUEST,
+        msg: "You don't have any pending delivery ",
+        error: null,
+        data: null,
+        code: ERROR_CODES.NOT_FOUND,
+      });
+    }
+
+    const qrStr = JSON.stringify({
+      id,
+      user: req.user._id,
+    });
+
+    // const encryptedQrStr = encryptText(qrStr, "../../../keys/public.pem");
+
+    const collectedOfferQR = await generateQR(qrStr);
+    return responseObj({
+      resObj: res,
+      type: "success",
+      statusCode: HTTP_STATUS_CODES.SUCCESS,
+      msg: "Collected Offer Qr",
+      error: null,
+      data: collectedOfferQR,
+      code: ERROR_CODES.SUCCESS,
+    });
+  } catch (error: any) {
+    logging.error("Collected Offer", error.message, error);
+    return responseObj({
+      resObj: res,
+      type: "error",
+      statusCode: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR,
+      msg: "Internal server error",
       error: error.message ? error.message : "internal server error",
       data: null,
       code: ERROR_CODES.SERVER_ERR,

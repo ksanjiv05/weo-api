@@ -1,6 +1,7 @@
 //encryption
 import * as fs from "fs";
 import crypto from "crypto";
+import QRCode from "qrcode";
 import { Transform } from "stream";
 import logging from "../config/logging";
 
@@ -86,7 +87,7 @@ export const decrypt = ({ filePath, password, cb }: EncProp) => {
   });
 };
 
-export function encryptData(plainText: string, public_key_path: string) {
+export function encryptText(plainText: string, public_key_path: string) {
   return crypto.publicEncrypt(
     {
       key: fs.readFileSync(public_key_path, "utf8"),
@@ -167,10 +168,19 @@ export const verifyHash = (data: string, hash: string) => {
  * Round to nearest whole number to deal with DST.
  */
 export function getDaysBetweenTwoDate(startDate: any, endDate: any) {
-  const endTime = new Date(endDate).getTime()
-  const startTime = new Date(startDate).getTime()
-  console.log(endTime,"--",startTime)
-  return Math.round(
-    (endTime -startTime ) / (1000 * 60 * 60 * 24)
-  );
+  const endTime = new Date(endDate).getTime();
+  const startTime = new Date(startDate).getTime();
+  console.log(endTime, "--", startTime);
+  return Math.round((endTime - startTime) / (1000 * 60 * 60 * 24));
 }
+
+// With async/await
+export const generateQR = async (text: string) => {
+  try {
+    const qr = await QRCode.toDataURL(text);
+    return qr;
+  } catch (err) {
+    console.error(err);
+    return null;
+  }
+};

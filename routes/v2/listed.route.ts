@@ -7,6 +7,7 @@ import {
   createListed,
   getAllListedBrands,
   getAllListedOffersByBrand,
+  verifyCollectedOffer,
 } from "../../controllers/v2/listedController/listed";
 
 const router = express.Router();
@@ -203,5 +204,7 @@ router.get("/listed/user/brand", auth, getAllListedBrands);
  */
 
 router.get("/listed/user/brand/:id", getAllListedOffersByBrand);
+
+router.post("/listed/offer/verify", auth, verifyCollectedOffer);
 
 export default router;
