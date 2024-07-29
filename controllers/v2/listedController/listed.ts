@@ -13,7 +13,9 @@ import Outlet from "../../../models/outlet.model";
 import Brand from "../../../models/brand.model";
 import mongoose from "mongoose";
 import { IRequest } from "../../../interfaces/IRequest";
-import { OFFER_STATUS, STATUS } from "../../../config/enums";
+import { OFFER_COLLECTION_EVENTS, OFFER_STATUS, STATUS } from "../../../config/enums";
+import Ownership from "../../../models/ownership.model";
+import Collected from "../../../models/collected.model";
 
 // define function for create listed
 //TODO: created listed logic not implemented yet
@@ -668,6 +670,98 @@ export const getAllListedOffersByBrand = async (
     });
   } catch (error: any) {
     logging.error("Get Listed Offers By Brand", error.message, error);
+    return responseObj({
+      resObj: res,
+      type: "error",
+      statusCode: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR,
+      msg: "Internal server error",
+      error: error.message ? error.message : "internal server error",
+      data: null,
+      code: ERROR_CODES.SERVER_ERR,
+    });
+  }
+};
+
+export const verifyCollectedOffer = async (req: IRequest, res: Response) => {
+
+  try {
+    const { id,user } = req.body;
+    const offer = await Offer.findById(id);
+
+    const ownership = await Ownership.findOne({
+      offer_access_codes: { $elemMatch: { code: id } },
+    });
+    if (!ownership) {
+      return responseObj({
+        resObj: res,
+        type: "error",
+        statusCode: HTTP_STATUS_CODES.BAD_REQUEST,
+        msg: " not found",
+        error: " not found",
+        data: null,
+        code: ERROR_CODES.NOT_FOUND,
+      });
+    }
+
+    const collectedOffer = await Collected.findOne({
+       _id: id,
+       user,
+     });
+
+     if(!collectedOffer){
+      return responseObj({
+        resObj: res,
+        type: "error",
+        statusCode: HTTP_STATUS_CODES.BAD_REQUEST,
+        msg: "unauthorized owner",
+        error: "unauthorized owner",
+        data: null,
+        code: ERROR_CODES.NOT_FOUND,
+      });
+     }
+
+
+    const listedOffer = await Listed.findOne({
+      user: req.user._id,
+      ownership: { $in: [ownership._id] },
+    });
+
+    if(!listedOffer){
+      return responseObj({
+        resObj: res,
+        type: "error",
+        statusCode: HTTP_STATUS_CODES.BAD_REQUEST,
+        msg: " not found",
+        error: " not found",
+        data: null,
+        code: ERROR_CODES.NOT_FOUND,
+      });
+    }
+
+    
+
+    
+    ownership.offer_access_codes = ownership.offer_access_codes.map((code:any)=>{
+      if(code.code === id){
+        code.status = OFFER_COLLECTION_EVENTS.DELIVERED
+      }
+      return code
+    })
+
+    await ownership.save();
+
+    return responseObj({
+      resObj: res,
+      type: "success",
+      statusCode: HTTP_STATUS_CODES.SUCCESS,
+      msg: "Collected Offer Verified and delivered successfully",
+      error: null,
+      data: null,
+      code: ERROR_CODES.SUCCESS,
+    });
+
+  } catch (error: any) {
+    logging.error("Verify Collected Offer", error.message, error);
     return responseObj({
       resObj: res,
       type: "error",

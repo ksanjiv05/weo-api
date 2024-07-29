@@ -18,7 +18,12 @@ import loggingMiddleware from "./middleware/logger";
 import routerV2 from "./routes/v2";
 import { createSuperAdmin } from "./scripts/createAdmin";
 import webhookRouterV2 from "./routes/v2/webhook";
-import { getDaysBetweenTwoDate } from "./helper/utils";
+import {
+  decryptText,
+  encryptText,
+  generateKeyPair,
+  getDaysBetweenTwoDate,
+} from "./helper/utils";
 
 //end scripts
 
@@ -90,3 +95,9 @@ app.use(
 // createSuperAdmin();
 //TODO:
 // filter offer for finder user not able to see own offer or collected
+
+// const ex = encryptText("hello", "./keys/public.pem"); //.toString("utf-8");
+// console.log("ex ", ex.toString());
+
+// const de = decryptText(Buffer.from(ex.toString()), "./keys/private.pem");
+// console.log("de ", de.toString());
