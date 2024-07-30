@@ -13,7 +13,11 @@ import Outlet from "../../../models/outlet.model";
 import Brand from "../../../models/brand.model";
 import mongoose from "mongoose";
 import { IRequest } from "../../../interfaces/IRequest";
-import { OFFER_COLLECTION_EVENTS, OFFER_STATUS, STATUS } from "../../../config/enums";
+import {
+  OFFER_COLLECTION_EVENTS,
+  OFFER_STATUS,
+  STATUS,
+} from "../../../config/enums";
 import Ownership from "../../../models/ownership.model";
 import Collected from "../../../models/collected.model";
 
@@ -682,11 +686,417 @@ export const getAllListedOffersByBrand = async (
   }
 };
 
-export const verifyCollectedOffer = async (req: IRequest, res: Response) => {
-
+export const getPendingOffersByBrand = async (req: IRequest, res: Response) => {
   try {
-    const { id,user } = req.body;
-    const offer = await Offer.findById(id);
+    const { id } = req.params;
+    console.log("id", id);
+    const listedPendingOffers = await Listed.aggregate([
+      {
+        $match: {
+          user: new mongoose.Types.ObjectId(req.user._id),
+          brand: new mongoose.Types.ObjectId(id),
+        },
+      },
+      // {
+      //   $lookup: {
+      //     from: "ownerships",
+      //     localField: "ownership",
+      //     foreignField: "_id",
+      //     as: "ownerships",
+      //     pipeline: [
+      //       {
+      //         $lookup: {
+      //           from: "users",
+      //           localField: "owner.ownerId",
+      //           foreignField: "_id",
+      //           as: "customer",
+      //           pipeline: [
+      //             {
+      //               $project: {
+      //                 _id: 1,
+      //                 name: 1,
+      //               },
+      //             },
+      //           ],
+      //         },
+      //       },
+      //       {
+      //         $addFields: {
+      //           customer: {
+      //             $first: "$customer",
+      //           },
+      //         },
+      //       },
+      //     ],
+      //   },
+      // },
+      // {
+      //   $lookup: {
+      //     from: "offers",
+      //     localField: "offer",
+      //     foreignField: "_id",
+      //     as: "offers",
+      //     pipeline: [
+      //       {
+      //         $lookup: {
+      //           from: "outlets",
+      //           localField: "outlets",
+      //           foreignField: "_id",
+      //           as: "outlets",
+      //         },
+      //       },
+      //       {
+      //         $project: {
+      //           _id: 1,
+      //           offerName: 1,
+      //           offerDescription: 1,
+      //           totalOfferSold: 1,
+      //           offerDataPoints: 1,
+      //           totalOffersAvailable: 1,
+      //           outlets: 1,
+      //         },
+      //       },
+      //     ],
+      //   },
+      // },
+      // {
+      //   $addFields: {
+      //     offerDetails: { $first: "$offers" },
+      //   },
+      // },
+      // {
+      //   $facet: {
+      //     listed: [
+      //       {
+      //         $project: {
+      //           _id: 1,
+      //           user: 1,
+      //           brand: 1,
+      //           ownerships: 1,
+      //           offers: 1,
+      //           offerDetails: 1,
+      //         },
+      //       },
+      //     ],
+      //     collectedCount: [
+      //       {
+      //         $unwind: "$ownerships",
+      //       },
+      //       {
+      //         $unwind: "$ownerships.offer_access_codes",
+      //       },
+      //       {
+      //         $match: {
+      //           "ownerships.offer_access_codes.status": "collected",
+      //         },
+      //       },
+      //       {
+      //         $count: "totalCollectedOfferAccessCodes",
+      //       },
+      //     ],
+      //     uniqueCustomers: [
+      //       {
+      //         $unwind: "$ownerships",
+      //       },
+      //       {
+      //         $unwind: "$ownerships.owner",
+      //       },
+      //       {
+      //         $group: {
+      //           _id: "$ownerships.owner.ownerId",
+      //         },
+      //       },
+      //       {
+      //         $count: "totalUniqueCustomers",
+      //       },
+      //     ],
+      //     totalOffers: [
+      //       {
+      //         $count: "totalOffers",
+      //       },
+      //     ],
+      //     totalOwnerships: [
+      //       {
+      //         $unwind: "$ownerships",
+      //       },
+      //       {
+      //         $count: "totalOwnerships",
+      //       },
+      //     ],
+      //   },
+      // },
+      // {
+      //   $project: {
+      //     listed: "$listed",
+      //     totalCollectedOfferAccessCodes: {
+      //       $arrayElemAt: ["$collectedCount.totalCollectedOfferAccessCodes", 0],
+      //     },
+      //     totalUniqueCustomers: {
+      //       $arrayElemAt: ["$uniqueCustomers.totalUniqueCustomers", 0],
+      //     },
+      //     totalOffers: {
+      //       $arrayElemAt: ["$totalOffers.totalOffers", 0],
+      //     },
+      //     totalOrders: {
+      //       $arrayElemAt: ["$totalOwnerships.totalOwnerships", 0],
+      //     },
+      //   },
+      // },
+
+      {
+    $lookup: {
+      from: "ownerships",
+      localField: "ownership",
+      foreignField: "_id",
+      as: "ownerships",
+      pipeline: [
+        {
+          $lookup: {
+            from: "users",
+            localField: "owner.ownerId",
+            foreignField: "_id",
+            as: "customer",
+            pipeline: [
+              {
+                $project: {
+                  _id: 1,
+                  name: 1
+                }
+              }
+            ]
+          }
+        },
+        {
+          $addFields: {
+            customer: {
+              $first: "$customer"
+            }
+          }
+        }
+      ]
+    }
+  },
+  {
+    $lookup: {
+      from: "offers",
+      localField: "offer",
+      foreignField: "_id",
+      as: "offers",
+      pipeline: [
+        {
+          $lookup: {
+            from: "outlets",
+            localField: "outlets",
+            foreignField: "_id",
+            as: "outlets"
+          }
+        },
+        {
+          $project: {
+            _id: 1,
+            offerName: 1,
+            offerDescription: 1,
+            totalOfferSold: 1,
+            offerDataPoints: 1,
+            totalOffersAvailable: 1,
+            outlets: 1
+          }
+        }
+      ]
+    }
+  },
+  {
+    $addFields: {
+      offerDetails: { $first: "$offers" }
+    }
+  },
+  {
+    $facet: {
+      listed: [
+        // {
+        //   $project: {
+        //     _id: 1,
+        //     user: 1,
+        //     brand: 1,
+        //     ownerships: 1,
+        //     offers: 1,
+        //     offerDetails: 1
+        //   }
+        // }
+        {
+          $unwind: "$ownerships"
+        },
+        {
+          $addFields: {
+            ownershipDetails: "$ownerships"
+          }
+        },
+        {
+          $project: {
+            offers: 0,
+            ownership: 0,
+            ownerships: 0
+          }
+        }
+      ],
+      collectedCount: [
+        {
+          $unwind: "$ownerships"
+        },
+        {
+          $unwind:
+            "$ownerships.offer_access_codes"
+        },
+        {
+          $match: {
+            "ownerships.offer_access_codes.status":
+              "collected"
+          }
+        },
+        {
+          $count: "totalCollectedOfferAccessCodes"
+        }
+      ],
+      uniqueCustomers: [
+        {
+          $unwind: "$ownerships"
+        },
+        {
+          $unwind: "$ownerships.owner"
+        },
+        {
+          $group: {
+            _id: "$ownerships.owner.ownerId"
+          }
+        },
+        {
+          $count: "totalUniqueCustomers"
+        }
+      ],
+      totalOffers: [
+        {
+          $count: "totalOffers"
+        }
+      ],
+      totalOwnerships: [
+        {
+          $unwind: "$ownerships"
+        },
+        {
+          $count: "totalOwnerships"
+        }
+      ]
+    }
+  },
+  {
+    $project: {
+      listed: "$listed",
+      totalCollectedOfferAccessCodes: {
+        $arrayElemAt: [
+          "$collectedCount.totalCollectedOfferAccessCodes",
+          0
+        ]
+      },
+      totalUniqueCustomers: {
+        $arrayElemAt: [
+          "$uniqueCustomers.totalUniqueCustomers",
+          0
+        ]
+      },
+      totalOffers: {
+        $arrayElemAt: [
+          "$totalOffers.totalOffers",
+          0
+        ]
+      },
+      totalOrders: {
+        $arrayElemAt: [
+          "$totalOwnerships.totalOwnerships",
+          0
+        ]
+      }
+    }
+  }
+    ]);
+
+    const data = listedPendingOffers.length>0?listedPendingOffers[0]:[]
+
+    return responseObj({
+      resObj: res,
+      type: "success",
+      statusCode: HTTP_STATUS_CODES.SUCCESS,
+      msg: "Listed Offer",
+      error: null,
+      data: {
+        ...data,
+      },
+      code: ERROR_CODES.SUCCESS,
+    });
+  } catch (error: any) {
+    logging.error("Get Listed Pending Offers By Brand", error.message, error);
+    return responseObj({
+      resObj: res,
+      type: "error",
+      statusCode: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR,
+      msg: "Internal server error",
+      error: error.message ? error.message : "internal server error",
+      data: null,
+      code: ERROR_CODES.SERVER_ERR,
+    });
+  }
+};
+
+export const getCustomerDetailsBeforeVerify = async (
+  req: IRequest,
+  res: Response
+) => {
+  try {
+    const { code }: any = req.query;
+    const id = JSON.parse(code);
+    const ownership = await Collected.findOne({ _id: id })
+      .populate("user")
+      .select("name _id uid")
+      .populate("ownership");
+    if (!ownership) {
+      return responseObj({
+        resObj: res,
+        type: "error",
+        statusCode: HTTP_STATUS_CODES.BAD_REQUEST,
+        msg: "offer not found to collect",
+        error: "offer not found to collect",
+        data: null,
+        code: ERROR_CODES.NOT_FOUND,
+      });
+    }
+    return responseObj({
+      resObj: res,
+      type: "success",
+      statusCode: HTTP_STATUS_CODES.SUCCESS,
+      msg: "Listed Offer",
+      error: null,
+      data: {
+        ownership,
+      },
+      code: ERROR_CODES.SUCCESS,
+    });
+  } catch (error: any) {
+    logging.error("Get Customer Details Before Verify", error.message, error);
+    return responseObj({
+      resObj: res,
+      type: "error",
+      statusCode: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR,
+      msg: "Internal server error",
+      error: error.message ? error.message : "internal server error",
+      data: null,
+      code: ERROR_CODES.SERVER_ERR,
+    });
+  }
+};
+
+export const verifyCollectedOffer = async (req: IRequest, res: Response) => {
+  try {
+    const { code }: any = req.query;
+    const { id, user } = JSON.parse(code);
 
     const ownership = await Ownership.findOne({
       offer_access_codes: { $elemMatch: { code: id } },
@@ -704,11 +1114,11 @@ export const verifyCollectedOffer = async (req: IRequest, res: Response) => {
     }
 
     const collectedOffer = await Collected.findOne({
-       _id: id,
-       user,
-     });
+      _id: id,
+      user,
+    });
 
-     if(!collectedOffer){
+    if (!collectedOffer) {
       return responseObj({
         resObj: res,
         type: "error",
@@ -718,15 +1128,14 @@ export const verifyCollectedOffer = async (req: IRequest, res: Response) => {
         data: null,
         code: ERROR_CODES.NOT_FOUND,
       });
-     }
-
+    }
 
     const listedOffer = await Listed.findOne({
       user: req.user._id,
       ownership: { $in: [ownership._id] },
     });
 
-    if(!listedOffer){
+    if (!listedOffer) {
       return responseObj({
         resObj: res,
         type: "error",
@@ -738,15 +1147,14 @@ export const verifyCollectedOffer = async (req: IRequest, res: Response) => {
       });
     }
 
-    
-
-    
-    ownership.offer_access_codes = ownership.offer_access_codes.map((code:any)=>{
-      if(code.code === id){
-        code.status = OFFER_COLLECTION_EVENTS.DELIVERED
+    ownership.offer_access_codes = ownership.offer_access_codes.map(
+      (code: any) => {
+        if (code.code === id) {
+          code.status = OFFER_COLLECTION_EVENTS.DELIVERED;
+        }
+        return code;
       }
-      return code
-    })
+    );
 
     await ownership.save();
 
@@ -759,7 +1167,6 @@ export const verifyCollectedOffer = async (req: IRequest, res: Response) => {
       data: null,
       code: ERROR_CODES.SUCCESS,
     });
-
   } catch (error: any) {
     logging.error("Verify Collected Offer", error.message, error);
     return responseObj({
@@ -773,3 +1180,80 @@ export const verifyCollectedOffer = async (req: IRequest, res: Response) => {
     });
   }
 };
+
+// [
+//   {
+//     $match: {
+//       user: ObjectId("65efd60968853585bbb96322"),
+//       brand:ObjectId('6694c5cdf76d30df7594173a')
+//     }
+//   },
+//   {
+//     $lookup: {
+//       from: "ownerships",
+//       localField: "ownership",
+//       foreignField: "_id",
+//       as: "ownerships",
+//       pipeline: [
+//         {
+//           $lookup: {
+//             from: "users",
+//             localField: "owner.ownerId",
+//             foreignField: "_id",
+//             as: "customer",
+//             pipeline: [
+//               {
+//                 $project: {
+//                   _id: 1,
+//                   name: 1
+//                 }
+//               }
+//             ]
+//           }
+//         },
+//         {
+//           $addFields: {
+//             customer: {
+//               $first: "$customer"
+//             }
+//           }
+//         }
+//       ]
+//     }
+//   },
+
+//   {
+//     $lookup: {
+//       from: "offers",
+//       localField: "offer",
+//       foreignField: "_id",
+//       as: "offers",
+//       pipeline: [
+//         {
+//           $lookup: {
+//             from: "outlets",
+//             localField: "outlets",
+//             foreignField: "_id",
+//             as: "outlets"
+//           }
+//         },
+//         {
+//           $project: {
+//             _id: 1,
+//             offerName: 1,
+//             offerDescription: 1,
+//             totalOfferSold: 1,
+//             offerDataPoints: 1,
+//             totalOffersAvailable: 1,
+//             outlets: 1
+//           }
+//         }
+//       ]
+//     }
+//   },
+//   {
+//     $addFields: {
+//       offerDetails: { $first: "$offers" }
+//     }
+//   }
+// ]

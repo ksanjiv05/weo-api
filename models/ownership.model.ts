@@ -73,6 +73,7 @@ const ownershipSchema: Schema = new Schema(
     pendingInstallment: { type: Number, default: 1 },
     offerExpiryDate: { type: String },
     oEarned: { type: Number, default: 0 },
+    spent: { type: Number, default: 0 },
     quantity: String,
   },
   {

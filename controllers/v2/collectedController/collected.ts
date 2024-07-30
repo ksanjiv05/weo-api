@@ -291,6 +291,7 @@ export const collectOffer = async (req: IRequest, res: Response) => {
       noOfInstallments: isFullPayment ? 1 : noOfInstallments,
       pendingInstallment: noOfInstallments - 1,
       quantity: quantity,
+      spent: amount * noOfOffers,
       oEarned: toDistribute / 2,
     });
 
