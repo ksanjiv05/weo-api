@@ -7,8 +7,11 @@ import {
   createListed,
   getAllListedBrands,
   getAllListedOffersByBrand,
+  getCustomerDetailsBeforeVerify,
+  getPendingOffersByBrand,
   verifyCollectedOffer,
 } from "../../controllers/v2/listedController/listed";
+import { getCollectedOfferDetails } from "../../controllers/v2/collectedController/collected";
 
 const router = express.Router();
 
@@ -203,8 +206,10 @@ router.get("/listed/user/brand", auth, getAllListedBrands);
  *           type: integer
  */
 
-router.get("/listed/user/brand/:id", getAllListedOffersByBrand);
+router.get("/listed/user/brand/:id", auth, getAllListedOffersByBrand);
+router.get("/listed/user/brand/pending/:id", auth, getPendingOffersByBrand);
 
-router.post("/listed/offer/verify", auth, verifyCollectedOffer);
+router.get("/listed/offer/collected", auth, getCustomerDetailsBeforeVerify);
+router.get("/listed/offer/verify", auth, verifyCollectedOffer);
 
 export default router;

@@ -4,6 +4,7 @@ import crypto from "crypto";
 import QRCode from "qrcode";
 import { Transform } from "stream";
 import logging from "../config/logging";
+import jwt from "jsonwebtoken";
 
 class AppendInitVect extends Transform {
   appended: Boolean;
@@ -135,6 +136,23 @@ export const generateKeyPair = () => {
   );
 
   return { publicKey, privateKey };
+};
+
+export const encryptTextWithPassword = ({
+  filePath,
+  password,
+  cb,
+}: EncProp) => {
+  // Generate a secure, pseudo random initialization vector.
+  const initVect = crypto.randomBytes(16);
+  const CIPHER_KEY = getCipherKey(password);
+
+  // const readStream = fs.createReadStream(filePath);
+  const cipher = crypto.createCipheriv("aes256", CIPHER_KEY, initVect);
+  // const appendInitVect = new AppendInitVect(initVect);
+  // Create a write stream with a different file extension.
+
+  cipher.update("hii sanjiv");
 };
 
 // Function to generate SHA-256 hash
