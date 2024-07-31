@@ -129,6 +129,7 @@ export const getListedOffers = async (req: Request, res: Response) => {
 export const getAllListedBrands = async (req: IRequest, res: Response) => {
   try {
     const { user } = req;
+    const { codeStatus = OFFER_COLLECTION_EVENTS.COLLECTED } = req.query;
     // const brands = await Brand.find({ user: user._id });
 
     // const brands = await Brand.aggregate([
@@ -689,6 +690,8 @@ export const getAllListedOffersByBrand = async (
 export const getPendingOffersByBrand = async (req: IRequest, res: Response) => {
   try {
     const { id } = req.params;
+    const { codeStatus = OFFER_COLLECTION_EVENTS.COLLECTED } = req.query;
+
     console.log("id", id);
     const listedPendingOffers = await Listed.aggregate([
       {
@@ -948,7 +951,7 @@ export const getPendingOffersByBrand = async (req: IRequest, res: Response) => {
             },
             {
               $match: {
-                "ownerships.offer_access_codes.status": "collected",
+                "ownerships.offer_access_codes.status": codeStatus,
               },
             },
             {
@@ -1039,14 +1042,6 @@ export const getCustomerDetailsBeforeVerify = async (
   try {
     const { id }: any = req.body;
     console.log("--", req.body, id);
-
-    // const ownership = await Collected.findOne({
-    //   _id: new mongoose.Types.ObjectId(id),
-    // })
-    //   .populate("user")
-    //   .select("name _id uid")
-    //   .populate("ownership");
-
     const ownership = await Collected.aggregate([
       {
         $match: {
@@ -1059,17 +1054,17 @@ export const getCustomerDetailsBeforeVerify = async (
           localField: "offerDataId",
           foreignField: "_id",
           as: "offerDatas",
-          pipeline: [
-            {
-              $project: {
-                _id: 1,
-                serviceStartDate: 1,
-                serviceEndDate: 1,
-                serviceStartTime: 1,
-                serviceEndTime: 1,
-              },
-            },
-          ],
+          // pipeline: [
+          //   {
+          //     $project: {
+          //       _id: 1,
+          //       serviceStartDate: 1,
+          //       serviceEndDate: 1,
+          //       serviceStartTime: 1,
+          //       serviceEndTime: 1,
+          //     },
+          //   },
+          // ],
         },
       },
 
@@ -1129,13 +1124,42 @@ export const getCustomerDetailsBeforeVerify = async (
         },
       },
     ]);
-    if (!ownership) {
+    if (ownership.length === 0) {
       return responseObj({
         resObj: res,
         type: "error",
         statusCode: HTTP_STATUS_CODES.BAD_REQUEST,
         msg: "offer not found to collect",
         error: "offer not found to collect",
+        data: null,
+        code: ERROR_CODES.NOT_FOUND,
+      });
+    }
+
+    const accessCodeObjectArr =
+      ownership[0].ownershipDetails.offer_access_codes.filter(
+        (ow: any) => ow.code === id
+      );
+
+    if (accessCodeObjectArr.length === 0) {
+      return responseObj({
+        resObj: res,
+        type: "error",
+        statusCode: HTTP_STATUS_CODES.BAD_REQUEST,
+        msg: "offer not found to collect",
+        error: "offer not found to collect",
+        data: null,
+        code: ERROR_CODES.NOT_FOUND,
+      });
+    }
+
+    if (accessCodeObjectArr[0].status === OFFER_COLLECTION_EVENTS.DELIVERED) {
+      return responseObj({
+        resObj: res,
+        type: "error",
+        statusCode: HTTP_STATUS_CODES.BAD_REQUEST,
+        msg: "offer already delivered",
+        error: "offer already delivered",
         data: null,
         code: ERROR_CODES.NOT_FOUND,
       });
@@ -1167,6 +1191,8 @@ export const verifyCollectedOffer = async (req: IRequest, res: Response) => {
   try {
     // const { code }: any = req.body;
     const { id, user } = req.body; //JSON.parse(code);
+
+    console.log("body", id, req.body);
 
     const ownership = await Ownership.findOne({
       offer_access_codes: { $elemMatch: { code: id } },
@@ -1225,6 +1251,8 @@ export const verifyCollectedOffer = async (req: IRequest, res: Response) => {
         return code;
       }
     );
+
+    console.log(ownership.offer_access_codes);
 
     await ownership.save();
 
