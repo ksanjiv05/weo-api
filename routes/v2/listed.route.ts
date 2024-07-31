@@ -209,7 +209,15 @@ router.get("/listed/user/brand", auth, getAllListedBrands);
 router.get("/listed/user/brand/:id", auth, getAllListedOffersByBrand);
 router.get("/listed/user/brand/pending/:id", auth, getPendingOffersByBrand);
 
-router.get("/listed/offer/collected", auth, getCustomerDetailsBeforeVerify);
-router.get("/listed/offer/verify", auth, verifyCollectedOffer);
+router.post(
+  "/listed/collected/customer/verify",
+  auth,
+  getCustomerDetailsBeforeVerify
+);
+router.post(
+  "/listed/collected/customer/verify/confirm",
+  auth,
+  verifyCollectedOffer
+);
 
 export default router;
