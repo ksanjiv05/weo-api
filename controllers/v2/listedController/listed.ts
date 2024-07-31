@@ -844,182 +844,168 @@ export const getPendingOffersByBrand = async (req: IRequest, res: Response) => {
       // },
 
       {
-    $lookup: {
-      from: "ownerships",
-      localField: "ownership",
-      foreignField: "_id",
-      as: "ownerships",
-      pipeline: [
-        {
-          $lookup: {
-            from: "users",
-            localField: "owner.ownerId",
-            foreignField: "_id",
-            as: "customer",
-            pipeline: [
-              {
-                $project: {
-                  _id: 1,
-                  name: 1
-                }
-              }
-            ]
-          }
+        $lookup: {
+          from: "ownerships",
+          localField: "ownership",
+          foreignField: "_id",
+          as: "ownerships",
+          pipeline: [
+            {
+              $lookup: {
+                from: "users",
+                localField: "owner.ownerId",
+                foreignField: "_id",
+                as: "customer",
+                pipeline: [
+                  {
+                    $project: {
+                      _id: 1,
+                      name: 1,
+                    },
+                  },
+                ],
+              },
+            },
+            {
+              $addFields: {
+                customer: {
+                  $first: "$customer",
+                },
+              },
+            },
+          ],
         },
-        {
-          $addFields: {
-            customer: {
-              $first: "$customer"
-            }
-          }
-        }
-      ]
-    }
-  },
-  {
-    $lookup: {
-      from: "offers",
-      localField: "offer",
-      foreignField: "_id",
-      as: "offers",
-      pipeline: [
-        {
-          $lookup: {
-            from: "outlets",
-            localField: "outlets",
-            foreignField: "_id",
-            as: "outlets"
-          }
-        },
-        {
-          $project: {
-            _id: 1,
-            offerName: 1,
-            offerDescription: 1,
-            totalOfferSold: 1,
-            offerDataPoints: 1,
-            totalOffersAvailable: 1,
-            outlets: 1
-          }
-        }
-      ]
-    }
-  },
-  {
-    $addFields: {
-      offerDetails: { $first: "$offers" }
-    }
-  },
-  {
-    $facet: {
-      listed: [
-        // {
-        //   $project: {
-        //     _id: 1,
-        //     user: 1,
-        //     brand: 1,
-        //     ownerships: 1,
-        //     offers: 1,
-        //     offerDetails: 1
-        //   }
-        // }
-        {
-          $unwind: "$ownerships"
-        },
-        {
-          $addFields: {
-            ownershipDetails: "$ownerships"
-          }
-        },
-        {
-          $project: {
-            offers: 0,
-            ownership: 0,
-            ownerships: 0
-          }
-        }
-      ],
-      collectedCount: [
-        {
-          $unwind: "$ownerships"
-        },
-        {
-          $unwind:
-            "$ownerships.offer_access_codes"
-        },
-        {
-          $match: {
-            "ownerships.offer_access_codes.status":
-              "collected"
-          }
-        },
-        {
-          $count: "totalCollectedOfferAccessCodes"
-        }
-      ],
-      uniqueCustomers: [
-        {
-          $unwind: "$ownerships"
-        },
-        {
-          $unwind: "$ownerships.owner"
-        },
-        {
-          $group: {
-            _id: "$ownerships.owner.ownerId"
-          }
-        },
-        {
-          $count: "totalUniqueCustomers"
-        }
-      ],
-      totalOffers: [
-        {
-          $count: "totalOffers"
-        }
-      ],
-      totalOwnerships: [
-        {
-          $unwind: "$ownerships"
-        },
-        {
-          $count: "totalOwnerships"
-        }
-      ]
-    }
-  },
-  {
-    $project: {
-      listed: "$listed",
-      totalCollectedOfferAccessCodes: {
-        $arrayElemAt: [
-          "$collectedCount.totalCollectedOfferAccessCodes",
-          0
-        ]
       },
-      totalUniqueCustomers: {
-        $arrayElemAt: [
-          "$uniqueCustomers.totalUniqueCustomers",
-          0
-        ]
+      {
+        $lookup: {
+          from: "offers",
+          localField: "offer",
+          foreignField: "_id",
+          as: "offers",
+          pipeline: [
+            {
+              $lookup: {
+                from: "outlets",
+                localField: "outlets",
+                foreignField: "_id",
+                as: "outlets",
+              },
+            },
+            {
+              $project: {
+                _id: 1,
+                offerName: 1,
+                offerDescription: 1,
+                totalOfferSold: 1,
+                offerDataPoints: 1,
+                totalOffersAvailable: 1,
+                outlets: 1,
+              },
+            },
+          ],
+        },
       },
-      totalOffers: {
-        $arrayElemAt: [
-          "$totalOffers.totalOffers",
-          0
-        ]
+      {
+        $addFields: {
+          offerDetails: { $first: "$offers" },
+        },
       },
-      totalOrders: {
-        $arrayElemAt: [
-          "$totalOwnerships.totalOwnerships",
-          0
-        ]
-      }
-    }
-  }
+      {
+        $facet: {
+          listed: [
+            // {
+            //   $project: {
+            //     _id: 1,
+            //     user: 1,
+            //     brand: 1,
+            //     ownerships: 1,
+            //     offers: 1,
+            //     offerDetails: 1
+            //   }
+            // }
+            {
+              $unwind: "$ownerships",
+            },
+            {
+              $addFields: {
+                ownershipDetails: "$ownerships",
+              },
+            },
+            {
+              $project: {
+                offers: 0,
+                ownership: 0,
+                ownerships: 0,
+              },
+            },
+          ],
+          collectedCount: [
+            {
+              $unwind: "$ownerships",
+            },
+            {
+              $unwind: "$ownerships.offer_access_codes",
+            },
+            {
+              $match: {
+                "ownerships.offer_access_codes.status": "collected",
+              },
+            },
+            {
+              $count: "totalCollectedOfferAccessCodes",
+            },
+          ],
+          uniqueCustomers: [
+            {
+              $unwind: "$ownerships",
+            },
+            {
+              $unwind: "$ownerships.owner",
+            },
+            {
+              $group: {
+                _id: "$ownerships.owner.ownerId",
+              },
+            },
+            {
+              $count: "totalUniqueCustomers",
+            },
+          ],
+          totalOffers: [
+            {
+              $count: "totalOffers",
+            },
+          ],
+          totalOwnerships: [
+            {
+              $unwind: "$ownerships",
+            },
+            {
+              $count: "totalOwnerships",
+            },
+          ],
+        },
+      },
+      {
+        $project: {
+          listed: "$listed",
+          totalCollectedOfferAccessCodes: {
+            $arrayElemAt: ["$collectedCount.totalCollectedOfferAccessCodes", 0],
+          },
+          totalUniqueCustomers: {
+            $arrayElemAt: ["$uniqueCustomers.totalUniqueCustomers", 0],
+          },
+          totalOffers: {
+            $arrayElemAt: ["$totalOffers.totalOffers", 0],
+          },
+          totalOrders: {
+            $arrayElemAt: ["$totalOwnerships.totalOwnerships", 0],
+          },
+        },
+      },
     ]);
 
-    const data = listedPendingOffers.length>0?listedPendingOffers[0]:[]
+    const data = listedPendingOffers.length > 0 ? listedPendingOffers[0] : [];
 
     return responseObj({
       resObj: res,
@@ -1051,12 +1037,98 @@ export const getCustomerDetailsBeforeVerify = async (
   res: Response
 ) => {
   try {
-    const { code }: any = req.query;
-    const id = JSON.parse(code);
-    const ownership = await Collected.findOne({ _id: id })
-      .populate("user")
-      .select("name _id uid")
-      .populate("ownership");
+    const { id }: any = req.body;
+    console.log("--", req.body, id);
+
+    // const ownership = await Collected.findOne({
+    //   _id: new mongoose.Types.ObjectId(id),
+    // })
+    //   .populate("user")
+    //   .select("name _id uid")
+    //   .populate("ownership");
+
+    const ownership = await Collected.aggregate([
+      {
+        $match: {
+          _id: new mongoose.Types.ObjectId(id),
+        },
+      },
+      {
+        $lookup: {
+          from: "offerdatas",
+          localField: "offerDataId",
+          foreignField: "_id",
+          as: "offerDatas",
+          pipeline: [
+            {
+              $project: {
+                _id: 1,
+                serviceStartDate: 1,
+                serviceEndDate: 1,
+                serviceStartTime: 1,
+                serviceEndTime: 1,
+              },
+            },
+          ],
+        },
+      },
+
+      {
+        $addFields: {
+          offerDataDetails: {
+            $first: "$offerDatas",
+          },
+        },
+      },
+      {
+        $lookup: {
+          from: "ownerships",
+          localField: "ownership",
+          foreignField: "_id",
+          as: "ownership",
+          pipeline: [
+            {
+              $lookup: {
+                from: "users",
+                localField: "owner.ownerId",
+                foreignField: "_id",
+                as: "customer",
+                pipeline: [
+                  {
+                    $project: {
+                      _id: 1,
+                      name: 1,
+                      uid: 1,
+                    },
+                  },
+                ],
+              },
+            },
+            {
+              $addFields: {
+                customer: {
+                  $first: "$customer",
+                },
+              },
+            },
+          ],
+        },
+      },
+      {
+        $addFields: {
+          ownershipDetails: {
+            $first: "$ownership",
+          },
+        },
+      },
+      {
+        $project: {
+          user: 0,
+          ownership: 0,
+          offerDatas: 0,
+        },
+      },
+    ]);
     if (!ownership) {
       return responseObj({
         resObj: res,
@@ -1074,9 +1146,7 @@ export const getCustomerDetailsBeforeVerify = async (
       statusCode: HTTP_STATUS_CODES.SUCCESS,
       msg: "Listed Offer",
       error: null,
-      data: {
-        ownership,
-      },
+      data: ownership.length > 0 ? ownership[0] : null,
       code: ERROR_CODES.SUCCESS,
     });
   } catch (error: any) {
@@ -1095,8 +1165,8 @@ export const getCustomerDetailsBeforeVerify = async (
 
 export const verifyCollectedOffer = async (req: IRequest, res: Response) => {
   try {
-    const { code }: any = req.query;
-    const { id, user } = JSON.parse(code);
+    // const { code }: any = req.body;
+    const { id, user } = req.body; //JSON.parse(code);
 
     const ownership = await Ownership.findOne({
       offer_access_codes: { $elemMatch: { code: id } },
