@@ -195,6 +195,11 @@ export function getDaysBetweenTwoDate(startDate: any, endDate: any) {
 // With async/await
 export const generateQR = async (text: string) => {
   try {
+    const opts = {
+      dark: "#010599FF",
+      light: "#FFBF60FF",
+    };
+
     const qr = await QRCode.toDataURL(text);
     return qr;
   } catch (err) {

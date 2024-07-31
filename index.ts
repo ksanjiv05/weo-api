@@ -24,6 +24,7 @@ import {
   generateKeyPair,
   getDaysBetweenTwoDate,
 } from "./helper/utils";
+import { oGenerate } from "./helper/oCalculator/v2";
 
 //end scripts
 
@@ -101,3 +102,10 @@ app.use(
 
 // const de = decryptText(Buffer.from(ex.toString()), "./keys/private.pem");
 // console.log("de ", de.toString());
+
+console.log(
+  oGenerate({
+    amount: 5.97,
+    discount: 90,
+  })
+);

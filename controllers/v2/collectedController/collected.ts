@@ -240,6 +240,14 @@ export const collectOffer = async (req: IRequest, res: Response) => {
       discount: offerDataPoint.offerPriceMinPercentage,
     });
 
+    console.log("_______toDistribute_____after collect________");
+    console.log({
+      exchangeRate,
+      amountAfterExchange,
+      toDistribute,
+      totalO,
+    });
+
     const deductOBalance =
       req.body?.negotiationAttemptInstance &&
       req.body.negotiationAttemptInstance.noOfAttempts >
@@ -487,10 +495,98 @@ export const getCollectedOffers = async (req: IRequest, res: Response) => {
           },
         },
       },
+      // {
+      //   $project: {
+      //     brands: 0,
+      //     ownerships: 0,
+      //   },
+      // },
+      {
+        $facet: {
+          collectedOffers: [
+            {
+              $project: {
+                brands: 0,
+                ownerships: 0,
+              },
+            },
+          ],
+          totalOfferCount: [
+            {
+              $count: "offer",
+            },
+          ],
+          totalInProgress: [
+            {
+              $unwind: "$ownerships",
+            },
+            {
+              $unwind: "$ownerships.offer_access_codes",
+            },
+            {
+              $match: {
+                "ownerships.offer_access_codes.status": "collected",
+              },
+            },
+            {
+              $count: "totalInProgress",
+            },
+          ],
+          totalOEarned: [
+            {
+              $unwind: "$ownerships",
+            },
+            {
+              $group: {
+                _id: null,
+                total: {
+                  $sum: "$ownerships.oEarned",
+                },
+              },
+            },
+            {
+              $project: {
+                _id: 0,
+                totalOEarned: "$total",
+              },
+            },
+          ],
+          totalSpent: [
+            {
+              $unwind: "$ownerships",
+            },
+            {
+              $group: {
+                _id: null,
+                total: {
+                  $sum: "$ownerships.spent",
+                },
+              },
+            },
+            {
+              $project: {
+                _id: 0,
+                total: "$total",
+              },
+            },
+          ],
+        },
+      },
       {
         $project: {
-          brands: 0,
-          ownerships: 0,
+          collectedOffers: 1,
+          totalOfferCount: {
+            $first: "$totalOfferCount.offer",
+          },
+          totalInProgress: {
+            $first: "$totalInProgress.totalInProgress",
+          },
+          totalOEarned: {
+            $first: "$totalOEarned.totalOEarned",
+          },
+          totalSpent: {
+            $first: "$totalSpent.total",
+          },
         },
       },
     ]);
@@ -500,7 +596,7 @@ export const getCollectedOffers = async (req: IRequest, res: Response) => {
       statusCode: HTTP_STATUS_CODES.SUCCESS,
       msg: "Collected Offer",
       error: null,
-      data: collectedOffers,
+      data: collectedOffers.length > 0 ? collectedOffers[0] : null,
       code: ERROR_CODES.SUCCESS,
     });
   } catch (error: any) {

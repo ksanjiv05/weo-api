@@ -48,8 +48,8 @@ export const oNetworkConfig = {
   volume: 10000,
   oReservedVolume: 10000,
 
-  atPlatformCutOffRate: 0,
-  atRateCutOffFromDiscount: 0,
+  atPlatformCutOffRate: 10,
+  atRateCutOffFromDiscount: 100,
   toPlatformCutOffRateFromDiscount: 0,
   toPlatformCutOffRate: 10,
 };
@@ -58,6 +58,6 @@ export const negotiationConfig = {
   maxAttempts: 2,
   oCharge: 10,
   freeAttempts: 1,
-}
+};
 
 export const oNetworkConfigLoad = async () => {};
