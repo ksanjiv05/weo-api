@@ -7,7 +7,9 @@ import {
   createListed,
   getAllListedBrands,
   getAllListedOffersByBrand,
+  getAllListedOffersByUser,
   getCustomerDetailsBeforeVerify,
+  getListedOfferDetails,
   getPendingOffersByBrand,
   verifyCollectedOffer,
 } from "../../controllers/v2/listedController/listed";
@@ -90,6 +92,13 @@ router.post("/listed/:id", auth, createListed);
  */
 
 router.get("/listed/user/brand", auth, getAllListedBrands);
+router.get("/listed/user/offers", auth, getAllListedOffersByUser);
+router.get("/listed/user/offers/:id", auth, getAllListedOffersByUser);
+router.get(
+  "/listed/user/offers/:brandId/:offerId",
+  auth,
+  getListedOfferDetails
+);
 
 /**
  * @swagger

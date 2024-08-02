@@ -31,5 +31,9 @@ export enum OFFER_COLLECTION_EVENTS {
   DELIVERED = "delivered",
   COMPLETED = "completed",
 }
+export enum OFFER_TYPE {
+  FRESH = "fresh",
+  RESELL = "resell",
+}
 
 // paused

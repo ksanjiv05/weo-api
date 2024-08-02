@@ -711,54 +711,6 @@ export const getOffersByLocation = async (req: Request, res: Response) => {
     const lat = parseFloat(userLongitude);
     const lng = parseFloat(userLatitude);
 
-    // const offers = await Offer.aggregate([
-    //   {
-    //     $lookup: {
-    //       from: "outlets",
-    //       localField: "outlets",
-    //       foreignField: "_id",
-    //       as: "outletDetails",
-    //     },
-    //   },
-    //   {
-    //     $unwind: "$outletDetails",
-    //   },
-    //   {
-    //     // $match: {
-    //     //   "outletDetails.location.coordinates": {
-    //     // $nearSphere: {
-    //     //   $geometry: {
-    //     //     type: "Point",
-    //     //     coordinates: [userLongitude, userLatitude],
-    //     //   },
-    //     //   $maxDistance: maxDistance,
-    //     // },
-
-    //     $geoNear: {
-    //       near: {
-    //         type: "Point",
-    //         coordinates: [lng, lat],
-    //       },
-    //       // distanceField: "distance",
-    //       // maxDistance: maxDistance ? parseInt(maxDistance) : 10000,
-    //       // spherical: true,
-    //       distanceField: "dist.calculated",
-    //       maxDistance: 10000,
-    //       query: { isEnabled: true },
-    //     },
-    //     // },
-    //     // },
-    //   },
-    //   {
-    //     $group: {
-    //       _id: "$_id",
-    //       offerName: { $first: "$offerName" },
-    //       offerDescription: { $first: "$offerDescription" },
-    //       outlets: { $push: "$outletDetails" },
-    //     },
-    //   },
-    // ]);
-
     console.log("lat", lat, "lng", lng);
 
     const offers = await outletModel.aggregate([

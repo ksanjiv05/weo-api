@@ -16,6 +16,7 @@ import {
   O_EVENTS,
   OFFER_COLLECTION_EVENTS,
   OFFER_STATUS,
+  OFFER_TYPE,
 } from "../../../config/enums";
 import OfferData, { IOfferData } from "../../../models/offer.data.model";
 import Wallet from "../../../models/wallet.model";
@@ -916,6 +917,103 @@ export const getCollectedOfferQr = async (req: IRequest, res: Response) => {
     });
   } catch (error: any) {
     logging.error("Collected Offer", error.message, error);
+    return responseObj({
+      resObj: res,
+      type: "error",
+      statusCode: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR,
+      msg: "Internal server error",
+      error: error.message ? error.message : "internal server error",
+      data: null,
+      code: ERROR_CODES.SERVER_ERR,
+    });
+  }
+};
+
+export const reSellCollectedOffer = async (req: IRequest, res: Response) => {
+  try {
+    const id = req.params.id;
+    const { offerPriceAmount, offerPriceMinAmount, offerPriceMinPercentage } =
+      req.body;
+    const collectedOffer = await Collected.findOne({
+      _id: id,
+      user: req.user._id,
+    }).populate("ownership");
+    if (!collectedOffer) {
+      return responseObj({
+        resObj: res,
+        type: "error",
+        statusCode: HTTP_STATUS_CODES.BAD_REQUEST,
+        msg: "Invalid Collected Offer to resell",
+        error: null,
+        data: null,
+        code: ERROR_CODES.NOT_FOUND,
+      });
+    }
+    const status = collectedOffer?.ownership?.offer_access_codes.find(
+      (code: any) =>
+        code.code === id && code.status === OFFER_COLLECTION_EVENTS.COLLECTED
+    );
+    if (!status) {
+      return responseObj({
+        resObj: res,
+        type: "error",
+        statusCode: HTTP_STATUS_CODES.BAD_REQUEST,
+        msg: "This offer already delivered",
+        error: null,
+        data: null,
+        code: ERROR_CODES.NOT_FOUND,
+      });
+    }
+
+    const offerDataId = collectedOffer?.offerDataId;
+    const offer = collectedOffer.offer;
+
+    const offerData = await OfferData.findById(offerDataId);
+    const offerObj = await Offer.findById(offer);
+    if (!offerData || !offerObj) {
+      return responseObj({
+        resObj: res,
+        type: "error",
+        statusCode: HTTP_STATUS_CODES.BAD_REQUEST,
+        msg: "Invalid Offer to resell",
+        error: null,
+        data: null,
+        code: ERROR_CODES.NOT_FOUND,
+      });
+    }
+
+    delete offerData._id;
+    const newOfferData = new OfferData({
+      ...offerData,
+      offerPriceAmount,
+      offerPriceMinAmount,
+      offerPriceMinPercentage,
+      type: OFFER_TYPE.RESELL,
+    });
+
+    await newOfferData.save();
+
+    delete offerObj._id;
+
+    const newOffer = new Offer({
+      ...offerObj,
+      user: req.user._id,
+      offerType: OFFER_TYPE.RESELL,
+    });
+
+    await newOffer.save();
+
+    return responseObj({
+      resObj: res,
+      type: "success",
+      statusCode: HTTP_STATUS_CODES.SUCCESS,
+      msg: "Collected Offer Qr",
+      error: null,
+      data: null,
+      code: ERROR_CODES.SUCCESS,
+    });
+  } catch (error: any) {
+    logging.error("Resell Collected Offer", error.message, error);
     return responseObj({
       resObj: res,
       type: "error",
