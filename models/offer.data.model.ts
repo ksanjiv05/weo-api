@@ -3,6 +3,7 @@
 
 import mongoose, { Schema, Document } from "mongoose";
 import { conn_v2 } from "../db";
+import { OFFER_TYPE } from "../config/enums";
 
 export interface IOfferData extends Document {
   offerId: string;
@@ -45,7 +46,7 @@ export interface IOfferData extends Document {
   ]; // images/video
   offerThumbnail: string;
   checkpoint: number;
-  // collectable: string;
+  type: string;
 }
 
 const offerDataSchema: Schema = new Schema(
@@ -156,11 +157,11 @@ const offerDataSchema: Schema = new Schema(
       type: Number,
       default: 2,
     },
-    // collectable: {
-    //   type: String,
-    //   lowercase: true,
-    //   default: "offline", // online or offline
-    // },
+    type: {
+      type: String,
+
+      default: OFFER_TYPE.FRESH,
+    },
   },
 
   {

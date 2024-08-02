@@ -3,7 +3,7 @@
 
 import mongoose, { Schema, Document } from "mongoose";
 import { conn_v2 } from "../db";
-import { OFFER_STATUS } from "../config/enums";
+import { OFFER_STATUS, OFFER_TYPE } from "../config/enums";
 
 export interface IOffer extends Document {
   user: any; //creatorId
@@ -18,6 +18,7 @@ export interface IOffer extends Document {
   totalOfferSold: number; // total offer activated
   offerStatus: number; // 1:pending 2:listed, 3: pushed, 4: sold out, 5: expired
   checkpoint: number;
+  offerType: string;
 }
 
 const offerSchema: Schema = new Schema(
@@ -86,6 +87,10 @@ const offerSchema: Schema = new Schema(
     checkpoint: {
       type: Number,
       default: 1,
+    },
+    offerType: {
+      type: String,
+      default: OFFER_TYPE.FRESH,
     },
   },
   { timestamps: true }
