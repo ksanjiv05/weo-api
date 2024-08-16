@@ -16,7 +16,7 @@ export interface ICollected extends Document {
   offerDataId: any;
   offerName: string;
   offerThumbnail: string;
-  ownership: any; // order reference
+  ownerships: any; // order reference
   outlet: any;
 }
 
@@ -27,7 +27,7 @@ const CollectedSchema: Schema = new Schema({
   offerDataId: { type: Schema.Types.ObjectId, ref: "OfferData" },
   offerName: { type: String },
   offerThumbnail: { type: String },
-  ownership: {
+  ownerships: {
     type: Schema.Types.ObjectId,
     ref: "Ownership",
   },

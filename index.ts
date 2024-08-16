@@ -102,10 +102,3 @@ app.use(
 
 // const de = decryptText(Buffer.from(ex.toString()), "./keys/private.pem");
 // console.log("de ", de.toString());
-
-console.log(
-  oGenerate({
-    amount: 5.97,
-    discount: 90,
-  })
-);

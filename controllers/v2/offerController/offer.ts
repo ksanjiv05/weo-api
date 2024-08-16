@@ -389,7 +389,7 @@ export const toListOffer = async (req: IRequest, res: Response) => {
       user: req.user._id,
       offer: offer._id,
       brand: offer.brand,
-      ownership: [],
+      ownerships: [],
     });
     newOfferListed.offer = id;
     await newOfferListed.save();
@@ -623,7 +623,13 @@ export const deleteOffers = async (req: Request, res: Response) => {
   const session = await Offer.startSession();
   session.startTransaction();
   try {
-    const ids = Object.values(req.query);
+    let ids = Object.values(req.query);
+
+    const offerIds = await Offer.find({
+      _id: { $in: ids },
+      offerStatus: OFFER_STATUS.PENDING,
+    }).select("_id");
+    ids = offerIds.map((offer) => offer._id.toString());
 
     const offerData = await OfferData.find({ offerId: { $in: ids } });
     console.log("delete", ids);

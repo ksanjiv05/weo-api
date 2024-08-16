@@ -10,6 +10,8 @@ import {
   getServiceTools,
   updateServiceTool,
 } from "../../controllers/v2/serviceToolsController/serviceTools";
+import { auth } from "../../middleware/auth";
+import { addServiceValidation } from "../../middleware/validator/v2/service.validation";
 
 const router = express.Router();
 
@@ -44,7 +46,7 @@ const router = express.Router();
  *       500:
  *         description: service not saved
  */
-router.post("/services", addServiceTool);
+router.post("/services", auth, addServiceValidation, addServiceTool);
 
 // Route to update the service tool
 /**
@@ -80,7 +82,7 @@ router.post("/services", addServiceTool);
  *         description: Service not saved
  */
 
-router.put("/services/:id", updateServiceTool);
+router.put("/services/:id", auth, updateServiceTool);
 
 // Route to get the service tools
 /**
@@ -95,7 +97,7 @@ router.put("/services/:id", updateServiceTool);
  *       500:
  *         description: Brand not found
  */
-router.get("/services", getServiceTools);
+router.get("/services", auth, getServiceTools);
 
 // Route to get the service tool by id
 /**
@@ -117,7 +119,7 @@ router.get("/services", getServiceTools);
  *       500:
  *         description: Service not found
  */
-router.get("/services/:id", getServiceToolById);
+router.get("/services/:id", auth, getServiceToolById);
 
 // Route to delete the service tool
 /**
@@ -139,6 +141,6 @@ router.get("/services/:id", getServiceToolById);
  *       500:
  *         description: Service not deleted
  */
-router.delete("/services/:id", deleteServiceTool);
+router.delete("/services/:id", auth, deleteServiceTool);
 
 export default router;

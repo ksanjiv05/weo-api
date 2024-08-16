@@ -2,7 +2,6 @@
 //Author: sanjiv kumar pandit
 
 import { Request, Response } from "express";
-import { validationResult } from "express-validator";
 import Listed, { IListed } from "../../../models/listed.model";
 import logging from "../../../config/logging";
 import { responseObj } from "../../../helper/response";
@@ -20,21 +19,9 @@ import {
 } from "../../../config/enums";
 import Ownership from "../../../models/ownership.model";
 import Collected from "../../../models/collected.model";
+import offerModel from "../../../models/offer.model";
 
 export const createListed = async (req: IRequest, res: Response) => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return responseObj({
-      resObj: res,
-      type: "error",
-      statusCode: HTTP_STATUS_CODES.BAD_REQUEST,
-      msg: "fields are required",
-      error: errors.array({}),
-      data: null,
-      code: ERROR_CODES.FIELD_VALIDATION_REQUIRED_ERR,
-    });
-  }
-
   const { id } = req.params;
   const offer = await Offer.findById(id);
   if (!offer) {
@@ -59,7 +46,7 @@ export const createListed = async (req: IRequest, res: Response) => {
       user: req.user._id,
       offer: offer._id,
       brand: offer.brand,
-      ownership: [],
+      ownerships: [],
     });
     newOfferListed.offer = id;
     await newOfferListed.save();
@@ -124,7 +111,7 @@ export const getListedOffers = async (req: Request, res: Response) => {
   }
 };
 
-//TODO : Total O Earn And Total Money Earn
+//TODO : Total O Earn And Total Money Earn and add brand wise
 export const getAllListedBrands = async (req: IRequest, res: Response) => {
   try {
     const { user } = req;
@@ -146,7 +133,7 @@ export const getAllListedBrands = async (req: IRequest, res: Response) => {
             {
               $lookup: {
                 from: "ownerships",
-                localField: "ownership",
+                localField: "ownerships",
                 foreignField: "_id",
                 as: "ownerships",
               },
@@ -285,115 +272,18 @@ export const getAllListedBrands = async (req: IRequest, res: Response) => {
   }
 };
 
+//TODO : add oearned and how much money earned
 export const getAllListedOffersByBrand = async (
   req: Request,
   res: Response
 ) => {
   try {
-    const { id } = req.params;
-
-    // const offers = await Offer.aggregate([
-    //   {
-    //     $match: {
-    //       brand: new mongoose.Types.ObjectId(id),
-    //       // offerStatus: OFFER_STATUS.LIVE,
-    //       $or: [
-    //         {
-    //           offerStatus: OFFER_STATUS.LIVE,
-    //         },
-    //         {
-    //           offerStatus: OFFER_STATUS.SOLD,
-    //         },
-    //       ],
-    //     },
-    //   },
-    //   {
-    //     $lookup: {
-    //       from: "offerdatas",
-    //       localField: "offerDataPoints.offerData",
-    //       foreignField: "_id",
-    //       as: "offerDataDetails",
-    //     },
-    //   },
-    //   {
-    //     $unwind: "$offerDataDetails",
-    //   },
-    //   {
-    //     $group: {
-    //       _id: "$_id",
-    //       offerName: { $first: "$offerName" },
-    //       offerDescription: { $first: "$offerDescription" },
-    //       totalOffersAvailable: { $first: "$totalOffersAvailable" },
-    //       soldOffers: { $first: "$totalOfferSold" },
-    //       offerThumbnail: { $first: "$offerDataDetails.offerThumbnail" },
-    //       offerAvailabilityStartDate: {
-    //         $first: "$offerDataDetails.offerAvailabilityStartDate",
-    //       },
-    //       offerAvailabilityEndDate: {
-    //         $first: "$offerDataDetails.offerAvailabilityEndDate",
-    //       },
-    //       serviceStartDate: { $first: "$offerDataDetails.serviceStartDate" },
-    //       serviceEndDate: { $first: "$offerDataDetails.serviceEndDate" },
-    //       offerLiveTillSoldOut: {
-    //         $first: "$offerDataDetails.offerLiveTillSoldOut",
-    //       },
-    //       offerStatus: { $first: "$offerStatus" },
-    //     },
-    //   },
-    //   {
-    //     $project: {
-    //       _id: 1,
-    //       offerName: 1,
-    //       offerDescription: 1,
-    //       soldOffers: 1,
-    //       offerThumbnail: 1,
-    //       offerAvailabilityStartDate: 1,
-    //       offerAvailabilityEndDate: 1,
-    //       serviceStartDate: 1,
-    //       serviceEndDate: 1,
-    //       offerLiveTillSoldOut: 1,
-    //       totalOffersAvailable: 1,
-    //       offerStatus: 1,
-    //     },
-    //   },
-    //   {
-    //     $group: {
-    //       // _id: null,
-    //       _id: "$offerStatus",
-    //       totalListed: { $sum: 1 },
-    //       offers: { $push: "$$ROOT" },
-    //       totalListedOffersCount: {
-    //         $sum: "$totalOffersAvailable",
-    //       },
-    //       soldStatusCount: {
-    //         $sum: {
-    //           $cond: [{ $eq: ["$offerStatus", OFFER_STATUS.SOLD] }, 1, 0],
-    //         },
-    //       },
-
-    //       // totalListedOffersSum: { $count: "$$ROOT" },
-    //       // pushedOfferCount: { $sum: "$totalPushedOffers" },
-    //     },
-    //   },
-    //   // { $group: { _id: "$offerStatus", count: { $sum: 1 } } },
-    //   {
-    //     $project: {
-    //       _id: 0,
-    //       offers: 1,
-    //       totalListed: 1,
-    //       offerStatus: 1,
-    //       totalListedOffersCount: 1,
-    //       soldStatusCount: 1,
-    //       // totalListedOffersSum: 1,
-    //       // pushedOfferCount: 1,
-    //     },
-    //   },
-    // ]);
+    const { id = "All" } = req.params;
 
     const offers = await Offer.aggregate([
       {
         $match: {
-          brand: new mongoose.Types.ObjectId(id),
+          ...(id === "All" ? {} : { brand: new mongoose.Types.ObjectId(id) }),
           $or: [
             { offerStatus: OFFER_STATUS.LIVE },
             { offerStatus: OFFER_STATUS.SOLD },
@@ -582,7 +472,7 @@ export const getAllListedOffersByUser = async (
             {
               $lookup: {
                 from: "ownerships",
-                localField: "ownership",
+                localField: "ownerships",
                 foreignField: "_id",
                 as: "ownerships",
               },
@@ -732,7 +622,7 @@ export const getListedOfferDetails = async (req: IRequest, res: Response) => {
             {
               $lookup: {
                 from: "ownerships",
-                localField: "ownership",
+                localField: "ownerships",
                 foreignField: "_id",
                 as: "ownerships",
               },
@@ -832,9 +722,21 @@ export const getListedOfferDetails = async (req: IRequest, res: Response) => {
   }
 };
 
+//TODO : offer image
 export const getPendingOffersByBrand = async (req: IRequest, res: Response) => {
   try {
-    const { id } = req.params;
+    const { id = "" } = req.params;
+    if (id == "") {
+      return responseObj({
+        resObj: res,
+        type: "error",
+        statusCode: HTTP_STATUS_CODES.NOT_FOUND,
+        msg: "brand id required",
+        error: "brand id required",
+        data: null,
+        code: ERROR_CODES.FIELD_VALIDATION_REQUIRED_ERR,
+      });
+    }
     const { codeStatus = OFFER_COLLECTION_EVENTS.COLLECTED } = req.query;
 
     console.log("id", id);
@@ -845,156 +747,11 @@ export const getPendingOffersByBrand = async (req: IRequest, res: Response) => {
           brand: new mongoose.Types.ObjectId(id),
         },
       },
-      // {
-      //   $lookup: {
-      //     from: "ownerships",
-      //     localField: "ownership",
-      //     foreignField: "_id",
-      //     as: "ownerships",
-      //     pipeline: [
-      //       {
-      //         $lookup: {
-      //           from: "users",
-      //           localField: "owner.ownerId",
-      //           foreignField: "_id",
-      //           as: "customer",
-      //           pipeline: [
-      //             {
-      //               $project: {
-      //                 _id: 1,
-      //                 name: 1,
-      //               },
-      //             },
-      //           ],
-      //         },
-      //       },
-      //       {
-      //         $addFields: {
-      //           customer: {
-      //             $first: "$customer",
-      //           },
-      //         },
-      //       },
-      //     ],
-      //   },
-      // },
-      // {
-      //   $lookup: {
-      //     from: "offers",
-      //     localField: "offer",
-      //     foreignField: "_id",
-      //     as: "offers",
-      //     pipeline: [
-      //       {
-      //         $lookup: {
-      //           from: "outlets",
-      //           localField: "outlets",
-      //           foreignField: "_id",
-      //           as: "outlets",
-      //         },
-      //       },
-      //       {
-      //         $project: {
-      //           _id: 1,
-      //           offerName: 1,
-      //           offerDescription: 1,
-      //           totalOfferSold: 1,
-      //           offerDataPoints: 1,
-      //           totalOffersAvailable: 1,
-      //           outlets: 1,
-      //         },
-      //       },
-      //     ],
-      //   },
-      // },
-      // {
-      //   $addFields: {
-      //     offerDetails: { $first: "$offers" },
-      //   },
-      // },
-      // {
-      //   $facet: {
-      //     listed: [
-      //       {
-      //         $project: {
-      //           _id: 1,
-      //           user: 1,
-      //           brand: 1,
-      //           ownerships: 1,
-      //           offers: 1,
-      //           offerDetails: 1,
-      //         },
-      //       },
-      //     ],
-      //     collectedCount: [
-      //       {
-      //         $unwind: "$ownerships",
-      //       },
-      //       {
-      //         $unwind: "$ownerships.offer_access_codes",
-      //       },
-      //       {
-      //         $match: {
-      //           "ownerships.offer_access_codes.status": "collected",
-      //         },
-      //       },
-      //       {
-      //         $count: "totalCollectedOfferAccessCodes",
-      //       },
-      //     ],
-      //     uniqueCustomers: [
-      //       {
-      //         $unwind: "$ownerships",
-      //       },
-      //       {
-      //         $unwind: "$ownerships.owner",
-      //       },
-      //       {
-      //         $group: {
-      //           _id: "$ownerships.owner.ownerId",
-      //         },
-      //       },
-      //       {
-      //         $count: "totalUniqueCustomers",
-      //       },
-      //     ],
-      //     totalOffers: [
-      //       {
-      //         $count: "totalOffers",
-      //       },
-      //     ],
-      //     totalOwnerships: [
-      //       {
-      //         $unwind: "$ownerships",
-      //       },
-      //       {
-      //         $count: "totalOwnerships",
-      //       },
-      //     ],
-      //   },
-      // },
-      // {
-      //   $project: {
-      //     listed: "$listed",
-      //     totalCollectedOfferAccessCodes: {
-      //       $arrayElemAt: ["$collectedCount.totalCollectedOfferAccessCodes", 0],
-      //     },
-      //     totalUniqueCustomers: {
-      //       $arrayElemAt: ["$uniqueCustomers.totalUniqueCustomers", 0],
-      //     },
-      //     totalOffers: {
-      //       $arrayElemAt: ["$totalOffers.totalOffers", 0],
-      //     },
-      //     totalOrders: {
-      //       $arrayElemAt: ["$totalOwnerships.totalOwnerships", 0],
-      //     },
-      //   },
-      // },
 
       {
         $lookup: {
           from: "ownerships",
-          localField: "ownership",
+          localField: "ownerships",
           foreignField: "_id",
           as: "ownerships",
           pipeline: [
@@ -1149,6 +906,7 @@ export const getPendingOffersByBrand = async (req: IRequest, res: Response) => {
           totalOrders: {
             $arrayElemAt: ["$totalOwnerships.totalOwnerships", 0],
           },
+          x: "hii",
         },
       },
     ]);
@@ -1168,6 +926,354 @@ export const getPendingOffersByBrand = async (req: IRequest, res: Response) => {
     });
   } catch (error: any) {
     logging.error("Get Listed Pending Offers By Brand", error.message, error);
+    return responseObj({
+      resObj: res,
+      type: "error",
+      statusCode: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR,
+      msg: "Internal server error",
+      error: error.message ? error.message : "internal server error",
+      data: null,
+      code: ERROR_CODES.SERVER_ERR,
+    });
+  }
+};
+
+export const getCompletedOffersByBrand = async (
+  req: IRequest,
+  res: Response
+) => {
+  try {
+    const brandId = req.params.id;
+    if (brandId == "" || brandId == undefined) {
+      return responseObj({
+        resObj: res,
+        type: "error",
+        statusCode: HTTP_STATUS_CODES.BAD_REQUEST,
+        msg: "brand id is required",
+        error: "brand id is required",
+        data: null,
+        code: ERROR_CODES.FIELD_VALIDATION_REQUIRED_ERR,
+      });
+    }
+    const completed = await offerModel.aggregate([
+      {
+        $match: {
+          user: new mongoose.Types.ObjectId(req.user._id),
+          brand: new mongoose.Types.ObjectId(brandId),
+          offerStatus: 2,
+        },
+      },
+      {
+        $lookup: {
+          from: "offerdatas",
+          localField: "offerDataPoints.offerData",
+          foreignField: "_id",
+          as: "offerdatas",
+        },
+      },
+      {
+        $unwind: "$offerdatas",
+      },
+      {
+        $match: {
+          $or: [
+            {
+              "offerdatas.offerAvailabilityEndDate": {
+                $lte: new Date(),
+              },
+            },
+
+            {
+              "offerdatas.offerLiveTillSoldOut": true,
+            },
+          ],
+        },
+      },
+      {
+        $lookup: {
+          from: "listeds",
+          localField: "_id",
+          foreignField: "offer",
+          as: "listeds",
+          pipeline: [
+            {
+              $lookup: {
+                from: "ownerships",
+                localField: "ownerships",
+                foreignField: "_id",
+                as: "ownerships",
+                pipeline: [
+                  {
+                    $project: {
+                      owner: 1,
+                    },
+                  },
+                  {
+                    $lookup: {
+                      from: "users",
+                      localField: "owner.ownerId",
+                      foreignField: "_id",
+                      as: "user",
+                      pipeline: [
+                        {
+                          $project: {
+                            device: 0,
+                            addresses: 0,
+                            wishLists: 0,
+                            likes: 0,
+                            bankAccounts: 0,
+                          },
+                        },
+                      ],
+                    },
+                  },
+                  {
+                    $unwind: "$user",
+                  },
+                  {
+                    $project: {
+                      owner: 0,
+                    },
+                  },
+                ],
+              },
+            },
+          ],
+        },
+      },
+      {
+        $unwind: "$listeds",
+      },
+      {
+        $addFields: {
+          serviceTypeOfferLiveTillSoldOut: "$offerdatas.offerLiveTillSoldOut",
+          serviceCloseDate: "$offerdatas.offerAvailabilityEndDate",
+        },
+      },
+      {
+        $project: {
+          boost: 0,
+          checkpoint: 0,
+          offerDataPoints: 0,
+          offerdatas: 0,
+        },
+      },
+      {
+        $facet: {
+          offers: [
+            // {
+            //   $project: {
+            //     boost: 0,
+            //     checkpoint: 0,
+            //     offerDataPoints: 0,
+            //     offerdatas: 0
+            //   }
+            // }
+          ],
+
+          totalOfferCount: [
+            {
+              $count: "offers",
+            },
+          ],
+          fullySoldCount: [
+            {
+              $match: {
+                totalOffersAvailable: 0,
+              },
+            },
+
+            {
+              $count: "offers",
+            },
+          ],
+          valueStats: [
+            {
+              $lookup: {
+                from: "ologs",
+                localField: "_id",
+                foreignField: "offer",
+                as: "ologs",
+              },
+            },
+            {
+              $unwind: "$ologs",
+            },
+            {
+              $group: {
+                _id: null,
+                oEarned: {
+                  $sum: "$ologs.seller.oQuantity",
+                },
+                moneyEarned: {
+                  $sum: "$ologs.amount",
+                },
+              },
+            },
+          ],
+        },
+      },
+      {
+        $project: {
+          offers: 1,
+          totalOfferCount: {
+            $first: "$totalOfferCount.offers",
+          },
+          fullySoldCount: {
+            $first: "$fullySoldCount.offers",
+          },
+          valueStats: {
+            $first: "$valueStats",
+          },
+        },
+      },
+    ]);
+
+    return responseObj({
+      resObj: res,
+      type: "success",
+      statusCode: HTTP_STATUS_CODES.SUCCESS,
+      msg: "success",
+      error: null,
+      data: {
+        ...completed,
+      },
+      code: ERROR_CODES.SUCCESS,
+    });
+  } catch (error: any) {
+    logging.error("Get Listed Completed Offers By Brand", error.message, error);
+    return responseObj({
+      resObj: res,
+      type: "error",
+      statusCode: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR,
+      msg: "Internal server error",
+      error: error.message ? error.message : "internal server error",
+      data: null,
+      code: ERROR_CODES.SERVER_ERR,
+    });
+  }
+};
+
+export const getCustomersByOffer = async (req: IRequest, res: Response) => {
+  try {
+    const offerId = req.params.id;
+    if (offerId == "" || offerId == undefined) {
+      return responseObj({
+        resObj: res,
+        type: "error",
+        statusCode: HTTP_STATUS_CODES.BAD_REQUEST,
+        msg: "offer id is required",
+        error: "offer id is required",
+        data: null,
+        code: ERROR_CODES.FIELD_VALIDATION_REQUIRED_ERR,
+      });
+    }
+    const offer = await offerModel.aggregate([
+      {
+        $match: {
+          offer: new mongoose.Types.ObjectId(offerId),
+        },
+      },
+      {
+        $lookup: {
+          from: "ownerships",
+          localField: "ownerships",
+          foreignField: "_id",
+          as: "ownerships",
+          pipeline: [
+            {
+              $lookup: {
+                from: "users",
+                localField: "owner.ownerId",
+                foreignField: "_id",
+                as: "owner",
+                pipeline: [
+                  {
+                    $project: {
+                      device: 0,
+                      addresses: 0,
+                      wishLists: 0,
+                      likes: 0,
+                      bankAccounts: 0,
+                    },
+                  },
+                ],
+              },
+            },
+            {
+              $unwind: "$owner",
+            },
+
+            {
+              $addFields: {
+                status: {
+                  $cond: [
+                    {
+                      $eq: [
+                        {
+                          $size: {
+                            $filter: {
+                              input: "$offer_access_codes",
+                              as: "item",
+                              cond: {
+                                $eq: ["$$item.status", "delivered"],
+                              },
+                            },
+                          },
+                        },
+                        1,
+                      ],
+                    },
+                    "delivered",
+                    "collected",
+                  ],
+                },
+              },
+            },
+          ],
+        },
+      },
+      {
+        $facet: {
+          customers: [],
+          stats: [
+            {
+              $unwind: "$ownerships",
+            },
+            {
+              $unwind: "$ownerships.offer_access_codes",
+            },
+            {
+              $match: {
+                "ownerships.offer_access_codes.status": {
+                  $in: ["delivered", "collected"],
+                },
+              },
+            },
+            {
+              $group: {
+                _id: "$ownerships.offer_access_codes.status",
+                count: { $sum: 1 },
+              },
+            },
+          ],
+        },
+      },
+    ]);
+
+    return responseObj({
+      resObj: res,
+      type: "success",
+      statusCode: HTTP_STATUS_CODES.SUCCESS,
+      msg: "success",
+      error: null,
+      data: {
+        ...offer,
+      },
+      code: ERROR_CODES.SUCCESS,
+    });
+  } catch (error: any) {
+    logging.error("Get Listed Customer Offers By Brand", error.message, error);
     return responseObj({
       resObj: res,
       type: "error",
@@ -1223,7 +1329,7 @@ export const getCustomerDetailsBeforeVerify = async (
       {
         $lookup: {
           from: "ownerships",
-          localField: "ownership",
+          localField: "ownerships",
           foreignField: "_id",
           as: "ownership",
           pipeline: [
@@ -1264,7 +1370,7 @@ export const getCustomerDetailsBeforeVerify = async (
       {
         $project: {
           user: 0,
-          ownership: 0,
+          ownerships: 0,
           offerDatas: 0,
         },
       },
@@ -1335,6 +1441,7 @@ export const getCustomerDetailsBeforeVerify = async (
 export const verifyCollectedOffer = async (req: IRequest, res: Response) => {
   try {
     // const { code }: any = req.body;
+    //TODO :need to change id to offer code
     const { id, user } = req.body; //JSON.parse(code);
 
     console.log("body", id, req.body);
@@ -1423,80 +1530,3 @@ export const verifyCollectedOffer = async (req: IRequest, res: Response) => {
     });
   }
 };
-
-// [
-//   {
-//     $match: {
-//       user: ObjectId("65efd60968853585bbb96322"),
-//       brand:ObjectId('6694c5cdf76d30df7594173a')
-//     }
-//   },
-//   {
-//     $lookup: {
-//       from: "ownerships",
-//       localField: "ownership",
-//       foreignField: "_id",
-//       as: "ownerships",
-//       pipeline: [
-//         {
-//           $lookup: {
-//             from: "users",
-//             localField: "owner.ownerId",
-//             foreignField: "_id",
-//             as: "customer",
-//             pipeline: [
-//               {
-//                 $project: {
-//                   _id: 1,
-//                   name: 1
-//                 }
-//               }
-//             ]
-//           }
-//         },
-//         {
-//           $addFields: {
-//             customer: {
-//               $first: "$customer"
-//             }
-//           }
-//         }
-//       ]
-//     }
-//   },
-
-//   {
-//     $lookup: {
-//       from: "offers",
-//       localField: "offer",
-//       foreignField: "_id",
-//       as: "offers",
-//       pipeline: [
-//         {
-//           $lookup: {
-//             from: "outlets",
-//             localField: "outlets",
-//             foreignField: "_id",
-//             as: "outlets"
-//           }
-//         },
-//         {
-//           $project: {
-//             _id: 1,
-//             offerName: 1,
-//             offerDescription: 1,
-//             totalOfferSold: 1,
-//             offerDataPoints: 1,
-//             totalOffersAvailable: 1,
-//             outlets: 1
-//           }
-//         }
-//       ]
-//     }
-//   },
-//   {
-//     $addFields: {
-//       offerDetails: { $first: "$offers" }
-//     }
-//   }
-// ]

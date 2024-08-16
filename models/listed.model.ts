@@ -13,14 +13,14 @@ export interface IListed extends Document {
   offer: any; // offer reference
   brand: any; // brand reference
   user: any;
-  ownership: any; // order reference
+  ownerships: any; // order reference
 }
 
 const ListedSchema: Schema = new Schema({
   offer: { type: Schema.Types.ObjectId, ref: "Offer" },
   brand: { type: Schema.Types.ObjectId, ref: "Brand" },
   user: { type: Schema.Types.ObjectId, ref: "User" },
-  ownership: [
+  ownerships: [
     {
       type: Schema.Types.ObjectId,
       ref: "Ownership",

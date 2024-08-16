@@ -18,17 +18,7 @@ export const addCategory = async (req: IRequest, res: Response) => {
       quantities = [],
       _id = "",
     }: ICategory = req.body;
-    // const file = req.file;
-    // console.log(
-    //   "file",
-    //   req.body,
-    //   file,
-    //   parentCategoryId,
-    //   parentCategoryId !== ""
-    // );
-    // if (file) {
-    //   req.body.categoryPic = file.filename;
-    // }
+
     if (name === "")
       return responseObj({
         resObj: res,

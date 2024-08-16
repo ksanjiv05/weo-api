@@ -1,22 +1,18 @@
-import { oNetworkConfig } from "../../../config/config";
+import { OConfig } from "../../../models/o.config.model";
 
-const O_Config = {
-  price: 1,
-  oAgainstPrice: 100,
-  ratio: 1 / 100,
-  volume: 10000,
-  preSetCutOff: 10,
-  perSetCutOffFromDiscount: 1,
-  toPlatformCutOff: 50,
-  oReservedVolume: 10000,
+export const getOConfig = async () => {
+  const oConfig = await OConfig.findOne();
+  return oConfig;
 };
 
 export const oGenerate = async ({
   discount = 0,
   amount,
+  oNetworkConfig,
 }: {
   discount: number;
   amount: number;
+  oNetworkConfig: any;
 }) => {
   discount = discount / 100;
   console.log("discount ", discount);

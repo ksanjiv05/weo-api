@@ -576,7 +576,7 @@ export const getBrandsByLocation = async (req: Request, res: Response) => {
             pipeline: [
               {
                 $match: {
-                  status: STATUS.LIVE,
+                  status: 2,
                 },
               },
             ],
@@ -588,8 +588,8 @@ export const getBrandsByLocation = async (req: Request, res: Response) => {
         {
           $lookup: {
             from: "offers",
-            localField: "brand",
-            foreignField: "brand",
+            localField: "_id",
+            foreignField: "outlets",
             as: "offers",
             pipeline: [
               {
@@ -606,7 +606,7 @@ export const getBrandsByLocation = async (req: Request, res: Response) => {
                     $sum: {
                       $cond: [
                         {
-                          $eq: ["$offerStatus", OFFER_STATUS.LIVE],
+                          $eq: ["$offerStatus", 2],
                         },
                         1,
                         0,

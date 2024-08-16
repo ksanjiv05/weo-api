@@ -2,9 +2,9 @@ import mongoose from "mongoose";
 import { conn_v2 } from "../db";
 
 export interface IOConfig {
-  price: number;
+  currency: string;
   oAgainstPrice: number;
-  ratio: number;
+  oNetworkValue: number;
   volume: number;
   oReservedVolume: number;
   atPlatformCutOffRate: number;
@@ -14,9 +14,9 @@ export interface IOConfig {
 }
 
 export const oConfigSchema = new mongoose.Schema<IOConfig>({
-  price: Number,
+  currency: Number,
   oAgainstPrice: Number,
-  ratio: Number,
+  oNetworkValue: Number,
   volume: Number,
   oReservedVolume: Number,
   atPlatformCutOffRate: Number,
