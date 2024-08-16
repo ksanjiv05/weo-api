@@ -8,6 +8,7 @@ import {
   getAllListedBrands,
   getAllListedOffersByBrand,
   getAllListedOffersByUser,
+  getCompletedOffersByBrand,
   getCustomerDetailsBeforeVerify,
   getListedOfferDetails,
   getPendingOffersByBrand,
@@ -93,7 +94,6 @@ router.post("/listed/:id", auth, createListed);
 
 router.get("/listed/user/brand", auth, getAllListedBrands);
 router.get("/listed/user/offers", auth, getAllListedOffersByUser);
-router.get("/listed/user/offers/:id", auth, getAllListedOffersByUser);
 router.get(
   "/listed/user/offers/:brandId/:offerId",
   auth,
@@ -217,12 +217,15 @@ router.get(
 
 router.get("/listed/user/brand/:id", auth, getAllListedOffersByBrand);
 router.get("/listed/user/brand/pending/:id", auth, getPendingOffersByBrand);
+router.get("/listed/user/brand/completed/:id", auth, getCompletedOffersByBrand);
+
 
 router.post(
   "/listed/collected/customer/verify",
   auth,
   getCustomerDetailsBeforeVerify
 );
+
 router.post(
   "/listed/collected/customer/verify/confirm",
   auth,

@@ -21,14 +21,9 @@ import {
 import OfferData, { IOfferData } from "../../../models/offer.data.model";
 import Wallet from "../../../models/wallet.model";
 import { IRequest } from "../../../interfaces/IRequest";
-import { oGenerate } from "../../../helper/oCalculator/v2";
+import { getOConfig, oGenerate } from "../../../helper/oCalculator/v2";
 import { getExchangeRate } from "../../../helper/exchangeRate";
-import {
-  BASE_CURRENCY,
-  negotiationConfig,
-  oNetworkConfig,
-  oNetworkConfigLoad,
-} from "../../../config/config";
+import { BASE_CURRENCY, negotiationConfig } from "../../../config/config";
 import oLogModel, { IOLog } from "../../../models/oLog.model";
 import {
   encrypt,
@@ -236,9 +231,22 @@ export const collectOffer = async (req: IRequest, res: Response) => {
     wallet.balance = wallet.balance - amount * noOfOffers * 100;
     const exchangeRate = await getExchangeRate(wallet.currency, BASE_CURRENCY);
     const amountAfterExchange = amount * exchangeRate;
+    const oNetworkConfig = await getOConfig();
+    if (!oNetworkConfig) {
+      return responseObj({
+        resObj: res,
+        type: "error",
+        statusCode: HTTP_STATUS_CODES.BAD_REQUEST,
+        msg: "Network not initialize",
+        error: "Network not initialize",
+        data: null,
+        code: ERROR_CODES.FIELD_VALIDATION_ERR,
+      });
+    }
     const { toDistribute, totalO } = await oGenerate({
       amount: amountAfterExchange,
       discount: offerDataPoint.offerPriceMinPercentage,
+      oNetworkConfig,
     });
 
     console.log("_______toDistribute_____after collect________");
@@ -261,13 +269,12 @@ export const collectOffer = async (req: IRequest, res: Response) => {
     const newOLog = new oLogModel({
       event: O_EVENTS.COLLECTED,
       amount: amount * noOfOffers,
-      offerId: id,
+      offer: id,
+      brand: offer.brand,
       seller: { id: offer.user, oQuantity: toDistribute / 2 },
       buyer: { id: req.user._id, oQuantity: toDistribute / 2 },
       discount: offerDataPoint.offerPriceMinPercentage,
       quantity: noOfOffers,
-
-      oPriceRate: oNetworkConfig.price,
       oAgainstPrice: oNetworkConfig.oAgainstPrice,
       oGenerated: totalO,
       atPlatformCutOffRate: oNetworkConfig.atPlatformCutOffRate,
@@ -311,7 +318,7 @@ export const collectOffer = async (req: IRequest, res: Response) => {
         //   ownership: newOwnerShip._id,
         // },
         $addToSet: {
-          ownership: newOwnerShip._id,
+          ownerships: newOwnerShip._id,
         },
       },
       {
@@ -319,7 +326,7 @@ export const collectOffer = async (req: IRequest, res: Response) => {
       }
     );
 
-    newOfferCollected.ownership = newOwnerShip._id;
+    newOfferCollected.ownerships = newOwnerShip._id;
     await newOwnerShip.save({ session });
     console.log("--0--");
     console.log("--1--");
@@ -467,7 +474,7 @@ export const getCollectedOffers = async (req: IRequest, res: Response) => {
       {
         $lookup: {
           from: "ownerships",
-          localField: "ownership",
+          localField: "ownerships",
           foreignField: "_id",
           as: "ownerships",
           // pipeline: [
@@ -644,7 +651,7 @@ export const getCollectedOfferDetails = async (
       {
         $lookup: {
           from: "ownerships",
-          localField: "ownership",
+          localField: "ownerships",
           foreignField: "_id",
           as: "ownerships",
           pipeline: [
@@ -881,7 +888,7 @@ export const getCollectedOfferQr = async (req: IRequest, res: Response) => {
       });
     }
 
-    const status = collectedOffer?.ownership?.offer_access_codes.find(
+    const status = collectedOffer?.ownerships?.offer_access_codes.find(
       (code: any) =>
         code.code === id && code.status === OFFER_COLLECTION_EVENTS.COLLECTED
     );
@@ -929,6 +936,7 @@ export const getCollectedOfferQr = async (req: IRequest, res: Response) => {
   }
 };
 
+//TODO : not completed yet
 export const reSellCollectedOffer = async (req: IRequest, res: Response) => {
   try {
     const id = req.params.id;
@@ -949,7 +957,7 @@ export const reSellCollectedOffer = async (req: IRequest, res: Response) => {
         code: ERROR_CODES.NOT_FOUND,
       });
     }
-    const status = collectedOffer?.ownership?.offer_access_codes.find(
+    const status = collectedOffer?.ownerships?.offer_access_codes.find(
       (code: any) =>
         code.code === id && code.status === OFFER_COLLECTION_EVENTS.COLLECTED
     );
@@ -1007,7 +1015,7 @@ export const reSellCollectedOffer = async (req: IRequest, res: Response) => {
       resObj: res,
       type: "success",
       statusCode: HTTP_STATUS_CODES.SUCCESS,
-      msg: "Collected Offer Qr",
+      msg: "Collected Offer Successfully added for ",
       error: null,
       data: null,
       code: ERROR_CODES.SUCCESS,

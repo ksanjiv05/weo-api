@@ -4,6 +4,7 @@ import {
   userDataValidateCheckPointA,
   userDataValidateCheckPointB,
   userDataValidateCheckPointForCreatorName,
+  userNewBankAccountValidate,
 } from "../../middleware/validator/userValidator";
 import { auth } from "../../middleware/auth";
 import {
@@ -432,12 +433,18 @@ const router = express.Router();
  */
 
 router.post("/users", auth, userDataValidateCheckPointA, register);
-router.post("/users/bank_account", auth, newBankAccount);
-
 router.get("/users", auth, getUserProfile);
 router.get("/users/all", auth, getUsers);
 router.get("/users/exist", isExistingUser);
 router.get("/users/exist/:creatorName", auth, isUserNameAvailable);
+
+router.post(
+  "/users/bank_account",
+  auth,
+  userNewBankAccountValidate,
+  newBankAccount
+);
+
 router.get("/users/wallet", auth, getWallet);
 
 router.put(
@@ -446,126 +453,8 @@ router.put(
   userDataValidateCheckPointForCreatorName,
   updateCreatorName
 );
-router.put("/users/:id", auth, userDataValidateCheckPointB, updateUser);
 
+router.put("/users/:id", auth, userDataValidateCheckPointB, updateUser);
 router.delete("/users/:id", auth, deleteUserProfile);
 
 export default router;
-
-const data = [
-  {
-    name: "Alice",
-    age: 25,
-    address: {
-      street: "456 Elm Street",
-      city: "Los Angeles",
-      zipcode: "90001",
-      coordinates: {
-        latitude: 34.0522,
-        longitude: -118.2437,
-      },
-    },
-    friends: [
-      {
-        name: "Bob",
-        age: 27,
-        address: {
-          street: "789 Oak Street",
-          city: "San Francisco",
-          zipcode: "94101",
-        },
-      },
-      {
-        name: "Caroline",
-        age: 30,
-        address: {
-          street: "101 Pine Street",
-          city: "Dallas",
-          zipcode: "75201",
-        },
-      },
-      {
-        name: "David",
-        age: 29,
-        address: {
-          street: "202 Maple Street",
-          city: "Dallas",
-          zipcode: "75201",
-        },
-      },
-      {
-        name: "Eve",
-        age: 31,
-        address: {
-          street: "303 Cedar Street",
-          city: "Seattle",
-          zipcode: "98101",
-        },
-      },
-    ],
-  },
-  {
-    name: "Ray",
-    age: 25,
-    address: {
-      street: "DL Street",
-      city: "California",
-      zipcode: "90002",
-      coordinates: {
-        latitude: 35.0522,
-        longitude: -18.2437,
-      },
-    },
-    friends: [
-      {
-        name: "Frank",
-        age: 26,
-        address: {
-          street: "909 Elm Street",
-          city: "New York",
-          zipcode: "10002",
-        },
-      },
-      {
-        name: "Grace",
-        age: 28,
-        address: {
-          street: "707 Oak Street",
-          city: "New York",
-          zipcode: "10002",
-        },
-      },
-      {
-        name: "Henry",
-        age: 29,
-        address: {
-          street: "505 Pine Street",
-          city: "Dallas",
-          zipcode: "75201",
-        },
-      },
-    ],
-  },
-];
-
-//Q1. write a function to get all the friends of a persons who lives in a particular/same city for example "Dallas"
-// the function should return an array of all the friends who live in Dallas
-//output should be like this
-// [
-//   { name: 'Caroline', age: 30, city: 'Dallas' },
-//   { name: 'David', age: 29, city: 'Dallas' },
-//   { name: 'Henry', age: 29, city: 'Dallas' }
-// ]
-// function getFriendsByCity(city) { write your logic here }
-
-//Q1. write a function to get all the friends of a person who lives in a particular/same city for example "New York"
-// the function should return an array of all the friends who live in New York
-//output should be like this
-// {
-//   name: 'Ray',
-//   friends: [
-//     { name: 'Frank', age: 26, city: 'New York' },
-//     { name: 'Grace', age: 28, city: 'New York' }
-//   ]
-//}
-// function getFriendsByCity(personName, city) { write your logic here }

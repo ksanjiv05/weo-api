@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { oGenerate } from "../../../helper/oCalculator/v2";
+import { getOConfig, oGenerate } from "../../../helper/oCalculator/v2";
 import { responseObj } from "../../../helper/response";
 import { HTTP_STATUS_CODES } from "../../../config/statusCode";
 import { ERROR_CODES } from "../../../config/errorCode";
@@ -24,6 +24,7 @@ export const oRewardCalculate = async (req: IRequest, res: Response) => {
       });
     }
 
+    const oConfig = await getOConfig();
     const exchangeRate = await getExchangeRate(
       req.user.currency,
       BASE_CURRENCY
@@ -33,6 +34,7 @@ export const oRewardCalculate = async (req: IRequest, res: Response) => {
     const { totalO, toDistribute } = await oGenerate({
       amount: amountAfterExchange,
       discount,
+      oNetworkConfig: oConfig,
     });
 
     return responseObj({

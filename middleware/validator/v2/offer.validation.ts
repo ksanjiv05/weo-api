@@ -19,6 +19,7 @@ export const offerValidationCh1 = [
 
 export const offerValidationCh2 = [
   // ...offerValidationCh1,
+  body("offerId").isString().withMessage("offerId is required"),
   body("offerPriceAmount")
     .isNumeric()
     .withMessage("offer price amount is required"),

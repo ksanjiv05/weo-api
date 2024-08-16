@@ -19,3 +19,16 @@ export const userDataValidateCheckPointB = [
   body("city").isString().notEmpty().withMessage("city is required"),
   body("landmark").isString().notEmpty().withMessage("landmark is required"),
 ];
+
+export const userNewBankAccountValidate = [
+  body("accountNumber")
+    .isString()
+    .notEmpty()
+    .withMessage("account number is required"),
+  body("ifsc").isString().notEmpty().withMessage("ifsc is required"),
+  body("bankName").isString().notEmpty().withMessage("bank name is required"),
+  body("accountHolderName")
+    .isString()
+    .notEmpty()
+    .withMessage("account holder name is required"),
+];

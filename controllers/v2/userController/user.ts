@@ -10,6 +10,7 @@ import { HTTP_STATUS_CODES } from "../../../config/statusCode";
 import { ERROR_CODES } from "../../../config/errorCode";
 import Wallet from "../../../models/wallet.model";
 import { fundTransfer } from "../../../payment/razorpay/transfer";
+import { validationResult } from "express-validator";
 
 export const newBankAccount = async (req: IRequest, res: Response) => {
   try {
@@ -22,17 +23,20 @@ export const newBankAccount = async (req: IRequest, res: Response) => {
       bankName = "",
       accountHolderName = "",
     } = req.body;
-    if (!accountNumber || !ifsc) {
+
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
       return responseObj({
         resObj: res,
         type: "error",
-        statusCode: 400,
-        msg: "account number and ifsc are required",
-        error: null,
+        statusCode: HTTP_STATUS_CODES.BAD_REQUEST,
+        msg: "fields are required",
+        error: errors.array({}),
         data: null,
+        code: ERROR_CODES.FIELD_VALIDATION_REQUIRED_ERR,
       });
     }
-
     const contactId =
       user.bankAccounts.length > 0 ? user.bankAccounts[0]?.contactId : null;
     // const account = await addBankAccount({
