@@ -11,6 +11,7 @@ import {
   getCompletedOffersByBrand,
   getCustomerDetailsBeforeVerify,
   getListedOfferDetails,
+  getOfferDetails,
   getPendingOffersByBrand,
   verifyCollectedOffer,
 } from "../../controllers/v2/listedController/listed";
@@ -95,6 +96,7 @@ router.post("/listed/:id", auth, createListed);
 router.get("/listed/user/brand", auth, getAllListedBrands);
 //all listed tab
 router.get("/listed/user/offers", auth, getAllListedOffersByUser);
+router.get("/listed/user/offers/:id", auth, getOfferDetails);
 router.get(
   "/listed/user/offers/:brandId/:offerId",
   auth,
