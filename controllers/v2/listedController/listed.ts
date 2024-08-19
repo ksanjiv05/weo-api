@@ -232,13 +232,16 @@ export const getAllListedBrands = async (req: IRequest, res: Response) => {
           _id: null,
           brands: { $push: "$$ROOT" },
           totalListedOffersSum: { $sum: "$totalListedOffers" },
+          totalCompleted: { $sum: "$completed" },
         },
       },
       {
         $project: {
           _id: 0,
           brands: 1,
-          totalListedOffersSum: 1,
+          totalListedOffersSum: {
+            $sum: ["$totalListedOffersSum", "$totalCompleted"],
+          },
         },
       },
     ]);
@@ -399,15 +402,19 @@ export const getAllListedOffersByUser = async (
 ) => {
   const { page = 1, perPage = 5 }: any = req.query;
   const skip = (parseInt(page) - 1) * parseInt(perPage);
-
+  console.log(req.user);
   try {
     const offers = await Offer.aggregate([
       {
         $match: {
-          user: req.user._id,
+          user: req.user._id, //new mongoose.Types.ObjectId("65efd60968853585bbb96322"),
           $or: [
-            { offerStatus: OFFER_STATUS.LIVE },
-            { offerStatus: OFFER_STATUS.SOLD },
+            {
+              offerStatus: OFFER_STATUS.LIVE,
+            },
+            {
+              offerStatus: OFFER_STATUS.SOLD,
+            },
           ],
         },
       },
@@ -425,24 +432,42 @@ export const getAllListedOffersByUser = async (
       {
         $group: {
           _id: "$_id",
-          offerName: { $first: "$offerName" },
-          offerDescription: { $first: "$offerDescription" },
-          totalOffersAvailable: { $first: "$totalOffersAvailable" },
-          soldOffers: { $first: "$totalOfferSold" },
-          offerThumbnail: { $first: "$offerDataDetails.offerThumbnail" },
+          offerName: {
+            $first: "$offerName",
+          },
+          offerDescription: {
+            $first: "$offerDescription",
+          },
+          totalOffersAvailable: {
+            $first: "$totalOffersAvailable",
+          },
+          soldOffers: {
+            $first: "$totalOfferSold",
+          },
+          offerThumbnail: {
+            $first: "$offerDataDetails.offerThumbnail",
+          },
           offerAvailabilityStartDate: {
             $first: "$offerDataDetails.offerAvailabilityStartDate",
           },
           offerAvailabilityEndDate: {
             $first: "$offerDataDetails.offerAvailabilityEndDate",
           },
-          serviceStartDate: { $first: "$offerDataDetails.serviceStartDate" },
-          serviceEndDate: { $first: "$offerDataDetails.serviceEndDate" },
+          serviceStartDate: {
+            $first: "$offerDataDetails.serviceStartDate",
+          },
+          serviceEndDate: {
+            $first: "$offerDataDetails.serviceEndDate",
+          },
           offerLiveTillSoldOut: {
             $first: "$offerDataDetails.offerLiveTillSoldOut",
           },
-          offerStatus: { $first: "$offerStatus" },
-          brand: { $first: "$brand" },
+          offerStatus: {
+            $first: "$offerStatus",
+          },
+          brand: {
+            $first: "$brand",
+          },
         },
       },
       {
@@ -472,7 +497,7 @@ export const getAllListedOffersByUser = async (
             {
               $lookup: {
                 from: "ownerships",
-                localField: "ownerships",
+                localField: "ownership",
                 foreignField: "_id",
                 as: "ownerships",
               },
@@ -495,7 +520,10 @@ export const getAllListedOffersByUser = async (
         },
       },
       {
-        $unwind: "$collecteds",
+        $unwind: {
+          path: "$collecteds",
+          preserveNullAndEmptyArrays: true,
+        },
       },
       {
         $facet: {
@@ -503,13 +531,21 @@ export const getAllListedOffersByUser = async (
             {
               $group: {
                 _id: null,
-                totalListed: { $sum: 1 },
+                totalListed: {
+                  $sum: 1,
+                },
                 totalListedOffersCount: {
                   $sum: "$totalOffersAvailable",
                 },
                 soldStatusCount: {
                   $sum: {
-                    $cond: [{ $eq: ["$offerStatus", 5] }, 1, 0],
+                    $cond: [
+                      {
+                        $eq: ["$offerStatus", 5],
+                      },
+                      1,
+                      0,
+                    ],
                   },
                 },
                 totalOEarned: {
@@ -532,8 +568,12 @@ export const getAllListedOffersByUser = async (
             },
           ],
           data: [
-            { $skip: skip },
-            { $limit: Number(perPage) },
+            {
+              $skip: skip,
+            },
+            {
+              $limit: Number(perPage),
+            },
             {
               $project: {
                 _id: 1,
@@ -564,7 +604,7 @@ export const getAllListedOffersByUser = async (
       },
     ]);
 
-    console.log("offers", req.user._id, offers);
+    // console.log("offers", req.user._id, offers);
     return responseObj({
       resObj: res,
       type: "success",

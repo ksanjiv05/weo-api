@@ -16,17 +16,20 @@ export interface IListed extends Document {
   ownerships: any; // order reference
 }
 
-const ListedSchema: Schema = new Schema({
-  offer: { type: Schema.Types.ObjectId, ref: "Offer" },
-  brand: { type: Schema.Types.ObjectId, ref: "Brand" },
-  user: { type: Schema.Types.ObjectId, ref: "User" },
-  ownerships: [
-    {
-      type: Schema.Types.ObjectId,
-      ref: "Ownership",
-    },
-  ],
-});
+const ListedSchema: Schema = new Schema(
+  {
+    offer: { type: Schema.Types.ObjectId, ref: "Offer" },
+    brand: { type: Schema.Types.ObjectId, ref: "Brand" },
+    user: { type: Schema.Types.ObjectId, ref: "User" },
+    ownerships: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Ownership",
+      },
+    ],
+  },
+  { timestamps: true }
+);
 
 ListedSchema.index({ offer: 1, brand: 1, user: 1 }, { unique: true });
 

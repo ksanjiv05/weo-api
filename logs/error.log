@@ -781,3 +781,6 @@ error: POST /api/v1/brands 400 7ms
 {"level":"error","message":"GET /api/v1/all_lead_source 404 1ms","timestamp":"2024-08-14T14:49:15.655Z"}
 {"level":"error","message":"GET /api/v2/offers?offerStatus=2&outlets[]=[object%20Object],[object%20Object] 500 327ms","timestamp":"2024-08-16T10:52:35.368Z"}
 {"level":"error","message":"GET /api/v2/listed/user/brand/All 500 306ms","timestamp":"2024-08-16T11:26:10.254Z"}
+{"level":"error","message":"GET /api/v2/listed/user/brand 500 1550ms","timestamp":"2024-08-19T05:58:51.854Z"}
+{"level":"error","message":"GET /api/v2/listed/user/brand/66939345da3d163e7a323d84 429 1ms","timestamp":"2024-08-19T06:55:28.097Z"}
+{"level":"error","message":"GET /api/v2/listed/user/brand/66939345da3d163e7a323d84 429 2ms","timestamp":"2024-08-19T06:55:29.453Z"}
