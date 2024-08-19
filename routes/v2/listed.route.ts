@@ -93,6 +93,7 @@ router.post("/listed/:id", auth, createListed);
  */
 
 router.get("/listed/user/brand", auth, getAllListedBrands);
+//all listed tab
 router.get("/listed/user/offers", auth, getAllListedOffersByUser);
 router.get(
   "/listed/user/offers/:brandId/:offerId",
@@ -218,7 +219,6 @@ router.get(
 router.get("/listed/user/brand/:id", auth, getAllListedOffersByBrand);
 router.get("/listed/user/brand/pending/:id", auth, getPendingOffersByBrand);
 router.get("/listed/user/brand/completed/:id", auth, getCompletedOffersByBrand);
-
 
 router.post(
   "/listed/collected/customer/verify",
