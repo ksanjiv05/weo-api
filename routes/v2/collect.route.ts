@@ -6,6 +6,7 @@ import {
   getCollectedOfferQr,
   getCollectedOffers,
   getNumberOfAttempts,
+  reSellCollectedOffer,
 } from "../../controllers/v2/collectedController/collected";
 import { negotiationAttempt } from "../../middleware/negotiationAttempt";
 
@@ -16,5 +17,7 @@ router.get("/collects", auth, getCollectedOffers);
 router.get("/collects/attempt", auth, getNumberOfAttempts);
 router.get("/collects/qr/:id", auth, getCollectedOfferQr);
 router.get("/collects/:id", auth, getCollectedOfferDetails);
+router.post("/collected/resell/:id",reSellCollectedOffer)
+
 
 export default router;
