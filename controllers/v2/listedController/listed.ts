@@ -628,6 +628,105 @@ export const getAllListedOffersByUser = async (
   }
 };
 
+
+export const getOfferDetails = async (
+  req: IRequest,
+  res: Response
+) => {
+  const { page = 1, perPage = 5 }: any = req.query;
+  const skip = (parseInt(page) - 1) * parseInt(perPage);
+  console.log(req.user);
+  try {
+    const offerDetails =await Listed.aggregate([
+  {
+    $match: {
+      offer: new mongoose.Types.ObjectId(req.params.id),
+    }
+  },
+  {
+    $lookup: {
+      from: "offers",
+      localField: "offer",
+      foreignField: "_id",
+      as: "offer"
+    }
+  },
+  {
+    $unwind: "$offer"
+  },
+  {
+    $lookup: {
+      from: "outlets",
+      localField: "offer.outlets",
+      foreignField: "_id",
+      as: "outlets"
+    }
+  },
+  {
+    $lookup: {
+      from: "offerdatas",
+      localField:
+        "offer.offerDataPoints.offerData",
+      foreignField: "_id",
+      as: "offerDataDetails"
+    }
+  },
+  {
+    $unwind: "$offerDataDetails"
+  },
+  {
+    $lookup: {
+      from: "ownerships",
+      localField: "ownerships",
+      foreignField: "_id",
+      as: "ownerships",
+      pipeline: [
+        {
+          $group: {
+            _id: null,
+            totalOEarned: {
+              $sum: "$oEarned"
+            },
+            totalEarned: {
+              $sum: "$spent"
+            },
+            totalCustomer: {
+              $sum: {
+                $size: "$owner"
+              }
+            },
+            customers: {
+              $push: "$owner.ownerId"
+            }
+          }
+        }
+      ]
+    }
+  }
+])
+    return responseObj({
+      resObj: res,
+      type: "success",
+      statusCode: HTTP_STATUS_CODES.SUCCESS,
+      msg: "Listed Offer",
+      error: null,
+      data: offerDetails.length > 0 ? offerDetails[0] : null,
+      code: ERROR_CODES.SUCCESS,
+    });
+  } catch (error: any) {
+    logging.error("Get Listed Offers By Brand", error.message, error);
+    return responseObj({
+      resObj: res,
+      type: "error",
+      statusCode: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR,
+      msg: "Internal server error",
+      error: error.message ? error.message : "internal server error",
+      data: null,
+      code: ERROR_CODES.SERVER_ERR,
+    });
+  }
+};
+
 export const getListedOfferDetails = async (req: IRequest, res: Response) => {
   try {
     const { brandId, offerId } = req.params;
