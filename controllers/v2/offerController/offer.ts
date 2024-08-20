@@ -272,6 +272,22 @@ export const updateOfferData = async (req: Request, res: Response) => {
       );
     }
 
+    if (req.body.checkpoint == 8) {
+      await Offer.updateOne(
+        {
+          _id: req.body?.offerId,
+        },
+        {
+          $set: {
+            offerThumbnail: req.body?.offerThumbnail,
+          },
+        },
+        {
+          session,
+        }
+      );
+    }
+
     await Offer.updateOne(
       { _id: req.body?.offerId },
       {
@@ -429,6 +445,7 @@ export const getOffers = async (req: IRequest, res: Response) => {
       perPage = 10,
       brandId = null,
       outlets = [],
+      finder=false
     }: any = req.query;
     const { _id } = req.user;
 
@@ -436,6 +453,7 @@ export const getOffers = async (req: IRequest, res: Response) => {
 
     const filter = {
       user: _id,
+      ...(finder&&{totalOffersAvailable: { $gte: 1 }}),
       offerStatus: Number(offerStatus),
       ...(brandId && { brand: brandId }),
       ...(outlets?.length > 0 && { outlets: { $in: outlets } }),
@@ -463,7 +481,7 @@ export const getOffers = async (req: IRequest, res: Response) => {
         code: ERROR_CODES.NOT_FOUND,
       });
     }
-
+   
     return responseObj({
       resObj: res,
       type: "success",
@@ -635,20 +653,19 @@ export const deleteOffers = async (req: Request, res: Response) => {
     console.log("delete", ids);
     if (offerData.length > 0) {
       console.log("offerData", offerData);
-      const keys = offerData
-        .flatMap(
-          (offer) =>
-            offer.offerMedia?.map((file) => ({
-              Key: file.mediaUrl.split("/").slice(3).join("/"),
-            })) || []
-        )
-        .concat(
-          offerData[0].offerThumbnail !== ""
-            ? {
-                Key: offerData[0].offerThumbnail.split("/").slice(3).join("/"),
-              }
-            : []
-        );
+      const keys = offerData.flatMap(
+        (offer) =>
+          offer.offerMedia?.map((file) => ({
+            Key: file.mediaUrl.split("/").slice(3).join("/"),
+          })) || []
+      );
+      // .concat(
+      //   offerData[0].offerThumbnail !== ""
+      //     ? {
+      //         Key: offerData[0].offerThumbnail.split("/").slice(3).join("/"),
+      //       }
+      //     : []
+      // );
 
       console.log("deletedMediaStatus", keys);
       const deletedMediaStatus = await deleteS3Files(keys);
@@ -832,6 +849,9 @@ export const getOfferByOutletId = async (req: Request, res: Response) => {
     });
   }
 };
+
+
+
 
 // const userLatitude = 34.0522; // example latitude
 // const userLongitude = -118.2437; // example longitude

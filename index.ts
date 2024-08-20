@@ -25,6 +25,7 @@ import {
   getDaysBetweenTwoDate,
 } from "./helper/utils";
 import { oGenerate } from "./helper/oCalculator/v2";
+import { initOConfig, run } from "./scripts/initalOConfig";
 
 //end scripts
 
@@ -102,3 +103,6 @@ app.use(
 
 // const de = decryptText(Buffer.from(ex.toString()), "./keys/private.pem");
 // console.log("de ", de.toString());
+
+// initOConfig()
+run();

@@ -133,7 +133,7 @@ export const getAllListedBrands = async (req: IRequest, res: Response) => {
             {
               $lookup: {
                 from: "ownerships",
-                localField: "ownerships",
+                localField: "ownership",
                 foreignField: "_id",
                 as: "ownerships",
               },
@@ -628,82 +628,77 @@ export const getAllListedOffersByUser = async (
   }
 };
 
-
-export const getOfferDetails = async (
-  req: IRequest,
-  res: Response
-) => {
+export const getOfferDetails = async (req: IRequest, res: Response) => {
   const { page = 1, perPage = 5 }: any = req.query;
   const skip = (parseInt(page) - 1) * parseInt(perPage);
   console.log(req.user);
   try {
-    const offerDetails =await Listed.aggregate([
-  {
-    $match: {
-      offer: new mongoose.Types.ObjectId(req.params.id),
-    }
-  },
-  {
-    $lookup: {
-      from: "offers",
-      localField: "offer",
-      foreignField: "_id",
-      as: "offer"
-    }
-  },
-  {
-    $unwind: "$offer"
-  },
-  {
-    $lookup: {
-      from: "outlets",
-      localField: "offer.outlets",
-      foreignField: "_id",
-      as: "outlets"
-    }
-  },
-  {
-    $lookup: {
-      from: "offerdatas",
-      localField:
-        "offer.offerDataPoints.offerData",
-      foreignField: "_id",
-      as: "offerDataDetails"
-    }
-  },
-  {
-    $unwind: "$offerDataDetails"
-  },
-  {
-    $lookup: {
-      from: "ownerships",
-      localField: "ownerships",
-      foreignField: "_id",
-      as: "ownerships",
-      pipeline: [
-        {
-          $group: {
-            _id: null,
-            totalOEarned: {
-              $sum: "$oEarned"
+    const offerDetails = await Listed.aggregate([
+      {
+        $match: {
+          offer: new mongoose.Types.ObjectId(req.params.id),
+        },
+      },
+      {
+        $lookup: {
+          from: "offers",
+          localField: "offer",
+          foreignField: "_id",
+          as: "offer",
+        },
+      },
+      {
+        $unwind: "$offer",
+      },
+      {
+        $lookup: {
+          from: "outlets",
+          localField: "offer.outlets",
+          foreignField: "_id",
+          as: "outlets",
+        },
+      },
+      {
+        $lookup: {
+          from: "offerdatas",
+          localField: "offer.offerDataPoints.offerData",
+          foreignField: "_id",
+          as: "offerDataDetails",
+        },
+      },
+      {
+        $unwind: "$offerDataDetails",
+      },
+      {
+        $lookup: {
+          from: "ownerships",
+          localField: "ownerships",
+          foreignField: "_id",
+          as: "ownerships",
+          pipeline: [
+            {
+              $group: {
+                _id: null,
+                totalOEarned: {
+                  $sum: "$oEarned",
+                },
+                totalEarned: {
+                  $sum: "$spent",
+                },
+                totalCustomer: {
+                  $sum: {
+                    $size: "$owner",
+                  },
+                },
+                customers: {
+                  $push: "$owner.ownerId",
+                },
+              },
             },
-            totalEarned: {
-              $sum: "$spent"
-            },
-            totalCustomer: {
-              $sum: {
-                $size: "$owner"
-              }
-            },
-            customers: {
-              $push: "$owner.ownerId"
-            }
-          }
-        }
-      ]
-    }
-  }
-])
+          ],
+        },
+      },
+    ]);
     return responseObj({
       resObj: res,
       type: "success",
@@ -1468,7 +1463,7 @@ export const getCustomerDetailsBeforeVerify = async (
       {
         $lookup: {
           from: "ownerships",
-          localField: "ownerships",
+          localField: "ownership",
           foreignField: "_id",
           as: "ownership",
           pipeline: [
@@ -1543,7 +1538,7 @@ export const getCustomerDetailsBeforeVerify = async (
       });
     }
 
-    if (accessCodeObjectArr[0].status === OFFER_COLLECTION_EVENTS.DELIVERED) {
+    if (accessCodeObjectArr[0].status === OFFER_COLLECTION_EVENTS.VERIFIED) {
       return responseObj({
         resObj: res,
         type: "error",
@@ -1593,8 +1588,8 @@ export const verifyCollectedOffer = async (req: IRequest, res: Response) => {
         resObj: res,
         type: "error",
         statusCode: HTTP_STATUS_CODES.BAD_REQUEST,
-        msg: " not found",
-        error: " not found",
+        msg: "invalid ownership code",
+        error: "invalid ownership code",
         data: null,
         code: ERROR_CODES.NOT_FOUND,
       });
@@ -1619,7 +1614,7 @@ export const verifyCollectedOffer = async (req: IRequest, res: Response) => {
 
     const listedOffer = await Listed.findOne({
       user: req.user._id,
-      ownership: { $in: [ownership._id] },
+      ownerships: { $in: [ownership._id] },
     });
 
     if (!listedOffer) {
@@ -1627,8 +1622,8 @@ export const verifyCollectedOffer = async (req: IRequest, res: Response) => {
         resObj: res,
         type: "error",
         statusCode: HTTP_STATUS_CODES.BAD_REQUEST,
-        msg: " not found",
-        error: " not found",
+        msg: "owner is invalid",
+        error: "owner is invalid",
         data: null,
         code: ERROR_CODES.NOT_FOUND,
       });
@@ -1637,7 +1632,7 @@ export const verifyCollectedOffer = async (req: IRequest, res: Response) => {
     ownership.offer_access_codes = ownership.offer_access_codes.map(
       (code: any) => {
         if (code.code === id) {
-          code.status = OFFER_COLLECTION_EVENTS.DELIVERED;
+          code.status = OFFER_COLLECTION_EVENTS.VERIFIED;
         }
         return code;
       }
