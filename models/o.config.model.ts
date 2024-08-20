@@ -14,7 +14,7 @@ export interface IOConfig {
 }
 
 export const oConfigSchema = new mongoose.Schema<IOConfig>({
-  currency: Number,
+  currency: String,
   oAgainstPrice: Number,
   oNetworkValue: Number,
   volume: Number,

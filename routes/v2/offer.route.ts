@@ -184,9 +184,6 @@ router.put("/offers/:id", auth, offerValidationCh1, updateOffer);
  *               offerPriceAmount:
  *                 type: number
  *                 description: The offer price amount
- *               offerPriceMinAmount:
- *                 type: number
- *                 description: The minimum offer price amount
  *               offerPriceMinPercentage:
  *                 type: number
  *                 description: The minimum offer price percentage
@@ -236,9 +233,6 @@ router.put("/offers/:id", auth, offerValidationCh1, updateOffer);
  *               offerPriceAmount:
  *                 type: number
  *                 description: The offer price amount
- *               offerPriceMinAmount:
- *                 type: number
- *                 description: The minimum offer price amount
  *               offerPriceMinPercentage:
  *                 type: number
  *                 description: The minimum offer price percentage

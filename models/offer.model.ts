@@ -19,6 +19,9 @@ export interface IOffer extends Document {
   offerStatus: number; // 1:pending 2:listed, 3: pushed, 4: sold out, 5: expired
   checkpoint: number;
   offerType: string;
+  reSeller: any;
+  reSoldOfferId: any;
+  offerThumbnail: string;
 }
 
 const offerSchema: Schema = new Schema(
@@ -92,11 +95,26 @@ const offerSchema: Schema = new Schema(
       type: String,
       default: OFFER_TYPE.FRESH,
     },
+    reSeller: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    },
+    reSoldOfferId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Offer",
+
+    },
+    offerThumbnail: {
+      type: String,
+    },
   },
   { timestamps: true }
 );
 
-offerSchema.index({ offerName: 1, brand: 1, user: 1 }, { unique: true });
+offerSchema.index(
+  { offerName: 1, brand: 1, user: 1, reSeller: 1 },
+  { unique: true }
+);
 
 offerSchema.index({ offerName: "text", offerDescription: "text" });
 

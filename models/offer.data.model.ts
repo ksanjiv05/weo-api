@@ -8,7 +8,6 @@ import { OFFER_TYPE } from "../config/enums";
 export interface IOfferData extends Document {
   offerId: string;
   offerPriceAmount: number; // price of the offer
-  offerPriceMinAmount: number; // min negotiable amount
   offerPriceMinPercentage: number; // min percentage of offer price amount to calculate offer price min amount
 
   paymentType: string;
@@ -44,7 +43,6 @@ export interface IOfferData extends Document {
       mediaType: string;
     }
   ]; // images/video
-  offerThumbnail: string;
   checkpoint: number;
   type: string;
 }
@@ -56,9 +54,6 @@ const offerDataSchema: Schema = new Schema(
       ref: "Offer",
     },
     offerPriceAmount: {
-      type: Number,
-    },
-    offerPriceMinAmount: {
       type: Number,
     },
     offerPriceMinPercentage: {
@@ -147,7 +142,7 @@ const offerDataSchema: Schema = new Schema(
       ],
       default: [],
     },
-    offerThumbnail: { type: String, default: "" },
+    // offerThumbnail: { type: String, default: "" },
     status: {
       type: Number,
       enum: [0, 1, 2],

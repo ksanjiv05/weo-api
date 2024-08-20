@@ -51,10 +51,6 @@ export const offerDataValidateCheckPointE = [
     .isNumeric()
     .notEmpty()
     .withMessage("offerPriceAmount is required"),
-  body("offerPriceMinAmount")
-    .isNumeric()
-    .notEmpty()
-    .withMessage("offerPriceAmount is required"),
   body("paymentType")
     .isString()
     .notEmpty()

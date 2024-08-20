@@ -23,9 +23,6 @@ export const offerValidationCh2 = [
   body("offerPriceAmount")
     .isNumeric()
     .withMessage("offer price amount is required"),
-  body("offerPriceMinAmount")
-    .isNumeric()
-    .withMessage("offer price min amount is required"),
   body("offerPriceMinPercentage")
     .isNumeric()
     .withMessage("offer price min percentage is required"),

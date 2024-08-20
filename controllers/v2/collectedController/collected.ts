@@ -41,9 +41,6 @@ import NegotiationAttempt from "../../../models/negotiationAttempt.model";
 
 //
 export const collectOffer = async (req: IRequest, res: Response) => {
-  // offerPriceAmount: number; // price of the offer
-  // offerPriceMinAmount: number; // min negotiable amount
-
   const {
     id,
     noOfOffers = 1,
@@ -55,16 +52,19 @@ export const collectOffer = async (req: IRequest, res: Response) => {
     noOfInstallments = 1,
     negotiationAttemptInstance = null,
     outletId = null,
+    offerType = OFFER_TYPE.FRESH,
   } = req.body;
 
   const session = await Collected.startSession();
   session.startTransaction();
   try {
+    offerStatusOffed();
     const offer = await Offer.findOne({
       _id: id,
       offerStatus: OFFER_STATUS.LIVE,
       totalOffersAvailable: { $gte: noOfOffers },
     });
+    console.log("offer which going to collect ", offer);
     const remainingAttempts = negotiationAttemptInstance
       ? negotiationConfig.maxAttempts - negotiationAttemptInstance?.noOfAttempts
       : negotiationConfig.maxAttempts;
@@ -96,20 +96,7 @@ export const collectOffer = async (req: IRequest, res: Response) => {
     const offerDataPoint: IOfferData | null = await OfferData.findOne({
       _id: offerDataId,
       minimumOfferUnitItem: { $lte: quantity },
-      // $and: [
-      //   {
-      //     offerPriceMinAmount: { $gte: amount },
-      //   },
-      //   {
-      //     minimumOfferUnitItem: { $gte: quantity },
-      //   },
-      // ],
     });
-    console.log(
-      "offerDataPoint",
-      offerDataPoint?.minimumOfferUnitItem,
-      quantity
-    );
 
     if (!offerDataPoint) {
       return responseObj({
@@ -141,19 +128,6 @@ export const collectOffer = async (req: IRequest, res: Response) => {
 
     const serviceDays = getDaysBetweenTwoDate(serviceStartDate, serviceEndDate);
 
-    console.log("________________________");
-    console.log("actual  value", {
-      offerValueAfterDiscount,
-      serviceDays,
-    });
-
-    console.log("_________your_______________");
-
-    console.log({
-      amount,
-      duration,
-    });
-
     if (serviceDays >= duration && offerValueAfterDiscount >= amount) {
       return responseObj({
         resObj: res,
@@ -168,17 +142,8 @@ export const collectOffer = async (req: IRequest, res: Response) => {
         code: ERROR_CODES.FIELD_VALIDATION_ERR,
       });
     }
-    // if (!(offerDataPoint.offerPriceMinAmount * noOfOffers > amount)) {
-    //   return responseObj({
-    //     resObj: res,
-    //     type: "error",
-    //     statusCode: HTTP_STATUS_CODES.BAD_REQUEST,
-    //     msg: "Offer purposed amount is declined",
-    //     error: "Offer purposed amount is declined",
-    //     data: null,
-    //     code: ERROR_CODES.FIELD_VALIDATION_ERR,
-    //   });
-    // }
+
+    //TODO: here is the logic to check if the offer is already collected and resold
 
     const newOfferCollected = new Collected({
       offer: id,
@@ -186,7 +151,7 @@ export const collectOffer = async (req: IRequest, res: Response) => {
       user: req.user._id,
       offerDataId: offerDataId,
       offerName: offer.offerName,
-      offerThumbnail: offerDataPoint.offerThumbnail,
+      offerThumbnail: offer.offerThumbnail,
       outlet: outletId,
     });
 
@@ -271,7 +236,10 @@ export const collectOffer = async (req: IRequest, res: Response) => {
       amount: amount * noOfOffers,
       offer: id,
       brand: offer.brand,
-      seller: { id: offer.user, oQuantity: toDistribute / 2 },
+      seller: {
+        id: offerType === OFFER_TYPE.RESELL ? offer.reSeller : offer.user,
+        oQuantity: toDistribute / 2,
+      },
       buyer: { id: req.user._id, oQuantity: toDistribute / 2 },
       discount: offerDataPoint.offerPriceMinPercentage,
       quantity: noOfOffers,
@@ -284,7 +252,7 @@ export const collectOffer = async (req: IRequest, res: Response) => {
       toPlatformCutOffRate: oNetworkConfig.toPlatformCutOffRate,
     });
 
-    const newOwnerShip = new Ownership({
+    let newOwnerShip = new Ownership({
       owner: [
         {
           ownerId: req.user._id,
@@ -311,48 +279,128 @@ export const collectOffer = async (req: IRequest, res: Response) => {
       oEarned: toDistribute / 2,
     });
 
-    await listedModel.updateOne(
-      { offer: id },
-      {
-        // $push: {
-        //   ownership: newOwnerShip._id,
-        // },
-        $addToSet: {
-          ownerships: newOwnerShip._id,
-        },
-      },
-      {
-        session,
+    if (offerType === OFFER_TYPE.RESELL) {
+      // const originalCreatorListed = await listedModel.findOne({
+      //   offer:offer.reSoldOfferId
+      // })
+
+      // originalCreatorListed?.ownerships
+      const collectObj = await Collected.findOne({
+        offer: offer.reSoldOfferId,
+        user: offer.reSeller,
+      }).select("_id");
+
+      const ownershipObj = await Ownership.findOne({
+        _id: collectObj?.ownership,
+      });
+      if (!ownershipObj) {
+        return responseObj({
+          resObj: res,
+          type: "error",
+          statusCode: HTTP_STATUS_CODES.BAD_REQUEST,
+          msg: "you are not owner of this offer",
+          error: "you are not owner of this offer",
+          data: null,
+          code: ERROR_CODES.FIELD_VALIDATION_ERR,
+        });
       }
-    );
 
-    newOfferCollected.ownerships = newOwnerShip._id;
-    await newOwnerShip.save({ session });
-    console.log("--0--");
-    console.log("--1--");
+      const owners = ownershipObj?.owner.map((owner: any) => {
+        owner.isCurrentOwner = false;
+        return owner;
+      });
+      ownershipObj.owner = [
+        ...owners,
+        {
+          ownerId: req.user._id,
+          isCurrentOwner: true,
+        },
+      ];
+      await ownershipObj.save({ session });
 
-    await wallet.save({ session });
-    console.log("--2--");
+      await listedModel.updateOne(
+        { offer: id },
+        {
+          $addToSet: {
+            ownerships: newOwnerShip._id,
+          },
+        },
+        {
+          session,
+        }
+      );
 
-    await newOfferCollected.save({ session });
-    console.log("--3--");
-    await newOLog.save({ session });
-    console.log("--4--");
-    await offer.save({ session });
-    console.log("--5 --", offer);
-    debugger;
-    await session.commitTransaction();
-    await session.endSession();
-    console.log("--6--");
-    return responseObj({
-      resObj: res,
-      type: "success",
-      statusCode: HTTP_STATUS_CODES.CREATED,
-      msg: "Offer Collected",
-      error: null,
-      data: newOfferCollected,
-      code: ERROR_CODES.SUCCESS,
-    });
+      newOfferCollected.ownership = newOwnerShip._id;
+      await newOwnerShip.save({ session });
+      console.log("--0--");
+      console.log("--1--");
+
+      await wallet.save({ session });
+      console.log("--2--");
+
+      await newOfferCollected.save({ session });
+      console.log("--3--");
+      await newOLog.save({ session });
+      console.log("--4--");
+      await offer.save({ session });
+      console.log("--5 --", offer);
+      debugger;
+      await session.commitTransaction();
+      await session.endSession();
+      console.log("--6--");
+      return responseObj({
+        resObj: res,
+        type: "success",
+        statusCode: HTTP_STATUS_CODES.CREATED,
+        msg: "Offer Collected",
+        error: null,
+        data: newOfferCollected,
+        code: ERROR_CODES.SUCCESS,
+      });
+    } else {
+      await listedModel.updateOne(
+        { offer: id },
+        {
+          // $push: {
+          //   ownership: newOwnerShip._id,
+          // },
+          $addToSet: {
+            ownerships: newOwnerShip._id,
+          },
+        },
+        {
+          session,
+        }
+      );
+
+      newOfferCollected.ownership = newOwnerShip._id;
+      await newOwnerShip.save({ session });
+      console.log("--0--");
+      console.log("--1--");
+
+      await wallet.save({ session });
+      console.log("--2--");
+
+      await newOfferCollected.save({ session });
+      console.log("--3--");
+      await newOLog.save({ session });
+      console.log("--4--");
+      await offer.save({ session });
+      console.log("--5 --", offer);
+      debugger;
+      await session.commitTransaction();
+      await session.endSession();
+      console.log("--6--");
+      return responseObj({
+        resObj: res,
+        type: "success",
+        statusCode: HTTP_STATUS_CODES.CREATED,
+        msg: "Offer Collected",
+        error: null,
+        data: newOfferCollected,
+        code: ERROR_CODES.SUCCESS,
+      });
+    }
   } catch (error: any) {
     debugger;
     await session.abortTransaction();
@@ -474,7 +522,7 @@ export const getCollectedOffers = async (req: IRequest, res: Response) => {
       {
         $lookup: {
           from: "ownerships",
-          localField: "ownerships",
+          localField: "ownership",
           foreignField: "_id",
           as: "ownerships",
           // pipeline: [
@@ -503,12 +551,6 @@ export const getCollectedOffers = async (req: IRequest, res: Response) => {
           },
         },
       },
-      // {
-      //   $project: {
-      //     brands: 0,
-      //     ownerships: 0,
-      //   },
-      // },
       {
         $facet: {
           collectedOffers: [
@@ -621,6 +663,8 @@ export const getCollectedOffers = async (req: IRequest, res: Response) => {
   }
 };
 
+
+//TODO : offer discription
 export const getCollectedOfferDetails = async (
   req: IRequest,
   res: Response
@@ -651,7 +695,7 @@ export const getCollectedOfferDetails = async (
       {
         $lookup: {
           from: "ownerships",
-          localField: "ownerships",
+          localField: "ownership",
           foreignField: "_id",
           as: "ownerships",
           pipeline: [
@@ -888,7 +932,7 @@ export const getCollectedOfferQr = async (req: IRequest, res: Response) => {
       });
     }
 
-    const status = collectedOffer?.ownerships?.offer_access_codes.find(
+    const status = collectedOffer?.ownership?.offer_access_codes.find(
       (code: any) =>
         code.code === id && code.status === OFFER_COLLECTION_EVENTS.COLLECTED
     );
@@ -936,12 +980,13 @@ export const getCollectedOfferQr = async (req: IRequest, res: Response) => {
   }
 };
 
-//TODO : not completed yet
 export const reSellCollectedOffer = async (req: IRequest, res: Response) => {
+  const session = await Collected.startSession();
+  session.startTransaction();
   try {
     const id = req.params.id;
-    const { offerPriceAmount, offerPriceMinAmount, offerPriceMinPercentage } =
-      req.body;
+    console.log("id", id, req.user._id);
+    const { offerPriceAmount, offerPriceMinPercentage } = req.body;
     const collectedOffer = await Collected.findOne({
       _id: id,
       user: req.user._id,
@@ -957,11 +1002,19 @@ export const reSellCollectedOffer = async (req: IRequest, res: Response) => {
         code: ERROR_CODES.NOT_FOUND,
       });
     }
-    const status = collectedOffer?.ownerships?.offer_access_codes.find(
-      (code: any) =>
-        code.code === id && code.status === OFFER_COLLECTION_EVENTS.COLLECTED
-    );
-    if (!status) {
+    //TODO : if service date is started then offer can not be resold
+    // const status = collectedOffer?.ownership?.offer_access_codes.find(
+    //   (code: any) =>
+    //     code.code === id && code.status === OFFER_COLLECTION_EVENTS.COLLECTED
+    // );
+    const offerData = await OfferData.findOne({
+      _id: collectedOffer.offerDataId,
+      serviceStartDate: {
+        $gt: new Date(),
+      },
+    });
+
+    if (!offerData) {
       return responseObj({
         resObj: res,
         type: "error",
@@ -973,11 +1026,8 @@ export const reSellCollectedOffer = async (req: IRequest, res: Response) => {
       });
     }
 
-    const offerDataId = collectedOffer?.offerDataId;
     const offer = collectedOffer.offer;
-
-    const offerData = await OfferData.findById(offerDataId);
-    const offerObj = await Offer.findById(offer);
+    const offerObj = await Offer.findOne({ _id: offer });
     if (!offerData || !offerObj) {
       return responseObj({
         resObj: res,
@@ -990,37 +1040,60 @@ export const reSellCollectedOffer = async (req: IRequest, res: Response) => {
       });
     }
 
-    delete offerData._id;
+    const offerDataJson = offerData.toJSON();
+    delete offerDataJson._id;
     const newOfferData = new OfferData({
-      ...offerData,
+      ...offerDataJson,
       offerPriceAmount,
-      offerPriceMinAmount,
       offerPriceMinPercentage,
       type: OFFER_TYPE.RESELL,
     });
 
-    await newOfferData.save();
-
-    delete offerObj._id;
+    await newOfferData.save({ session });
+    const offerId = offerObj._id;
+    const offerObjJson = offerObj.toJSON();
+    delete offerObjJson._id;
 
     const newOffer = new Offer({
-      ...offerObj,
-      user: req.user._id,
+      ...offerObjJson,
       offerType: OFFER_TYPE.RESELL,
+      reSeller: req.user._id,
+      totalOffersAvailable: 1,
+      totalOfferSold: 0,
+      offerStatus: OFFER_STATUS.LIVE,
+      reSoldOfferId: offerId,
+      offerDataPoints: [
+        {
+          offerData: newOfferData._id,
+        },
+      ],
     });
 
-    await newOffer.save();
+    await newOffer.save({ session });
 
+    const newOfferListed = new listedModel({
+      user: req.user._id,
+      offer: offer._id,
+      brand: offer.brand,
+      ownerships: [],
+    });
+
+    await newOfferListed.save({ session });
+
+    await session.commitTransaction();
+    await session.endSession();
     return responseObj({
       resObj: res,
       type: "success",
       statusCode: HTTP_STATUS_CODES.SUCCESS,
-      msg: "Collected Offer Successfully added for ",
+      msg: "Collected Offer Successfully added for resell ",
       error: null,
       data: null,
       code: ERROR_CODES.SUCCESS,
     });
   } catch (error: any) {
+    await session.abortTransaction();
+    await session.endSession();
     logging.error("Resell Collected Offer", error.message, error);
     return responseObj({
       resObj: res,
@@ -1031,5 +1104,16 @@ export const reSellCollectedOffer = async (req: IRequest, res: Response) => {
       data: null,
       code: ERROR_CODES.SERVER_ERR,
     });
+  }
+};
+
+const offerStatusOffed = async () => {
+  try {
+    await Offer.updateMany(
+      { totalOffersAvailable: 0 },
+      { offerStatus: OFFER_STATUS.SOLD }
+    );
+  } catch (error) {
+    console.log("offer status update failed", error);
   }
 };
