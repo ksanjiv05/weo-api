@@ -9,6 +9,7 @@ import { ERROR_CODES } from "../../../config/errorCode";
 import { IRequest } from "../../../interfaces/IRequest";
 import { addWallet } from "../../../helper/user";
 import { IWallet } from "../../../models/wallet.model";
+import mongoose from "mongoose";
 
 export const register = async (req: Request, res: Response) => {
   try {
@@ -342,7 +343,7 @@ export const getUserProfile = async (req: IRequest, res: Response) => {
       return responseObj({
         statusCode: HTTP_STATUS_CODES.BAD_REQUEST,
         type: "error",
-        msg: "please provide a valid user ID",
+        msg: "please provide a valid user firebase ID",
         error: null,
         resObj: res,
         data: null,
@@ -357,7 +358,27 @@ export const getUserProfile = async (req: IRequest, res: Response) => {
         .select("currency");
       User.updateOne({ uid }, { $set: { lastActive: new Date() } });
     } else {
-      user = await User.findOne({ uid });
+      user = await User.aggregate([
+        {
+          $match: {
+            uid,
+          },
+        },
+        {
+          $lookup: {
+            from: "brands",
+            localField: "_id",
+            foreignField: "user",
+            as: "brands",
+          },
+        },
+        {
+          $project: {
+            device: 0,
+            bankAccounts: 0,
+          },
+        },
+      ]);
     }
     return responseObj({
       statusCode: HTTP_STATUS_CODES.SUCCESS,
@@ -370,6 +391,73 @@ export const getUserProfile = async (req: IRequest, res: Response) => {
     });
   } catch (error: any) {
     logging.error("Get User", "unable to get user profile", error);
+    return responseObj({
+      resObj: res,
+      type: "error",
+      statusCode: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR,
+      msg: "unable to get user profile",
+      error: error.message ? error.message : "internal server error",
+      data: null,
+      code: ERROR_CODES.SERVER_ERR,
+    });
+  }
+};
+
+export const getUserPublicProfile = async (req: IRequest, res: Response) => {
+  try {
+    // const { uid = "" } = req.body;
+    const { id = "" } = req.params;
+    if (id == "")
+      return responseObj({
+        statusCode: HTTP_STATUS_CODES.BAD_REQUEST,
+        type: "error",
+        msg: "please provide a valid user ID",
+        error: null,
+        resObj: res,
+        data: null,
+        code: ERROR_CODES.FIELD_VALIDATION_REQUIRED_ERR,
+      });
+    const user = await User.aggregate([
+      {
+        $match: {
+          _id: new mongoose.Types.ObjectId(id),
+        },
+      },
+      {
+        $lookup: {
+          from: "brands",
+          localField: "_id",
+          foreignField: "user",
+          as: "brands",
+        },
+      },
+      {
+        $lookup: {
+          from: "offers",
+          localField: "_id",
+          foreignField: "user",
+          as: "offers",
+        },
+      },
+      {
+        $project: {
+          device: 0,
+          bankAccounts: 0,
+        },
+      },
+    ]);
+
+    return responseObj({
+      statusCode: HTTP_STATUS_CODES.SUCCESS,
+      type: "success",
+      msg: "your public profile",
+      error: null,
+      resObj: res,
+      data: user,
+      code: ERROR_CODES.SUCCESS,
+    });
+  } catch (error: any) {
+    logging.error("Get Public User", "unable to get user profile", error);
     return responseObj({
       resObj: res,
       type: "error",

@@ -1302,12 +1302,13 @@ export const getCustomersByOffer = async (req: IRequest, res: Response) => {
         code: ERROR_CODES.FIELD_VALIDATION_REQUIRED_ERR,
       });
     }
-    const offer = await offerModel.aggregate([
+    const lists = await Listed.aggregate([
       {
         $match: {
           offer: new mongoose.Types.ObjectId(offerId),
         },
       },
+
       {
         $lookup: {
           from: "ownerships",
@@ -1337,7 +1338,25 @@ export const getCustomersByOffer = async (req: IRequest, res: Response) => {
             {
               $unwind: "$owner",
             },
-
+            // {
+            //   $unwind: "$offer_access_codes"
+            // },
+            // {
+            //   $addFields: {
+            //     status: {
+            //       $cond: {
+            //         if: {
+            //           $eq: [
+            //             "$offer_access_codes.status",
+            //             "delivered"
+            //           ]
+            //         },
+            //         then: "delivered",
+            //         else: "collected"
+            //       }
+            //     }
+            //   }
+            // },
             {
               $addFields: {
                 status: {
@@ -1350,7 +1369,10 @@ export const getCustomersByOffer = async (req: IRequest, res: Response) => {
                               input: "$offer_access_codes",
                               as: "item",
                               cond: {
-                                $eq: ["$$item.status", "delivered"],
+                                $eq: [
+                                  "$$item.status",
+                                  OFFER_COLLECTION_EVENTS.VERIFIED,
+                                ],
                               },
                             },
                           },
@@ -1358,8 +1380,8 @@ export const getCustomersByOffer = async (req: IRequest, res: Response) => {
                         1,
                       ],
                     },
-                    "delivered",
-                    "collected",
+                    OFFER_COLLECTION_EVENTS.VERIFIED,
+                    OFFER_COLLECTION_EVENTS.COLLECTED,
                   ],
                 },
               },
@@ -1369,7 +1391,28 @@ export const getCustomersByOffer = async (req: IRequest, res: Response) => {
       },
       {
         $facet: {
-          customers: [],
+          customers: [
+            {
+              $project: {
+                ownerships: 1,
+              },
+            },
+          ],
+          offer: [
+            {
+              $group: {
+                _id: "$offer",
+              },
+            },
+            {
+              $lookup: {
+                from: "offers",
+                localField: "_id",
+                foreignField: "_id",
+                as: "offers",
+              },
+            },
+          ],
           stats: [
             {
               $unwind: "$ownerships",
@@ -1380,17 +1423,38 @@ export const getCustomersByOffer = async (req: IRequest, res: Response) => {
             {
               $match: {
                 "ownerships.offer_access_codes.status": {
-                  $in: ["delivered", "collected"],
+                  $in: [
+                    OFFER_COLLECTION_EVENTS.VERIFIED,
+                    OFFER_COLLECTION_EVENTS.COLLECTED,
+                  ],
                 },
               },
             },
             {
               $group: {
                 _id: "$ownerships.offer_access_codes.status",
-                count: { $sum: 1 },
+
+                count: {
+                  $sum: 1,
+                },
               },
             },
           ],
+        },
+      },
+      {
+        $project: {
+          customers: {
+            $first: "$customers.ownerships",
+          },
+          statsEnum: [
+            { _id: 3, value: "verified" },
+            { _id: 2, value: "collected" },
+          ],
+          stats: 1,
+          offer: {
+            $first: "$offer.offers",
+          },
         },
       },
     ]);
@@ -1401,9 +1465,7 @@ export const getCustomersByOffer = async (req: IRequest, res: Response) => {
       statusCode: HTTP_STATUS_CODES.SUCCESS,
       msg: "success",
       error: null,
-      data: {
-        ...offer,
-      },
+      data: lists.length > 0 ? lists[0] : null,
       code: ERROR_CODES.SUCCESS,
     });
   } catch (error: any) {

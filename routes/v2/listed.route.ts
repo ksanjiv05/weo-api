@@ -10,6 +10,7 @@ import {
   getAllListedOffersByUser,
   getCompletedOffersByBrand,
   getCustomerDetailsBeforeVerify,
+  getCustomersByOffer,
   getListedOfferDetails,
   getOfferDetails,
   getPendingOffersByBrand,
@@ -233,5 +234,8 @@ router.post(
   auth,
   verifyCollectedOffer
 );
+
+router.get("/listed/offers/:id/customers", auth, getCustomersByOffer);
+router.get("/listed/offers/:id/customers/:cid", auth, getCustomersByOffer);
 
 export default router;

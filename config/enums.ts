@@ -25,12 +25,12 @@ export enum O_EVENTS {
 }
 
 export enum OFFER_COLLECTION_EVENTS {
-  COLLECTED = 1,
-  RESOLD = 2,
-  EXPIRED = 3,
-  // DELIVERED = "delivered",
-  VERIFIED = 4,
-  COMPLETED = 5,
+  PENDING = 1,
+  COLLECTED = 2,
+  VERIFIED = 3,
+  RESOLD = 4,
+  EXPIRED = 5,
+  COMPLETED = 6,
 }
 export enum OFFER_TYPE {
   FRESH = "fresh",
