@@ -16,16 +16,7 @@ import path from "path";
 import { swaggerOptions, swaggerOptionsV2 } from "./config/swagger";
 import loggingMiddleware from "./middleware/logger";
 import routerV2 from "./routes/v2";
-import { createSuperAdmin } from "./scripts/createAdmin";
 import webhookRouterV2 from "./routes/v2/webhook";
-import {
-  decryptText,
-  encryptText,
-  generateKeyPair,
-  getDaysBetweenTwoDate,
-} from "./helper/utils";
-import { oGenerate } from "./helper/oCalculator/v2";
-import { initOConfig, run } from "./scripts/initalOConfig";
 
 //end scripts
 
@@ -105,4 +96,3 @@ app.use(
 // console.log("de ", de.toString());
 
 // initOConfig()
-run();

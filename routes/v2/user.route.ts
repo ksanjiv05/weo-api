@@ -10,6 +10,7 @@ import { auth } from "../../middleware/auth";
 import {
   deleteUserProfile,
   getUserProfile,
+  getUserPublicProfile,
   getUsers,
   isExistingUser,
   isUserNameAvailable,
@@ -434,6 +435,8 @@ const router = express.Router();
 
 router.post("/users", auth, userDataValidateCheckPointA, register);
 router.get("/users", auth, getUserProfile);
+router.get("/users/public/:id", getUserPublicProfile);
+
 router.get("/users/all", auth, getUsers);
 router.get("/users/exist", isExistingUser);
 router.get("/users/exist/:creatorName", auth, isUserNameAvailable);
