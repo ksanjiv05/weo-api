@@ -897,6 +897,11 @@ export const getPendingOffersByBrand = async (req: IRequest, res: Response) => {
                 as: "customer",
                 pipeline: [
                   {
+                    $match: {
+                      "offer_access_codes.status": 2,
+                    },
+                  },
+                  {
                     $project: {
                       _id: 1,
                       name: 1,
@@ -1269,9 +1274,7 @@ export const getCompletedOffersByBrand = async (
       statusCode: HTTP_STATUS_CODES.SUCCESS,
       msg: "success",
       error: null,
-      data: {
-        ...completed,
-      },
+      data: completed.length > 0 ? completed[0] : null,
       code: ERROR_CODES.SUCCESS,
     });
   } catch (error: any) {
