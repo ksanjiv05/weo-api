@@ -5505,3 +5505,6 @@ info: POST /api/v1/brands 200 295ms
 {"level":"error","message":"GET /api/v1/get_all_campaign 429 3ms","timestamp":"2024-08-22T06:26:48.290Z"}
 {"level":"error","message":"GET /api/v1/report_prospects_wise 429 2ms","timestamp":"2024-08-22T06:26:51.492Z"}
 {"level":"error","message":"GET /api/v1/get_all_logs 429 1ms","timestamp":"2024-08-22T06:26:51.494Z"}
+{"level":"info","message":"GET /api/v2/collects 200 5165ms","timestamp":"2024-08-22T11:45:37.136Z"}
+{"level":"error","message":"GET /favicon.ico 404 5ms","timestamp":"2024-08-22T11:45:38.026Z"}
+{"level":"info","message":"GET /api/v2/collects?isReSellable=true 200 319ms","timestamp":"2024-08-22T11:46:52.559Z"}

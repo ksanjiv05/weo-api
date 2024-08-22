@@ -490,10 +490,176 @@ export const getNumberOfAttempts = async (req: IRequest, res: Response) => {
 
 export const getCollectedOffers = async (req: IRequest, res: Response) => {
   try {
+    const { isReSellable = false } = req.query;
+    // const collectedOffers = await Collected.aggregate([
+    //   {
+    //     $match: {
+    //       user: new mongoose.Types.ObjectId(req.user._id),
+    //     },
+    //   },
+    //   {
+    //     $lookup: {
+    //       from: "brands",
+    //       localField: "brand",
+    //       foreignField: "_id",
+    //       as: "brands",
+    //       pipeline: [
+    //         {
+    //           $project: {
+    //             brandName: 1,
+    //             brandLogo: 1,
+    //           },
+    //         },
+    //       ],
+    //     },
+    //   },
+    //   {
+    //     $addFields: {
+    //       brandDetails: {
+    //         $first: "$brands",
+    //       },
+    //     },
+    //   },
+    //   {
+    //     $lookup: {
+    //       from: "ownerships",
+    //       localField: "ownership",
+    //       foreignField: "_id",
+    //       as: "ownerships",
+    //       // pipeline: [
+    //       //   {
+    //       //     $lookup: {
+    //       //       from: "ologs",
+    //       //       localField: "transaction",
+    //       //       foreignField: "_id",
+    //       //       as: "logs",
+    //       //     },
+    //       //   },
+    //       //   {
+    //       //     $addFields: {
+    //       //       earndO: {
+    //       //         $first: "$logs.buyer.oQuantity",
+    //       //       },
+    //       //     },
+    //       //   },
+    //       // ],
+    //     },
+    //   },
+    //   {
+    //     $addFields: {
+    //       ownershipDetails: {
+    //         $first: "$ownerships",
+    //       },
+    //     },
+    //   },
+    //   {
+    //     $facet: {
+    //       collectedOffers: [
+    //         {
+    //           $project: {
+    //             brands: 0,
+    //             ownerships: 0,
+    //           },
+    //         },
+    //       ],
+    //       totalOfferCount: [
+    //         {
+    //           $count: "offer",
+    //         },
+    //       ],
+    //       totalInProgress: [
+    //         {
+    //           $unwind: "$ownerships",
+    //         },
+    //         {
+    //           $unwind: "$ownerships.offer_access_codes",
+    //         },
+    //         {
+    //           $match: {
+    //             "ownerships.offer_access_codes.status": "collected",
+    //           },
+    //         },
+    //         {
+    //           $count: "totalInProgress",
+    //         },
+    //       ],
+    //       totalOEarned: [
+    //         {
+    //           $unwind: "$ownerships",
+    //         },
+    //         {
+    //           $group: {
+    //             _id: null,
+    //             total: {
+    //               $sum: "$ownerships.oEarned",
+    //             },
+    //           },
+    //         },
+    //         {
+    //           $project: {
+    //             _id: 0,
+    //             totalOEarned: "$total",
+    //           },
+    //         },
+    //       ],
+    //       totalSpent: [
+    //         {
+    //           $unwind: "$ownerships",
+    //         },
+    //         {
+    //           $group: {
+    //             _id: null,
+    //             total: {
+    //               $sum: "$ownerships.spent",
+    //             },
+    //           },
+    //         },
+    //         {
+    //           $project: {
+    //             _id: 0,
+    //             total: "$total",
+    //           },
+    //         },
+    //       ],
+    //     },
+    //   },
+    //   {
+    //     $project: {
+    //       collectedOffers: 1,
+    //       totalOfferCount: {
+    //         $first: "$totalOfferCount.offer",
+    //       },
+    //       totalInProgress: {
+    //         $first: "$totalInProgress.totalInProgress",
+    //       },
+    //       totalOEarned: {
+    //         $first: "$totalOEarned.totalOEarned",
+    //       },
+    //       totalSpent: {
+    //         $first: "$totalSpent.total",
+    //       },
+    //     },
+    //   },
+    // ]);
+
+    const reSellableFilter = [
+      {
+        $match: {
+          "ownership.offer_access_codes.status":
+            OFFER_COLLECTION_EVENTS.COLLECTED,
+        },
+      },
+      {
+        $match: {
+          reSellable: true,
+        },
+      },
+    ];
+
     const collectedOffers = await Collected.aggregate([
       {
         $match: {
-          user: new mongoose.Types.ObjectId(req.user._id),
+          user: new mongoose.Types.ObjectId("65efd60968853585bbb96322"),
         },
       },
       {
@@ -524,43 +690,59 @@ export const getCollectedOffers = async (req: IRequest, res: Response) => {
           from: "ownerships",
           localField: "ownership",
           foreignField: "_id",
-          as: "ownerships",
-          // pipeline: [
-          //   {
-          //     $lookup: {
-          //       from: "ologs",
-          //       localField: "transaction",
-          //       foreignField: "_id",
-          //       as: "logs",
-          //     },
-          //   },
-          //   {
-          //     $addFields: {
-          //       earndO: {
-          //         $first: "$logs.buyer.oQuantity",
-          //       },
-          //     },
-          //   },
-          // ],
+          as: "ownership",
+        },
+      },
+      {
+        $lookup: {
+          from: "offerdatas",
+          localField: "offerDataId",
+          foreignField: "_id",
+          as: "offerDataDetils",
+          pipeline: [
+            {
+              $project: {
+                serviceStartDate: 1,
+                serviceStartTime: 1,
+              },
+            },
+          ],
         },
       },
       {
         $addFields: {
-          ownershipDetails: {
-            $first: "$ownerships",
+          offerDataDetils: {
+            $first: "$offerDataDetils",
+          },
+        },
+      },
+      {
+        $addFields: {
+          ownership: {
+            $first: "$ownership",
+          },
+        },
+      },
+      {
+        $addFields: {
+          reSellable: {
+            $cond: [
+              {
+                $and: [
+                  {
+                    $gt: ["$offerDataDetils.serviceStartDate", new Date()],
+                  },
+                ],
+              },
+              true,
+              false,
+            ],
           },
         },
       },
       {
         $facet: {
-          collectedOffers: [
-            {
-              $project: {
-                brands: 0,
-                ownerships: 0,
-              },
-            },
-          ],
+          collectedOffers: [...(isReSellable ? reSellableFilter : [])],
           totalOfferCount: [
             {
               $count: "offer",
@@ -568,14 +750,12 @@ export const getCollectedOffers = async (req: IRequest, res: Response) => {
           ],
           totalInProgress: [
             {
-              $unwind: "$ownerships",
-            },
-            {
-              $unwind: "$ownerships.offer_access_codes",
+              $unwind: "$ownership.offer_access_codes",
             },
             {
               $match: {
-                "ownerships.offer_access_codes.status": "collected",
+                "ownership.offer_access_codes.status":
+                  OFFER_COLLECTION_EVENTS.COLLECTED,
               },
             },
             {
@@ -584,13 +764,10 @@ export const getCollectedOffers = async (req: IRequest, res: Response) => {
           ],
           totalOEarned: [
             {
-              $unwind: "$ownerships",
-            },
-            {
               $group: {
                 _id: null,
                 total: {
-                  $sum: "$ownerships.oEarned",
+                  $sum: "$ownership.oEarned",
                 },
               },
             },
@@ -603,13 +780,13 @@ export const getCollectedOffers = async (req: IRequest, res: Response) => {
           ],
           totalSpent: [
             {
-              $unwind: "$ownerships",
+              $unwind: "$ownership",
             },
             {
               $group: {
                 _id: null,
                 total: {
-                  $sum: "$ownerships.spent",
+                  $sum: "$ownership.spent",
                 },
               },
             },
@@ -662,7 +839,6 @@ export const getCollectedOffers = async (req: IRequest, res: Response) => {
     });
   }
 };
-
 
 //TODO : offer discription
 export const getCollectedOfferDetails = async (
