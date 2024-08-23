@@ -123,9 +123,10 @@ async function handlePayment(paymentLogPayload: any) {
     await newTransaction.save();
     if (isPaymentSuccess && notes && notes.type === ORDER_TYPE.TOPUP) {
       walletTopUp({
-        amount: amount/100,
+        amount: amount / 100,
         user: notes?.user,
       });
+      //TODO : distribute o reward
     }
     return true;
   } catch (error) {

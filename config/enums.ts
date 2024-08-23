@@ -21,7 +21,11 @@ export enum ORDER_TYPE {
 }
 
 export enum O_EVENTS {
-  COLLECTED = "collected",
+  COLLECTED = 1,
+  SOLD = 2,
+  TOP_UP = 3,
+  PURCHASE = 4,
+  NEGOTIATION_ATTEMPT = 5,
 }
 
 export enum OFFER_COLLECTION_EVENTS {

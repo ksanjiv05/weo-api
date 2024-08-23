@@ -8,6 +8,7 @@ export interface IWallet extends Document {
   balance: number;
   oBalance: number;
   currency: string;
+  oRate: number;
   verifyString?: string;
 }
 
@@ -22,7 +23,8 @@ const walletSchema: Schema = new Schema(
     name: { type: String, required: true },
     balance: { type: Number, required: true },
     currency: { type: String, required: true },
-    oBalance: { type: Number, default:0},
+    oBalance: { type: Number, default: 0 },
+    oRate: { type: Number, default: 100 },
     verifyString: { type: String, required: true },
   },
   {

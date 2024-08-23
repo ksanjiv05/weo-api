@@ -37,9 +37,6 @@ import Ownership from "../../../models/ownership.model";
 import NegotiationAttempt from "../../../models/negotiationAttempt.model";
 
 // define function for create Collected
-//TODO: created Collected logic not implemented yet
-
-//
 export const collectOffer = async (req: IRequest, res: Response) => {
   const {
     id,
@@ -143,8 +140,6 @@ export const collectOffer = async (req: IRequest, res: Response) => {
       });
     }
 
-    //TODO: here is the logic to check if the offer is already collected and resold
-
     const newOfferCollected = new Collected({
       offer: id,
       brand: offer.brand,
@@ -232,15 +227,20 @@ export const collectOffer = async (req: IRequest, res: Response) => {
     wallet.oBalance = wallet.oBalance + toDistribute / 2 - deductOBalance;
 
     const newOLog = new oLogModel({
-      event: O_EVENTS.COLLECTED,
+      // event: O_EVENTS.COLLECTED,
       amount: amount * noOfOffers,
       offer: id,
       brand: offer.brand,
       seller: {
         id: offerType === OFFER_TYPE.RESELL ? offer.reSeller : offer.user,
         oQuantity: toDistribute / 2,
+        event: O_EVENTS.SOLD,
       },
-      buyer: { id: req.user._id, oQuantity: toDistribute / 2 },
+      buyer: {
+        id: req.user._id,
+        oQuantity: toDistribute / 2,
+        event: O_EVENTS.COLLECTED,
+      },
       discount: offerDataPoint.offerPriceMinPercentage,
       quantity: noOfOffers,
       oAgainstPrice: oNetworkConfig.oAgainstPrice,
@@ -840,7 +840,6 @@ export const getCollectedOffers = async (req: IRequest, res: Response) => {
   }
 };
 
-//TODO : offer discription
 export const getCollectedOfferDetails = async (
   req: IRequest,
   res: Response
@@ -853,6 +852,15 @@ export const getCollectedOfferDetails = async (
           _id: new mongoose.Types.ObjectId(id),
         },
       },
+      {
+        $lookup: {
+          from: "offers",
+          localField: "offer",
+          foreignField: "_id",
+          as: "offer",
+        },
+      },
+      
       {
         $lookup: {
           from: "offerdatas",
@@ -906,6 +914,9 @@ export const getCollectedOfferDetails = async (
           outletDetails: {
             $first: "$outlets",
           },
+          offer:{
+            $first: "$offer",
+          }
         },
       },
       {
@@ -914,6 +925,7 @@ export const getCollectedOfferDetails = async (
           ownerships: 0,
           offerDataId: 0,
           ownership: 0,
+          
         },
       },
     ]);
