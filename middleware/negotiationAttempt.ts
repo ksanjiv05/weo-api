@@ -4,6 +4,7 @@ import { responseObj } from "../helper/response";
 import { HTTP_STATUS_CODES } from "../config/statusCode";
 import { negotiationConfig } from "../config/config";
 
+//O deduct and upadet in oLogs
 export const negotiationAttempt = async (req: any, res: any, next: any) => {
   const { id, negotiation = true } = req.body;
   const { user } = req;
@@ -11,7 +12,7 @@ export const negotiationAttempt = async (req: any, res: any, next: any) => {
     offer: id,
     user: user._id,
   });
-  console.log("negotiationAttempt",negotiation, negotiationAttempt);
+  console.log("negotiationAttempt", negotiation, negotiationAttempt);
   if (!negotiation) {
     req.body.negotiationAttemptInstance = negotiationAttempt;
     next();

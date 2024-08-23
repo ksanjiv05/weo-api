@@ -1,6 +1,7 @@
-import { OFFER_COLLECTION_EVENTS } from "../config/enums";
+import { O_EVENTS, OFFER_COLLECTION_EVENTS } from "../config/enums";
 import logger from "../helper/logger";
 import { OConfig } from "../models/o.config.model";
+import oLogModel from "../models/oLog.model";
 import Ownership from "../models/ownership.model";
 
 export const initOConfig = async () => {
@@ -70,3 +71,15 @@ export const initOConfig = async () => {
 //     console.log("-.-", error);
 //   }
 // };
+
+export const updateOLog = async () => {
+  await oLogModel.updateMany(
+    {},
+    {
+      $set: {
+        "buyer.event": O_EVENTS.COLLECTED,
+        "seller.event": O_EVENTS.SOLD,
+      },
+    }
+  );
+};

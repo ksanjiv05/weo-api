@@ -1,14 +1,18 @@
 import mongoose from "mongoose";
 import { conn_v2 } from "../db";
 
+type EventProp = {
+  event: number;
+  oQuantity: number;
+  id: any;
+};
 export interface IOLog {
-  event: string;
   amount: number;
   discount: number;
-  offer: string;
-  brand: string;
-  seller: string;
-  buyer: string;
+  offer: any;
+  brand: any;
+  seller: EventProp;
+  buyer: EventProp;
 
   quantity: number;
   oPriceRate: number; //1$ against 100
@@ -20,14 +24,11 @@ export interface IOLog {
   toPlatformCutOffRateFromDiscount: number;
   toPlatformCutOffRate: number;
   createdAt: Date;
+  transaction: any;
 }
 
 const oLogSchema = new mongoose.Schema(
   {
-    event: {
-      type: String,
-      required: true,
-    },
     amount: Number,
     discount: Number,
     offer: { type: mongoose.Types.ObjectId, ref: "Offer" },
@@ -35,10 +36,18 @@ const oLogSchema = new mongoose.Schema(
     seller: {
       id: { type: mongoose.Types.ObjectId, ref: "User" },
       oQuantity: Number,
+      event: {
+        type: Number,
+        required: true,
+      },
     },
     buyer: {
       id: { type: mongoose.Types.ObjectId, ref: "User" },
       oQuantity: Number,
+      event: {
+        type: Number,
+        required: true,
+      },
     },
     quantity: Number,
     oPriceRate: Number,
@@ -48,6 +57,7 @@ const oLogSchema = new mongoose.Schema(
     atRateCutOffFromDiscount: Number,
     toPlatformCutOffRateFromDiscount: Number,
     toPlatformCutOffRate: Number,
+    transaction: { type: mongoose.Types.ObjectId, ref: "Transaction" },
   },
   {
     timestamps: true,
