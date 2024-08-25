@@ -345,7 +345,8 @@ export const getAllListedOffersByBrand = async (
       },
       {
         $group: {
-          _id: "$offerStatus",
+          // _id: "$offerStatus",
+          _id: null,
           totalListed: { $sum: 1 },
           offers: { $push: "$$ROOT" },
           totalListedOffersCount: { $sum: "$totalOffersAvailable" },
@@ -1462,6 +1463,132 @@ export const getCustomersByOffer = async (req: IRequest, res: Response) => {
       },
     ]);
 
+    return responseObj({
+      resObj: res,
+      type: "success",
+      statusCode: HTTP_STATUS_CODES.SUCCESS,
+      msg: "success",
+      error: null,
+      data: lists.length > 0 ? lists[0] : null,
+      code: ERROR_CODES.SUCCESS,
+    });
+  } catch (error: any) {
+    logging.error("Get Listed Customer Offers By Brand", error.message, error);
+    return responseObj({
+      resObj: res,
+      type: "error",
+      statusCode: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR,
+      msg: "Internal server error",
+      error: error.message ? error.message : "internal server error",
+      data: null,
+      code: ERROR_CODES.SERVER_ERR,
+    });
+  }
+};
+
+export const getCustomerOffersDetails = async (req: IRequest, res: Response) => {
+  try {
+
+    const lists = await Ownership.aggregate([
+  {
+    $match: {
+      "owner.ownerId":req.user._id
+    }
+  },
+  {
+    $project: {
+      // owner:1,
+      transactions: 1,
+      offer_access_codes: 1
+    }
+  },
+  {
+    $lookup: {
+      from: "ologs",
+      localField: "transactions",
+      foreignField: "_id",
+      as: "transactions",
+      pipeline: [
+        {
+          $project: {
+            amount: 1,
+            _id: 1,
+            createdAt: 1
+          }
+        }
+      ]
+    }
+  },
+  {
+    $lookup: {
+      from: "collecteds",
+      localField: "_id",
+      foreignField: "ownership",
+      as: "collecteds"
+    }
+  },
+  {
+    $addFields: {
+      collecteds: {
+        $first: "$collecteds"
+      }
+    }
+  },
+  {
+    $lookup: {
+      from: "outlets",
+      localField: "collecteds.outlet",
+      foreignField: "_id",
+      as: "outlet"
+    }
+  },
+  {
+    $lookup: {
+      from: "offerdatas",
+      localField: "collecteds.offerDataId",
+      foreignField: "_id",
+      as: "offerData",
+      pipeline: [
+        {
+          $project: {
+            minimumOfferUnitItem: 1,
+            serviceEndDate: 1,
+            serviceEndTime: 1,
+            serviceStartDate: 1,
+            serviceStartTime: 1,
+            offerPriceAmount: 1
+          }
+        }
+      ]
+    }
+  },
+  {
+    $lookup: {
+      from: "brands",
+      localField: "collecteds.brand",
+      foreignField: "_id",
+      as: "brand"
+    }
+  },
+  {
+    $addFields: {
+      outlet: {
+        $first: "$outlet"
+      },
+      brand: {
+        $first: "$brand"
+      },
+      offerData: {
+        $first: "$offerData"
+      }
+    }
+  },
+  {
+    $project: {
+      collecteds: 0
+    }
+  }
+])
     return responseObj({
       resObj: res,
       type: "success",
