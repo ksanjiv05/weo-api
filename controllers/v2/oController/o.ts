@@ -85,6 +85,17 @@ export const getOHistory = async (req: IRequest, res: Response) => {
         },
       },
       {
+    $addFields: {
+      user: {
+        $cond: {
+          if: { $eq: ["$seller.id", new mongoose.Types.ObjectId(_id)] },
+          then: "$seller",
+          else: "$buyer"
+        }
+      }
+    }
+  },
+      {
         $project: {
           oPriceRate: 0,
           oAgainstPrice: 0,
@@ -118,9 +129,9 @@ export const getOHistory = async (req: IRequest, res: Response) => {
           eventWise: [
             {
               $group: {
-                _id: "$buyer.event",
+                _id: "$user.event",
                 total: {
-                  $sum: "$buyer.oQuantity",
+                  $sum: "$user.oQuantity",
                 },
               },
             },
