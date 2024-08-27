@@ -26,7 +26,8 @@ const userSchema: Schema = new Schema(
       type: String,
       required: true,
     },
-    oEarned: Number,
+    oEarnPotential: {type:Number,default:0},
+    oEarned: {type:Number,default:0},
     fcmToken: String,
     kyc: {
       panCardImage: String,
@@ -93,7 +94,8 @@ export interface IUser extends Document {
   profileImage?: string;
   coverImg?: string;
   phone?: string;
-  oEarned?: Number;
+  oEarned?: number;
+  oEarnPotential?: number;
   fcmToken?: String;
 
   countryCode?: string;

@@ -1486,116 +1486,135 @@ export const getCustomersByOffer = async (req: IRequest, res: Response) => {
   }
 };
 
-export const getCustomerOffersDetails = async (req: IRequest, res: Response) => {
+export const getCustomerOffersDetails = async (
+  req: IRequest,
+  res: Response
+) => {
   try {
+    const cid = req.params.id;
 
+    if (!cid) {
+      return responseObj({
+        resObj: res,
+        type: "error",
+        statusCode: HTTP_STATUS_CODES.BAD_REQUEST,
+        msg: "customer id is required",
+        error: null,
+        data: null,
+        code: ERROR_CODES.FIELD_VALIDATION_REQUIRED_ERR,
+      });
+    }
     const lists = await Ownership.aggregate([
-  {
-    $match: {
-      "owner.ownerId":req.user._id
-    }
-  },
-  {
-    $project: {
-      // owner:1,
-      transactions: 1,
-      offer_access_codes: 1
-    }
-  },
-  {
-    $lookup: {
-      from: "ologs",
-      localField: "transactions",
-      foreignField: "_id",
-      as: "transactions",
-      pipeline: [
-        {
-          $project: {
-            amount: 1,
-            _id: 1,
-            createdAt: 1
-          }
-        }
-      ]
-    }
-  },
-  {
-    $lookup: {
-      from: "collecteds",
-      localField: "_id",
-      foreignField: "ownership",
-      as: "collecteds"
-    }
-  },
-  {
-    $addFields: {
-      collecteds: {
-        $first: "$collecteds"
-      }
-    }
-  },
-  {
-    $lookup: {
-      from: "outlets",
-      localField: "collecteds.outlet",
-      foreignField: "_id",
-      as: "outlet"
-    }
-  },
-  {
-    $lookup: {
-      from: "offerdatas",
-      localField: "collecteds.offerDataId",
-      foreignField: "_id",
-      as: "offerData",
-      pipeline: [
-        {
-          $project: {
-            minimumOfferUnitItem: 1,
-            serviceEndDate: 1,
-            serviceEndTime: 1,
-            serviceStartDate: 1,
-            serviceStartTime: 1,
-            offerPriceAmount: 1
-          }
-        }
-      ]
-    }
-  },
-  {
-    $lookup: {
-      from: "brands",
-      localField: "collecteds.brand",
-      foreignField: "_id",
-      as: "brand"
-    }
-  },
-  {
-    $addFields: {
-      outlet: {
-        $first: "$outlet"
+      {
+        $match: {
+          "owner.ownerId": new mongoose.Types.ObjectId(cid), //req.user._id
+          "offer_access_codes.status": OFFER_COLLECTION_EVENTS.VERIFIED,
+        },
       },
-      brand: {
-        $first: "$brand"
+      {
+        $project: {
+          // owner:1,
+          transactions: 1,
+          offer_access_codes: 1,
+        },
       },
-      offerData: {
-        $first: "$offerData"
-      }
-    }
-  },
-  {
-    $project: {
-      collecteds: 0
-    }
-  }
-])
+      {
+        $lookup: {
+          from: "ologs",
+          localField: "transactions",
+          foreignField: "_id",
+          as: "transactions",
+          pipeline: [
+            {
+              $project: {
+                amount: 1,
+                _id: 1,
+                createdAt: 1,
+                quantity: 1,
+              },
+            },
+          ],
+        },
+      },
+      {
+        $lookup: {
+          from: "collecteds",
+          localField: "_id",
+          foreignField: "ownership",
+          as: "collecteds",
+        },
+      },
+      {
+        $addFields: {
+          collecteds: {
+            $first: "$collecteds",
+          },
+        },
+      },
+      {
+        $lookup: {
+          from: "outlets",
+          localField: "collecteds.outlet",
+          foreignField: "_id",
+          as: "outlet",
+        },
+      },
+      {
+        $lookup: {
+          from: "offerdatas",
+          localField: "collecteds.offerDataId",
+          foreignField: "_id",
+          as: "offerData",
+          pipeline: [
+            {
+              $project: {
+                minimumOfferUnitItem: 1,
+                serviceEndDate: 1,
+                serviceEndTime: 1,
+                serviceStartDate: 1,
+                serviceStartTime: 1,
+                offerPriceAmount: 1,
+                oRewardDeductPercentagePerSale: 1,
+                oRewardDeductPercentageLatePayment: 1,
+              },
+            },
+          ],
+        },
+      },
+      {
+        $lookup: {
+          from: "brands",
+          localField: "collecteds.brand",
+          foreignField: "_id",
+          as: "brand",
+        },
+      },
+      {
+        $addFields: {
+          outlet: {
+            $first: "$outlet",
+          },
+          brand: {
+            $first: "$brand",
+          },
+          offerData: {
+            $first: "$offerData",
+          },
+        },
+      },
+      {
+        $project: {
+          collecteds: 0,
+        },
+      },
+    ]);
     return responseObj({
       resObj: res,
       type: "success",
       statusCode: HTTP_STATUS_CODES.SUCCESS,
       msg: "success",
       error: null,
-      data: lists.length > 0 ? lists[0] : null,
+      data: lists,
       code: ERROR_CODES.SUCCESS,
     });
   } catch (error: any) {
