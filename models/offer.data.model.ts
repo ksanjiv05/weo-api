@@ -84,10 +84,10 @@ const offerDataSchema: Schema = new Schema(
       default: "INR",
     },
     serviceStartTime: {
-      type: String,
+      type: String, // TODO: change it to date
     },
     serviceEndTime: {
-      type: String,
+      type: String, // TODO: change it to date
     },
     serviceStartDate: {
       type: Date,
