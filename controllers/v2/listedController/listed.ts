@@ -1518,7 +1518,7 @@ export const getCustomerOffersDetails = async (
       {
         $match: {
           "owner.ownerId": new mongoose.Types.ObjectId(cid), //req.user._id
-          "offer_access_codes.status": OFFER_COLLECTION_EVENTS.VERIFIED,
+          "offer_access_codes.status": OFFER_COLLECTION_EVENTS.COLLECTED,
         },
       },
       {
