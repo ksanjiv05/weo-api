@@ -180,7 +180,7 @@ export const changePrimaryBankAccount = async (
 export const getWallet = async (req: IRequest, res: Response) => {
   try {
     const { user } = req;
-    const wallet = await Wallet.findOne({ user: user._id }).populate("user");
+    const wallet = await Wallet.findOne({ user: user._id }).populate("user")
     const config = await getOConfig();
     return responseObj({
       resObj: res,
@@ -188,7 +188,7 @@ export const getWallet = async (req: IRequest, res: Response) => {
       statusCode: HTTP_STATUS_CODES.SUCCESS,
       msg: "wallet details fetched successfully",
       error: null,
-      data: { ...wallet, config },
+      data: { ...wallet?wallet.toJSON():{}, config },
     });
   } catch (error: any) {
     logging.error(
