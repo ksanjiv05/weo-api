@@ -181,7 +181,7 @@ export const getWallet = async (req: IRequest, res: Response) => {
   try {
     const { user } = req;
     const wallet = await Wallet.findOne({ user: user._id }).populate("user");
-    const config = getOConfig();
+    const config = await getOConfig();
     return responseObj({
       resObj: res,
       type: "success",
