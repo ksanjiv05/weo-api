@@ -198,6 +198,17 @@ export const getTransactionHistory = async (req: IRequest, res: Response) => {
         },
       },
       {
+        $addFields: {
+          user: {
+            $cond: {
+              if: { $eq: ["$seller.id", new mongoose.Types.ObjectId(_id)] },
+              then: "$seller",
+              else: "$buyer",
+            },
+          },
+        },
+      },
+      {
         $project: {
           oPriceRate: 0,
           oAgainstPrice: 0,
@@ -308,8 +319,8 @@ export const getTransactionHistory = async (req: IRequest, res: Response) => {
         transactions.length > 0
           ? {
               transactions: transactions[0].transactions,
-              totalOAsSeller: transactions[0].totalOAsSeller,
-              totalOAsBuyer: transactions[0].totalOAsBuyer,
+              oSpent: transactions[0].totalOAsSeller,
+              oEarn: transactions[0].totalOAsBuyer,
             }
           : null,
       code: ERROR_CODES.SUCCESS,
