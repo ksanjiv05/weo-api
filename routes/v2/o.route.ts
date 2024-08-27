@@ -5,10 +5,12 @@ import express from "express";
 import { auth } from "../../middleware/auth";
 import {
   getGraphData,
+  getOConfigAndExchangeRate,
   getOHistory,
   getTransactionHistory,
   myWalletDetails,
   oRewardCalculate,
+  oTupUp,
 } from "../../controllers/v2/oController/o";
 import { oNetworkConfig } from "../../config/config";
 
@@ -23,5 +25,7 @@ router.get("/o/history", auth, getOHistory);
 router.get("/o/transaction", auth, getTransactionHistory);
 router.get("/o/wallet", auth, myWalletDetails);
 router.get("/o/graph", auth, getGraphData);
+router.get("/o/rate/config", auth, getOConfigAndExchangeRate);
+router.get("/o/topup", auth, oTupUp);
 
 export default router;
