@@ -66,6 +66,7 @@ export const oRewardCalculate = async (req: IRequest, res: Response) => {
   }
 };
 
+//TODO all data should be brand wise
 export const getOHistory = async (req: IRequest, res: Response) => {
   try {
     const { _id = "" } = req.user;
@@ -129,7 +130,9 @@ export const getOHistory = async (req: IRequest, res: Response) => {
       {
         $project: {
           oHistory: 1,
-          eventWise: 1,
+          earn: {
+            $first: "$eventWise.total",
+          },
         },
       },
     ]);
@@ -140,7 +143,15 @@ export const getOHistory = async (req: IRequest, res: Response) => {
       statusCode: HTTP_STATUS_CODES.SUCCESS,
       msg: "your o history",
       error: null,
-      data: oHistory.length > 0 ? oHistory[0] : null,
+      data:
+        oHistory.length > 0
+          ? {
+              oHistory: oHistory[0].oHistory,
+              stats: {
+                earn: oHistory[0].earn,
+              },
+            }
+          : null,
       code: ERROR_CODES.SUCCESS,
     });
   } catch (error: any) {
@@ -156,12 +167,13 @@ export const getOHistory = async (req: IRequest, res: Response) => {
     });
   }
 };
-
+//TODO need to add add negotiation event
+//TODO all data should be brand wise
 export const getTransactionHistory = async (req: IRequest, res: Response) => {
   try {
     const { _id = "" } = req.user;
 
-    const oHistory = await oLogModel.aggregate([
+    const transactions = await oLogModel.aggregate([
       {
         $match: {
           $or: [
@@ -281,7 +293,14 @@ export const getTransactionHistory = async (req: IRequest, res: Response) => {
       statusCode: HTTP_STATUS_CODES.SUCCESS,
       msg: "your o history",
       error: null,
-      data: oHistory.length > 0 ? oHistory[0] : null,
+      data:
+        transactions.length > 0
+          ? {
+              transactions: transactions[0].transactions,
+              totalOAsSeller: transactions[0].totalOAsSeller,
+              totalOAsBuyer: transactions[0].totalOAsBuyer,
+            }
+          : null,
       code: ERROR_CODES.SUCCESS,
     });
   } catch (error: any) {
