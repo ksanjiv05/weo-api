@@ -209,6 +209,10 @@ export const collectOffer = async (req: IRequest, res: Response) => {
       oNetworkConfig,
     });
 
+    // update
+    req.user.oEarned = req.user.oEarned + toDistribute / 2;
+    req.user.oEarnPotential = req.user.oEarnPotential + toDistribute / 2;
+
     console.log("_______toDistribute_____after collect________");
     console.log({
       exchangeRate,
@@ -343,8 +347,7 @@ export const collectOffer = async (req: IRequest, res: Response) => {
       await newOLog.save({ session });
       console.log("--4--");
       await offer.save({ session });
-      console.log("--5 --", offer);
-      debugger;
+      await req.user.save({ session });
       await session.commitTransaction();
       await session.endSession();
       console.log("--6--");
@@ -386,8 +389,7 @@ export const collectOffer = async (req: IRequest, res: Response) => {
       await newOLog.save({ session });
       console.log("--4--");
       await offer.save({ session });
-      console.log("--5 --", offer);
-      debugger;
+      await req.user.save({ session });
       await session.commitTransaction();
       await session.endSession();
       console.log("--6--");
@@ -860,7 +862,7 @@ export const getCollectedOfferDetails = async (
           as: "offer",
         },
       },
-      
+
       {
         $lookup: {
           from: "offerdatas",
@@ -914,9 +916,9 @@ export const getCollectedOfferDetails = async (
           outletDetails: {
             $first: "$outlets",
           },
-          offer:{
+          offer: {
             $first: "$offer",
-          }
+          },
         },
       },
       {
@@ -925,7 +927,6 @@ export const getCollectedOfferDetails = async (
           ownerships: 0,
           offerDataId: 0,
           ownership: 0,
-          
         },
       },
     ]);

@@ -486,3 +486,120 @@ export const getGraphData = async (req: IRequest, res: Response) => {
     });
   }
 };
+
+export const oTupUp = async (req: IRequest, res: Response) => {
+  try {
+    const { oAmount } = req.body;
+    const { user } = req;
+
+    const oConfig = await getOConfig();
+    if (!oConfig) {
+      return responseObj({
+        resObj: res,
+        type: "error",
+        statusCode: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR,
+        msg: "Internal server error",
+        error: "O Config not found",
+        data: null,
+        code: ERROR_CODES.SERVER_ERR,
+      });
+    }
+
+    const userRate =
+      user.oEarned === user.oEarnPotential
+        ? 1
+        : user.oEarned / user.oEarnPotential;
+
+    const oPriceRate = oConfig.networkRate + (oConfig.networkRate - userRate);
+
+    const oPrice = Math.ceil((oAmount * oPriceRate) / oConfig.oAgainstPrice);
+    const exchangeRate = await getExchangeRate(
+      req.user.currency,
+      BASE_CURRENCY
+    );
+
+    const amountAfterExchange = oPrice * exchangeRate;
+
+    responseObj({
+      resObj: res,
+      type: "success",
+      statusCode: HTTP_STATUS_CODES.SUCCESS,
+      msg: "O Tup Up",
+      error: null,
+      data: {
+        oPriceInUsd: oPrice,
+        price: amountAfterExchange,
+        totalO: oAmount,
+        exchangeRate,
+      },
+    });
+  } catch (error: any) {
+    logging.error("O Tup Up Error", error.message, error);
+    return responseObj({
+      resObj: res,
+      type: "error",
+      statusCode: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR,
+      msg: "Internal server error",
+      error: error.message ? error.message : "internal server error",
+      data: null,
+      code: ERROR_CODES.SERVER_ERR,
+    });
+  }
+};
+
+export const getOConfigAndExchangeRate = async (
+  req: IRequest,
+  res: Response
+) => {
+  try {
+    const { user } = req;
+    const oConfig = await getOConfig();
+    if (!oConfig) {
+      return responseObj({
+        resObj: res,
+        type: "error",
+        statusCode: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR,
+        msg: "Internal server error",
+        error: "O Config not found",
+        data: null,
+        code: ERROR_CODES.SERVER_ERR,
+      });
+    }
+    const exchangeRate = await getExchangeRate(
+      req.user.currency,
+      BASE_CURRENCY
+    );
+
+    const userSuccessRate =
+      user.oEarned === user.oEarnPotential
+        ? 1
+        : user.oEarned / user.oEarnPotential;
+
+    responseObj({
+      resObj: res,
+      type: "success",
+      statusCode: HTTP_STATUS_CODES.SUCCESS,
+      msg: "here is your o config and exchange rate",
+      error: null,
+      data: {
+        oConfig,
+        exchangeRate,
+        userSuccessRate,
+        userORate: userSuccessRate,
+      },
+    });
+  } catch (error: any) {
+    logging.error("Get O config and Exchange Rate Error", error.message, error);
+    return responseObj({
+      resObj: res,
+      type: "error",
+      statusCode: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR,
+      msg: "Internal server error",
+      error: error.message ? error.message : "internal server error",
+      data: null,
+      code: ERROR_CODES.SERVER_ERR,
+    });
+  }
+};
+// total potential o
+// total reward he earned

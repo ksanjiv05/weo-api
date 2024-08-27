@@ -237,6 +237,6 @@ router.post(
 );
 
 router.get("/listed/offers/:id/customers", auth, getCustomersByOffer);
-router.get("/listed/customer/offers", auth, getCustomerOffersDetails);
+router.get("/listed/customer/:id/offers", auth, getCustomerOffersDetails);
 
 export default router;

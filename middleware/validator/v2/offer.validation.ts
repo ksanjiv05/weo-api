@@ -89,10 +89,10 @@ export const offerValidationCh5 = [
 
 export const offerValidationCh6 = [
   // ...offerValidationCh5,
-  body("ORewardDeductPercentagePerSale")
+  body("oRewardDeductPercentagePerSale")
     .isNumeric()
     .withMessage("O reward deduct percentage per sale is required"),
-  body("ORewardDeductPercentageLatePayment")
+  body("oRewardDeductPercentageLatePayment")
     .isNumeric()
     .withMessage("O reward deduct percentage late payment is required"),
 ];

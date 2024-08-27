@@ -5,6 +5,7 @@ export interface IOConfig {
   currency: string;
   oAgainstPrice: number;
   oNetworkValue: number;
+  networkRate: number;
   volume: number;
   oReservedVolume: number;
   atPlatformCutOffRate: number;
@@ -17,6 +18,10 @@ export const oConfigSchema = new mongoose.Schema<IOConfig>({
   currency: String,
   oAgainstPrice: Number,
   oNetworkValue: Number,
+  networkRate: {
+    type: Number,
+    default: 1,
+  },
   volume: Number,
   oReservedVolume: Number,
   atPlatformCutOffRate: Number,
