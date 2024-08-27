@@ -357,6 +357,15 @@ export const getUserProfile = async (req: IRequest, res: Response) => {
         .select("creatorName")
         .select("currency");
       User.updateOne({ uid }, { $set: { lastActive: new Date() } });
+      return responseObj({
+        statusCode: HTTP_STATUS_CODES.SUCCESS,
+        type: "success",
+        msg: "your profile",
+        error: null,
+        resObj: res,
+        data: user,
+        code: ERROR_CODES.SUCCESS,
+      });
     } else {
       user = await User.aggregate([
         {
@@ -379,16 +388,16 @@ export const getUserProfile = async (req: IRequest, res: Response) => {
           },
         },
       ]);
+      return responseObj({
+        statusCode: HTTP_STATUS_CODES.SUCCESS,
+        type: "success",
+        msg: "your profile",
+        error: null,
+        resObj: res,
+        data: user.length > 0 ? user[0] : null,
+        code: ERROR_CODES.SUCCESS,
+      });
     }
-    return responseObj({
-      statusCode: HTTP_STATUS_CODES.SUCCESS,
-      type: "success",
-      msg: "your profile",
-      error: null,
-      resObj: res,
-      data: user,
-      code: ERROR_CODES.SUCCESS,
-    });
   } catch (error: any) {
     logging.error("Get User", "unable to get user profile", error);
     return responseObj({
@@ -453,7 +462,7 @@ export const getUserPublicProfile = async (req: IRequest, res: Response) => {
       msg: "your public profile",
       error: null,
       resObj: res,
-      data: user,
+      data: user.length > 0 ? user[0] : null,
       code: ERROR_CODES.SUCCESS,
     });
   } catch (error: any) {
