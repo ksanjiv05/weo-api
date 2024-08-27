@@ -1491,7 +1491,7 @@ export const getCustomerOffersDetails = async (
   res: Response
 ) => {
   try {
-    const cid = req.params.id;
+    const { cid, oid = "" } = req.params;
 
     if (!cid) {
       return responseObj({
@@ -1504,6 +1504,16 @@ export const getCustomerOffersDetails = async (
         code: ERROR_CODES.FIELD_VALIDATION_REQUIRED_ERR,
       });
     }
+    const filter =
+      oid && oid != ""
+        ? [
+            {
+              $match: {
+                offer: new mongoose.Types.ObjectId(oid),
+              },
+            },
+          ]
+        : [];
     const lists = await Ownership.aggregate([
       {
         $match: {
@@ -1518,6 +1528,17 @@ export const getCustomerOffersDetails = async (
           offer_access_codes: 1,
         },
       },
+
+      {
+        $lookup: {
+          from: "collecteds",
+          localField: "_id",
+          foreignField: "ownership",
+          as: "collecteds",
+          pipeline: filter,
+        },
+      },
+      { $unwind: "$collecteds" },
       {
         $lookup: {
           from: "ologs",
@@ -1536,21 +1557,13 @@ export const getCustomerOffersDetails = async (
           ],
         },
       },
-      {
-        $lookup: {
-          from: "collecteds",
-          localField: "_id",
-          foreignField: "ownership",
-          as: "collecteds",
-        },
-      },
-      {
-        $addFields: {
-          collecteds: {
-            $first: "$collecteds",
-          },
-        },
-      },
+      // {
+      //   $addFields: {
+      //     collecteds: {
+      //       $first: "$collecteds"
+      //     }
+      //   }
+      // },
       {
         $lookup: {
           from: "outlets",
@@ -1576,6 +1589,8 @@ export const getCustomerOffersDetails = async (
                 offerPriceAmount: 1,
                 oRewardDeductPercentagePerSale: 1,
                 oRewardDeductPercentageLatePayment: 1,
+                totalOfferUnitItem: 1,
+                offerUnitType: 1,
               },
             },
           ],
