@@ -903,9 +903,27 @@ export const getPendingOffersByBrand = async (req: IRequest, res: Response) => {
                     },
                   },
                   {
-                    $project: {
-                      _id: 1,
-                      name: 1,
+                    $lookup: {
+                      from: "users",
+                      localField: "owner.ownerId",
+                      foreignField: "_id",
+                      as: "customer",
+                      pipeline: [
+                        {
+                          $project: {
+                            _id: 1,
+                            name: 1,
+                            creatorName:1
+                          },
+                        },
+                      ],
+                    },
+                  },
+                  {
+                    $addFields: {
+                      customer: {
+                        $first: "$customer",
+                      },
                     },
                   },
                 ],
@@ -1518,7 +1536,9 @@ export const getCustomerOffersDetails = async (
       {
         $match: {
           "owner.ownerId": new mongoose.Types.ObjectId(cid), //req.user._id
-          "offer_access_codes.status": {$gte: OFFER_COLLECTION_EVENTS.COLLECTED},
+          "offer_access_codes.status": {
+            $gte: OFFER_COLLECTION_EVENTS.COLLECTED,
+          },
         },
       },
       {
