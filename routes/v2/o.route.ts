@@ -26,6 +26,6 @@ router.get("/o/transaction", auth, getTransactionHistory);
 router.get("/o/wallet", auth, myWalletDetails);
 router.get("/o/graph", auth, getGraphData);
 router.get("/o/rate/config", auth, getOConfigAndExchangeRate);
-router.get("/o/topup", auth, oTupUp);
+router.post("/o/topup", auth, oTupUp);
 
 export default router;
