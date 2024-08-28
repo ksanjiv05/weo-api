@@ -225,6 +225,9 @@ export const getAllListedBrands = async (req: IRequest, res: Response) => {
           totalListedOffers: 1,
           completed: 1,
           brandTransaction: 1,
+          oStats:{
+        $first:"$collecteds"
+      }
         },
       },
       {

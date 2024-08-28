@@ -276,6 +276,7 @@ router.delete("/brands", auth, deleteBrands);
  */
 
 router.get("/brands/:id/outlets", auth, getOutletsByBrandId);
+// router.get("/brands/stats",auth,getBrandStats)
 
 // Export the router
 

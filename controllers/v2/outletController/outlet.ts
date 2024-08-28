@@ -348,7 +348,10 @@ export const deleteOutlet = async (req: Request, res: Response) => {
 
 // Function to get the outlets by user locations
 
-export const getOutletsByUserLocation = async (req: Request, res: Response) => {
+export const getOutletsByUserLocation = async (
+  req: IRequest,
+  res: Response
+) => {
   try {
     const { userLatitude, userLongitude, maxDistance = 1000 }: any = req.query;
 
@@ -376,6 +379,9 @@ export const getOutletsByUserLocation = async (req: Request, res: Response) => {
             {
               $match: {
                 status: STATUS.LIVE,
+                // user: {
+                //   $ne: new mongoose.Types.ObjectId(req.user._id),
+                // },
               },
             },
           ],

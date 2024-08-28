@@ -12,6 +12,8 @@ import Wallet from "../../../models/wallet.model";
 import { fundTransfer } from "../../../payment/razorpay/transfer";
 import { validationResult } from "express-validator";
 import { getOConfig } from "../../../helper/oCalculator/v2";
+import { BASE_CURRENCY } from "../../../config/config";
+import { getExchangeRate } from "../../../helper/exchangeRate";
 
 export const newBankAccount = async (req: IRequest, res: Response) => {
   try {
@@ -182,13 +184,26 @@ export const getWallet = async (req: IRequest, res: Response) => {
     const { user } = req;
     const wallet = await Wallet.findOne({ user: user._id }).populate("user")
     const config = await getOConfig();
+
+  const exchangeRate = await getExchangeRate(
+      user.currency,
+      BASE_CURRENCY
+    );
+
+    const userSuccessRate =
+      user.oEarned === user.oEarnPotential
+        ? 1
+        : user.oEarned / user.oEarnPotential;
+
     return responseObj({
       resObj: res,
       type: "success",
       statusCode: HTTP_STATUS_CODES.SUCCESS,
       msg: "wallet details fetched successfully",
       error: null,
-      data: { ...wallet?wallet.toJSON():{}, config },
+      data: { ...wallet?wallet.toJSON():{}, config,exchangeRate,
+        userSuccessRate,
+        userORate: userSuccessRate, },
     });
   } catch (error: any) {
     logging.error(

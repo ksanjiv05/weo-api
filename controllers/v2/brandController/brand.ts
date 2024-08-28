@@ -12,6 +12,7 @@ import { ERROR_CODES } from "../../../config/errorCode";
 import { IRequest } from "../../../interfaces/IRequest";
 import outletModel from "../../../models/outlet.model";
 import { OFFER_STATUS, STATUS } from "../../../config/enums";
+import mongoose from "mongoose";
 
 // Define the functions
 
@@ -441,7 +442,7 @@ export const getBrandsByUserId = async (req: Request, res: Response) => {
 
 // Function to get all brands by nearby user location within 10 km with pagination
 
-export const getBrandsByLocation = async (req: Request, res: Response) => {
+export const getBrandsByLocation = async (req: IRequest, res: Response) => {
   try {
     const {
       userLatitude,
@@ -577,6 +578,9 @@ export const getBrandsByLocation = async (req: Request, res: Response) => {
               {
                 $match: {
                   status: 2,
+                  // user:{
+                  //   $ne: new mongoose.Types.ObjectId(req.user._id)
+                  // }
                 },
               },
             ],
@@ -683,3 +687,22 @@ export const getBrandsByLocation = async (req: Request, res: Response) => {
     });
   }
 };
+
+
+// export const getBrandStats= async (req: Request, res: Response) => {
+//   try {
+
+//   }catch (error: any) {
+//     logging.error("Get Brand Stats", error.message, error);
+//     return responseObj({
+//       resObj: res,
+//       type: "error",
+//       statusCode: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR,
+//       msg: "brands not found",
+//       error: error.message ? error.message : "internal server error",
+//       data: null,
+//       code: ERROR_CODES.SERVER_ERR,
+//     });
+//   }
+
+// }
