@@ -897,3 +897,5 @@ error: POST /api/v1/brands 400 7ms
 {"level":"error","message":"GET /api/v2/users/wallet 403 0ms","timestamp":"2024-08-28T15:10:15.028Z"}
 {"level":"error","message":"GET /api/v2/users?initData=true 403 0ms","timestamp":"2024-08-28T15:10:54.344Z"}
 {"level":"error","message":"GET /api/v2/listed/user/brand 500 564ms","timestamp":"2024-08-28T15:36:11.114Z"}
+{"level":"error","message":"GET /api/v2/listed/user/brand 500 554ms","timestamp":"2024-08-28T15:48:01.020Z"}
+{"level":"error","message":"GET /api/v2/listed/user/brand 500 568ms","timestamp":"2024-08-28T15:49:09.196Z"}

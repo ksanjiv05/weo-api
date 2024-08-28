@@ -12,6 +12,7 @@ const userSchema: Schema = new Schema(
     creatorName: {
       type: String,
       lowercase: true,
+      default: null,
     },
     name: {
       type: String,
@@ -26,8 +27,8 @@ const userSchema: Schema = new Schema(
       type: String,
       required: true,
     },
-    oEarnPotential: {type:Number,default:0},
-    oEarned: {type:Number,default:0},
+    oEarnPotential: { type: Number, default: 0 },
+    oEarned: { type: Number, default: 0 },
     fcmToken: String,
     kyc: {
       panCardImage: String,
