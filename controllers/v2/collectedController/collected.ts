@@ -37,6 +37,8 @@ import Ownership from "../../../models/ownership.model";
 import NegotiationAttempt from "../../../models/negotiationAttempt.model";
 
 // define function for create Collected
+
+
 export const collectOffer = async (req: IRequest, res: Response) => {
   const {
     id,
@@ -51,11 +53,83 @@ export const collectOffer = async (req: IRequest, res: Response) => {
     outletId = null,
     offerType = OFFER_TYPE.FRESH,
   } = req.body;
-
+const uid = req.user._id;
   const session = await Collected.startSession();
   session.startTransaction();
   try {
     offerStatusOffed();
+
+    const wallet = await Wallet.findOne({ user: uid });
+    if (!wallet) {
+      return responseObj({
+        resObj: res,
+        type: "error",
+        statusCode: HTTP_STATUS_CODES.BAD_REQUEST,
+        msg: "Wallet not found",
+        error: "Wallet not found",
+        data: {
+          remainingAttempts: negotiationAttemptInstance
+            ? negotiationConfig.maxAttempts -
+              negotiationAttemptInstance?.noOfAttempts
+            : negotiationConfig.maxAttempts,
+        },
+        code: ERROR_CODES.FIELD_VALIDATION_ERR,
+      });
+    }
+
+    const deductOBalance =
+      req.body?.negotiationAttemptInstance &&
+      req.body.negotiationAttemptInstance.noOfAttempts >
+        negotiationConfig.freeAttempts
+        ? negotiationConfig.oCharge
+        : 0;
+
+        if(deductOBalance>0){
+          if( wallet.oBalance<deductOBalance){
+        return responseObj({
+          resObj: res,
+          type: "error",
+          statusCode: HTTP_STATUS_CODES.BAD_REQUEST,
+          msg: "Insufficient O Balance",
+          error: "Insufficient O Balance",
+          data: {
+            remainingAttempts: negotiationAttemptInstance
+              ? negotiationConfig.maxAttempts -
+                negotiationAttemptInstance?.noOfAttempts
+              : negotiationConfig.maxAttempts,
+          },
+          code: ERROR_CODES.FIELD_VALIDATION_ERR,
+        });
+      }
+      wallet.oBalance = wallet.oBalance-deductOBalance;
+      await wallet.save();
+      const newOLogForONegotiation = new oLogModel({
+      // event: O_EVENTS.COLLECTED,
+      amount: 0,
+      offer: id,
+      brand: null,
+      seller: null,
+      buyer: {
+        id: req.user._id,
+        oQuantity:deductOBalance ,
+        event: O_EVENTS.NEGOTIATION_ATTEMPT,
+      },
+      discount: 0,
+      quantity:0,
+      noOfOffers: 0,
+      oAgainstPrice: 0,
+      oGenerated: 0,
+      atPlatformCutOffRate: 0,
+      atRateCutOffFromDiscount: 0,
+      toPlatformCutOffRateFromDiscount:
+        0,
+      toPlatformCutOffRate: 0,
+    });
+
+    await newOLogForONegotiation.save();
+        }
+      
+
     const offer = await Offer.findOne({
       _id: id,
       offerStatus: OFFER_STATUS.LIVE,
@@ -152,25 +226,9 @@ export const collectOffer = async (req: IRequest, res: Response) => {
 
     offer.totalOffersAvailable = offer.totalOffersAvailable - noOfOffers;
     offer.totalOfferSold = offer.totalOfferSold + noOfOffers;
-    const uid = req.user._id;
+    
 
-    const wallet = await Wallet.findOne({ user: uid });
-    if (!wallet) {
-      return responseObj({
-        resObj: res,
-        type: "error",
-        statusCode: HTTP_STATUS_CODES.BAD_REQUEST,
-        msg: "Wallet not found",
-        error: "Wallet not found",
-        data: {
-          remainingAttempts: negotiationAttemptInstance
-            ? negotiationConfig.maxAttempts -
-              negotiationAttemptInstance?.noOfAttempts
-            : negotiationConfig.maxAttempts,
-        },
-        code: ERROR_CODES.FIELD_VALIDATION_ERR,
-      });
-    }
+
     if (wallet.balance < amount * noOfOffers * 100) {
       return responseObj({
         resObj: res,
@@ -187,7 +245,7 @@ export const collectOffer = async (req: IRequest, res: Response) => {
         code: ERROR_CODES.FIELD_VALIDATION_ERR,
       });
     }
-
+//
     wallet.balance = wallet.balance - amount * noOfOffers * 100;
     const exchangeRate = await getExchangeRate(wallet.currency, BASE_CURRENCY);
     const amountAfterExchange = amount * exchangeRate;
@@ -221,14 +279,9 @@ export const collectOffer = async (req: IRequest, res: Response) => {
       totalO,
     });
 
-    const deductOBalance =
-      req.body?.negotiationAttemptInstance &&
-      req.body.negotiationAttemptInstance.noOfAttempts >
-        negotiationConfig.freeAttempts
-        ? negotiationConfig.oCharge
-        : 0;
+ 
 
-    wallet.oBalance = wallet.oBalance + toDistribute / 2 - deductOBalance;
+    wallet.oBalance = wallet.oBalance + toDistribute / 2;
 
     const newOLog = new oLogModel({
       // event: O_EVENTS.COLLECTED,

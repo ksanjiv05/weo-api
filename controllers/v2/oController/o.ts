@@ -85,16 +85,16 @@ export const getOHistory = async (req: IRequest, res: Response) => {
         },
       },
       {
-    $addFields: {
-      user: {
-        $cond: {
-          if: { $eq: ["$seller.id", new mongoose.Types.ObjectId(_id)] },
-          then: "$seller",
-          else: "$buyer"
-        }
-      }
-    }
-  },
+        $addFields: {
+          user: {
+            $cond: {
+              if: { $eq: ["$seller.id", new mongoose.Types.ObjectId(_id)] },
+              then: "$seller",
+              else: "$buyer",
+            },
+          },
+        },
+      },
       {
         $project: {
           oPriceRate: 0,
@@ -383,7 +383,8 @@ export const myWalletDetails = async (req: IRequest, res: Response) => {
 export const getGraphData = async (req: IRequest, res: Response) => {
   try {
     const { _id = "" } = req.user;
-    const { fromDate = new Date(), toDate = new Date() } = req.body;
+    const { from = new Date(), to = new Date() }: any = req.query;
+    console.log(from, to, new Date(parseInt(from)), new Date(parseInt(to)));
     const gData = await oLogModel.aggregate([
       {
         $match: {
@@ -395,6 +396,17 @@ export const getGraphData = async (req: IRequest, res: Response) => {
               "buyer.id": new mongoose.Types.ObjectId(_id),
             },
           ],
+        },
+      },
+      {
+        $addFields: {
+          user: {
+            $cond: {
+              if: { $eq: ["$seller.id", new mongoose.Types.ObjectId(_id)] },
+              then: "$seller",
+              else: "$buyer",
+            },
+          },
         },
       },
       {
@@ -439,7 +451,6 @@ export const getGraphData = async (req: IRequest, res: Response) => {
           offer: {
             $first: "$offer",
           },
-          user: "$buyer",
         },
       },
       {
@@ -454,18 +465,36 @@ export const getGraphData = async (req: IRequest, res: Response) => {
               },
             },
           ],
+          cards: [
+            {
+              $match: {
+                $and: [
+                  {
+                    createdAt: {
+                      $gte: new Date("2024-08-01T04:36:38.701+00:00"),
+                    },
+                  },
+                  {
+                    createdAt: {
+                      $lte: new Date(),
+                    },
+                  },
+                ],
+              },
+            },
+          ],
           transactions: [
             {
               $match: {
                 $and: [
                   {
                     createdAt: {
-                      $gte: new Date(fromDate),
+                      $gte: new Date(parseInt(from)),
                     },
                   },
                   {
                     createdAt: {
-                      $lte: new Date(toDate),
+                      $lte: new Date(parseInt(to)),
                     },
                   },
                 ],
@@ -501,6 +530,7 @@ export const getGraphData = async (req: IRequest, res: Response) => {
           totalTransactionStat: {
             $first: "$totalTransactionValue",
           },
+          cards: 1,
         },
       },
     ]);
@@ -511,7 +541,7 @@ export const getGraphData = async (req: IRequest, res: Response) => {
       statusCode: HTTP_STATUS_CODES.SUCCESS,
       msg: "graph data",
       error: null,
-      data: gData,
+      data: gData.length > 0 ? gData[0] : null,
       code: ERROR_CODES.SUCCESS,
     });
   } catch (error: any) {
