@@ -10,6 +10,7 @@ import { IRequest } from "../../../interfaces/IRequest";
 import oLogModel from "../../../models/oLog.model";
 import mongoose from "mongoose";
 import walletModel from "../../../models/wallet.model";
+import User from "../../../models_v1/User";
 
 export const oRewardCalculate = async (req: IRequest, res: Response) => {
   try {
@@ -113,6 +114,60 @@ export const getOHistory = async (req: IRequest, res: Response) => {
           localField: "offer",
           foreignField: "_id",
           as: "offer",
+          pipeline: [
+            {
+              $lookup: {
+                from: "brands",
+                localField: "brand",
+                foreignField: "_id",
+                as: "brand",
+              },
+            },
+            {
+              $lookup: {
+                from: "users",
+                localField: "user",
+                foreignField: "_id",
+                as: "user",
+                pipeline:[
+                  {
+                    $project: {
+                      _id: 1,
+                      name: 1,
+                      creatorName:1
+                    },
+                  }
+                ]
+              },
+            },
+
+            {
+              $lookup: {
+                from: "offerdatas",
+                localField: "offerDataPoints.offerData",
+                foreignField: "_id",
+                as: "offerDataPoints",
+              },
+            },
+            {
+              $addFields: {
+                offerDataDetails: {
+                  $first: "$offerDataPoints",
+                },
+                brand: {
+                  $first: "$brand",
+                },
+                user: {
+                  $first: "$user",
+                },
+              },
+            },
+            {
+              $project: {
+                offerDataPoints:0
+              }
+            }
+          ],
         },
       },
       {
@@ -236,12 +291,49 @@ export const getTransactionHistory = async (req: IRequest, res: Response) => {
               },
             },
             {
+              $lookup: {
+                from: "users",
+                localField: "user",
+                foreignField: "_id",
+                as: "user",
+                pipeline:[
+                  {
+                    $project: {
+                      _id: 1,
+                      name: 1,
+                      creatorName:1
+                    },
+                  }
+                ]
+              },
+            },
+
+            {
+              $lookup: {
+                from: "offerdatas",
+                localField: "offerDataPoints.offerData",
+                foreignField: "_id",
+                as: "offerDataPoints",
+              },
+            },
+            {
               $addFields: {
+                offerDataDetails: {
+                  $first: "$offerDataPoints",
+                },
                 brand: {
                   $first: "$brand",
                 },
+                user:{
+                  $first: "$user",
+                }
               },
             },
+            {
+              $project: {
+                offerDataPoints:0
+              }
+            }
           ],
         },
       },
@@ -443,6 +535,21 @@ export const getGraphData = async (req: IRequest, res: Response) => {
                 },
               },
             },
+            {
+              $lookup: {
+                from: "offerdatas",
+                localField: "offerDataPoints.offerData",
+                foreignField: "_id",
+                as: "offerDataPoints",
+              },
+            },
+            {
+              $addFields: {
+                offerDataDetails: {
+                  $first: "$offerDataPoints",
+                },
+              },
+            },
           ],
         },
       },
@@ -471,12 +578,12 @@ export const getGraphData = async (req: IRequest, res: Response) => {
                 $and: [
                   {
                     createdAt: {
-                      $gte: new Date("2024-08-01T04:36:38.701+00:00"),
+                      $gte: new Date(parseInt(from)),
                     },
                   },
                   {
                     createdAt: {
-                      $lte: new Date(),
+                      $lte: new Date(parseInt(to)),
                     },
                   },
                 ],

@@ -859,3 +859,5 @@ error: POST /api/v1/brands 400 7ms
 {"level":"error","message":"GET /api/v1/get_all_logs 429 1ms","timestamp":"2024-08-22T06:26:51.494Z"}
 {"level":"error","message":"GET /favicon.ico 404 5ms","timestamp":"2024-08-22T11:45:38.026Z"}
 {"level":"error","message":"GET /api/v2/listed/customer/65efd60968853585bbb96322/offers 401 611ms","timestamp":"2024-08-26T14:11:31.539Z"}
+{"level":"error","message":"GET /api/v2/users/public/AsRYLjNCLyeWvvAykGofBNrPdQG2 500 19ms","timestamp":"2024-08-28T09:44:58.111Z"}
+{"level":"error","message":"GET /api/v2/users/public/AsRYLjNCLyeWvvAykGofBNrPdQG2 500 17ms","timestamp":"2024-08-28T10:09:54.400Z"}

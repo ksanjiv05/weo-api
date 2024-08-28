@@ -35,6 +35,7 @@ import { v4 } from "uuid";
 import listedModel from "../../../models/listed.model";
 import Ownership from "../../../models/ownership.model";
 import NegotiationAttempt from "../../../models/negotiationAttempt.model";
+import User from "../../../models_v1/User";
 
 // define function for create Collected
 
@@ -135,6 +136,8 @@ const uid = req.user._id;
       offerStatus: OFFER_STATUS.LIVE,
       totalOffersAvailable: { $gte: noOfOffers },
     });
+
+
     console.log("offer which going to collect ", offer);
     const remainingAttempts = negotiationAttemptInstance
       ? negotiationConfig.maxAttempts - negotiationAttemptInstance?.noOfAttempts
@@ -161,6 +164,22 @@ const uid = req.user._id;
           remainingFreeAttempts,
         },
         code: ERROR_CODES.FIELD_VALIDATION_ERR,
+      });
+    }
+        if(offer.user==req.user._id){
+      return responseObj({
+        resObj: res,
+        type: "error",
+        statusCode: HTTP_STATUS_CODES.BAD_REQUEST,
+        msg: "You cannot collect your own offer",
+        error: "You cannot collect your own offer",
+        data: {
+          remainingAttempts: negotiationAttemptInstance
+            ? negotiationConfig.maxAttempts -
+              negotiationAttemptInstance?.noOfAttempts
+            : negotiationConfig.maxAttempts,
+        },
+        code: ERROR_CODES.FIELD_VALIDATION_ERR, 
       });
     }
 

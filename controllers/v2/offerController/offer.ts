@@ -466,6 +466,7 @@ export const getOffers = async (req: IRequest, res: Response) => {
         path: "offerDataPoints",
         populate: { path: "offerData" },
       })
+      .populate("user", "_id creatorName name")
       .skip(Number(skip))
       .limit(Number(perPage))
       .exec();
@@ -823,6 +824,7 @@ export const getOfferByOutletId = async (req: Request, res: Response) => {
         path: "offerDataPoints",
         populate: { path: "offerData" },
       })
+      .populate("user", "_id name creatorName")
       .populate("outlets")
       .skip(skip)
       .limit(Number(perPage));

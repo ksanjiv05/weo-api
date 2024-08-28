@@ -70,7 +70,7 @@ const router = express.Router();
 
 router.post("/offers", auth, offerValidationCh1, addOffer);
 router.get("/offers", auth, getOffers);
-router.get("/offers/location", getOffersByLocation);
+router.get("/offers/location",auth, getOffersByLocation);
 router.get("/offers/outlets/:id", auth, getOfferByOutletId);
 
 /**
