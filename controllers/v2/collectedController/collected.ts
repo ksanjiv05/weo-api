@@ -39,7 +39,6 @@ import User from "../../../models_v1/User";
 
 // define function for create Collected
 
-
 export const collectOffer = async (req: IRequest, res: Response) => {
   const {
     id,
@@ -54,7 +53,7 @@ export const collectOffer = async (req: IRequest, res: Response) => {
     outletId = null,
     offerType = OFFER_TYPE.FRESH,
   } = req.body;
-const uid = req.user._id;
+  const uid = req.user._id;
   const session = await Collected.startSession();
   session.startTransaction();
   try {
@@ -85,8 +84,8 @@ const uid = req.user._id;
         ? negotiationConfig.oCharge
         : 0;
 
-        if(deductOBalance>0){
-          if( wallet.oBalance<deductOBalance){
+    if (deductOBalance > 0) {
+      if (wallet.oBalance < deductOBalance) {
         return responseObj({
           resObj: res,
           type: "error",
@@ -102,41 +101,38 @@ const uid = req.user._id;
           code: ERROR_CODES.FIELD_VALIDATION_ERR,
         });
       }
-      wallet.oBalance = wallet.oBalance-deductOBalance;
+      wallet.oBalance = wallet.oBalance - deductOBalance;
       await wallet.save();
       const newOLogForONegotiation = new oLogModel({
-      // event: O_EVENTS.COLLECTED,
-      amount: 0,
-      offer: id,
-      brand: null,
-      seller: null,
-      buyer: {
-        id: req.user._id,
-        oQuantity:deductOBalance ,
-        event: O_EVENTS.NEGOTIATION_ATTEMPT,
-      },
-      discount: 0,
-      quantity:0,
-      noOfOffers: 0,
-      oAgainstPrice: 0,
-      oGenerated: 0,
-      atPlatformCutOffRate: 0,
-      atRateCutOffFromDiscount: 0,
-      toPlatformCutOffRateFromDiscount:
-        0,
-      toPlatformCutOffRate: 0,
-    });
+        // event: O_EVENTS.COLLECTED,
+        amount: 0,
+        offer: id,
+        brand: null,
+        seller: null,
+        buyer: {
+          id: req.user._id,
+          oQuantity: deductOBalance,
+          event: O_EVENTS.NEGOTIATION_ATTEMPT,
+        },
+        discount: 0,
+        quantity: 0,
+        noOfOffers: 0,
+        oAgainstPrice: 0,
+        oGenerated: 0,
+        atPlatformCutOffRate: 0,
+        atRateCutOffFromDiscount: 0,
+        toPlatformCutOffRateFromDiscount: 0,
+        toPlatformCutOffRate: 0,
+      });
 
-    await newOLogForONegotiation.save();
-        }
-      
+      await newOLogForONegotiation.save();
+    }
 
     const offer = await Offer.findOne({
       _id: id,
       offerStatus: OFFER_STATUS.LIVE,
       totalOffersAvailable: { $gte: noOfOffers },
     });
-
 
     console.log("offer which going to collect ", offer);
     const remainingAttempts = negotiationAttemptInstance
@@ -166,7 +162,7 @@ const uid = req.user._id;
         code: ERROR_CODES.FIELD_VALIDATION_ERR,
       });
     }
-        if(offer.user==req.user._id){
+    if (offer.user == req.user._id) {
       return responseObj({
         resObj: res,
         type: "error",
@@ -179,7 +175,7 @@ const uid = req.user._id;
               negotiationAttemptInstance?.noOfAttempts
             : negotiationConfig.maxAttempts,
         },
-        code: ERROR_CODES.FIELD_VALIDATION_ERR, 
+        code: ERROR_CODES.FIELD_VALIDATION_ERR,
       });
     }
 
@@ -245,8 +241,6 @@ const uid = req.user._id;
 
     offer.totalOffersAvailable = offer.totalOffersAvailable - noOfOffers;
     offer.totalOfferSold = offer.totalOfferSold + noOfOffers;
-    
-
 
     if (wallet.balance < amount * noOfOffers * 100) {
       return responseObj({
@@ -264,7 +258,7 @@ const uid = req.user._id;
         code: ERROR_CODES.FIELD_VALIDATION_ERR,
       });
     }
-//
+    //
     wallet.balance = wallet.balance - amount * noOfOffers * 100;
     const exchangeRate = await getExchangeRate(wallet.currency, BASE_CURRENCY);
     const amountAfterExchange = amount * exchangeRate;
@@ -290,6 +284,23 @@ const uid = req.user._id;
     req.user.oEarned = req.user.oEarned + toDistribute / 2;
     req.user.oEarnPotential = req.user.oEarnPotential + toDistribute / 2;
 
+    const sellerWallet = await Wallet.findOne({
+      user: offerType === OFFER_TYPE.RESELL ? offer.reSeller : offer.user,
+    });
+
+    if (!sellerWallet) {
+      return responseObj({
+        resObj: res,
+        type: "error",
+        statusCode: HTTP_STATUS_CODES.BAD_REQUEST,
+        msg: "seller wallet not found",
+        error: "seller wallet not found",
+        data: null,
+        code: ERROR_CODES.FIELD_VALIDATION_ERR,
+      });
+    }
+
+    sellerWallet.oBalance = sellerWallet.oBalance + toDistribute / 2;
     console.log("_______toDistribute_____after collect________");
     console.log({
       exchangeRate,
@@ -297,8 +308,6 @@ const uid = req.user._id;
       toDistribute,
       totalO,
     });
-
- 
 
     wallet.oBalance = wallet.oBalance + toDistribute / 2;
 
@@ -365,7 +374,8 @@ const uid = req.user._id;
       const collectObj = await Collected.findOne({
         offer: offer.reSoldOfferId,
         user: offer.reSeller,
-      }).select("_id");
+      });
+      console.log("-----", { collectObj });
 
       const ownershipObj = await Ownership.findOne({
         _id: collectObj?.ownership,
@@ -386,6 +396,7 @@ const uid = req.user._id;
         owner.isCurrentOwner = false;
         return owner;
       });
+
       ownershipObj.owner = [
         ...owners,
         {
@@ -413,6 +424,7 @@ const uid = req.user._id;
       console.log("--1--");
 
       await wallet.save({ session });
+      await sellerWallet.save({ session });
       console.log("--2--");
 
       await newOfferCollected.save({ session });
@@ -455,6 +467,8 @@ const uid = req.user._id;
       console.log("--1--");
 
       await wallet.save({ session });
+      await sellerWallet.save({ session });
+
       console.log("--2--");
 
       await newOfferCollected.save({ session });
@@ -734,7 +748,7 @@ export const getCollectedOffers = async (req: IRequest, res: Response) => {
     const collectedOffers = await Collected.aggregate([
       {
         $match: {
-          user: new mongoose.Types.ObjectId("65efd60968853585bbb96322"),
+          user: new mongoose.Types.ObjectId(req.user._id),
         },
       },
       {
@@ -768,6 +782,23 @@ export const getCollectedOffers = async (req: IRequest, res: Response) => {
           as: "ownership",
         },
       },
+
+      {
+        $lookup: {
+          from: "offers",
+          localField: "offer",
+          foreignField: "_id",
+          as: "offer",
+        },
+      },
+      {
+        $addFields: {
+          offer: {
+            $first: "$offer",
+          },
+        },
+      },
+
       {
         $lookup: {
           from: "offerdatas",
@@ -1194,9 +1225,12 @@ export const getCollectedOfferQr = async (req: IRequest, res: Response) => {
       });
     }
 
+    console.log("---", collectedOffer);
+
     const status = collectedOffer?.ownership?.offer_access_codes.find(
       (code: any) =>
-        code.code === id && code.status === OFFER_COLLECTION_EVENTS.COLLECTED
+        code.code === id &&
+        parseInt(code.status) === OFFER_COLLECTION_EVENTS.COLLECTED
     );
 
     if (!status) {

@@ -15,8 +15,9 @@ export const auth = (req: IRequest, res: Response, next: NextFunction) => {
       .auth()
       .verifyIdToken(token)
       .then(async (claims) => {
-        // console.log("clams", claims);
+        console.log("clams", claims);
         const user = await User.findOne({ uid: claims.uid });
+        console.log("user", user);
         req.user = user;
         next();
       })

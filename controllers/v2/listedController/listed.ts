@@ -225,9 +225,9 @@ export const getAllListedBrands = async (req: IRequest, res: Response) => {
           totalListedOffers: 1,
           completed: 1,
           brandTransaction: 1,
-          oStats:{
-        $first:"$collecteds"
-      }
+          oStats: {
+            $first: "$collecteds",
+          },
         },
       },
       {
@@ -902,7 +902,8 @@ export const getPendingOffersByBrand = async (req: IRequest, res: Response) => {
                 pipeline: [
                   {
                     $match: {
-                      "offer_access_codes.status": 2,
+                      "offer_access_codes.status":
+                        OFFER_COLLECTION_EVENTS.PENDING,
                     },
                   },
                   {
@@ -916,7 +917,7 @@ export const getPendingOffersByBrand = async (req: IRequest, res: Response) => {
                           $project: {
                             _id: 1,
                             name: 1,
-                            creatorName:1
+                            creatorName: 1,
                           },
                         },
                       ],
@@ -1121,7 +1122,7 @@ export const getCompletedOffersByBrand = async (
         $match: {
           user: new mongoose.Types.ObjectId(req.user._id),
           brand: new mongoose.Types.ObjectId(brandId),
-          offerStatus: 2,
+          offerStatus: OFFER_COLLECTION_EVENTS.VERIFIED,
         },
       },
       {

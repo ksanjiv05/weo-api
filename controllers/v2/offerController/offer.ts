@@ -445,15 +445,17 @@ export const getOffers = async (req: IRequest, res: Response) => {
       perPage = 10,
       brandId = null,
       outlets = [],
-      finder=false
+      finder = false,
     }: any = req.query;
     const { _id } = req.user;
+
+    console.log("offer status", offerStatus);
 
     const skip = (Number(page) - 1) * Number(perPage);
 
     const filter = {
-      user: _id,
-      ...(finder&&{totalOffersAvailable: { $gte: 1 }}),
+      ...(!finder && { user: _id }),
+      ...(finder && { totalOffersAvailable: { $gte: 1 } }),
       offerStatus: Number(offerStatus),
       ...(brandId && { brand: brandId }),
       ...(outlets?.length > 0 && { outlets: { $in: outlets } }),
@@ -482,7 +484,7 @@ export const getOffers = async (req: IRequest, res: Response) => {
         code: ERROR_CODES.NOT_FOUND,
       });
     }
-   
+
     return responseObj({
       resObj: res,
       type: "success",
@@ -817,6 +819,7 @@ export const getOfferByOutletId = async (req: Request, res: Response) => {
     const offer = await Offer.find({
       offerStatus: OFFER_STATUS.LIVE,
       outlets: { $in: [id] },
+      totalOffersAvailable: { $gte: 1 },
     })
       .sort({ createdAt: -1 })
       .populate("brand", "brandName brandLogo")
@@ -851,9 +854,6 @@ export const getOfferByOutletId = async (req: Request, res: Response) => {
     });
   }
 };
-
-
-
 
 // const userLatitude = 34.0522; // example latitude
 // const userLongitude = -118.2437; // example longitude

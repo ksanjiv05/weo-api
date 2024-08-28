@@ -60,7 +60,7 @@ const ownershipSchema: Schema = new Schema(
     offer_access_codes: [
       {
         code: { type: String },
-        status: { type: String },
+        status: { type: Number },
       },
     ],
     isFullPayment: { type: Boolean, default: false },

@@ -405,6 +405,8 @@ export const getOutletsByUserLocation = async (
                 $expr: {
                   $in: ["$$outletId", "$outlets"],
                 },
+                offerStatus: OFFER_STATUS.LIVE,
+                totalOffersAvailable: { $gte: 1 },
               },
             },
             {

@@ -13,7 +13,7 @@ import { negotiationAttempt } from "../../middleware/negotiationAttempt";
 const router = express.Router();
 
 router.post("/collects", auth, negotiationAttempt, collectOffer);
-router.get("/collects", getCollectedOffers);
+router.get("/collects",auth, getCollectedOffers);
 router.get("/collects/attempt", auth, getNumberOfAttempts);
 router.get("/collects/qr/:id", auth, getCollectedOfferQr);
 router.get("/collects/:id", auth, getCollectedOfferDetails);
