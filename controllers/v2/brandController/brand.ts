@@ -601,6 +601,7 @@ export const getBrandsByLocation = async (req: IRequest, res: Response) => {
                   status: {
                     $ne: 1, // 1: pending or draft
                   },
+                  totalOffersAvailable: { $gte: 1 },
                 },
               },
               {
@@ -687,7 +688,6 @@ export const getBrandsByLocation = async (req: IRequest, res: Response) => {
     });
   }
 };
-
 
 // export const getBrandStats= async (req: Request, res: Response) => {
 //   try {

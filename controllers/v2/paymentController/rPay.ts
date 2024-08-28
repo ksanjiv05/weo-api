@@ -73,6 +73,7 @@ export const newPurchaseOrder = async (req: IRequest, res: Response) => {
 export const newTopUpOrder = async (req: IRequest, res: Response) => {
   try {
     const { amount } = req.body;
+    console.log("---",req.user);
     const { currency } = req.user;
     if (
       currency === "KWD" ||
@@ -97,6 +98,7 @@ export const newTopUpOrder = async (req: IRequest, res: Response) => {
       notes: { user: req.user._id, type: ORDER_TYPE.TOPUP },
       currency: currency.toUpperCase(),
     });
+    console.log("----",order);
     if (order)
       return responseObj({
         resObj: res,

@@ -181,14 +181,12 @@ export const changePrimaryBankAccount = async (
 
 export const getWallet = async (req: IRequest, res: Response) => {
   try {
+    console.log("++++++++++++++", req.user);
     const { user } = req;
-    const wallet = await Wallet.findOne({ user: user._id }).populate("user")
+    const wallet = await Wallet.findOne({ user: user._id }).populate("user");
     const config = await getOConfig();
 
-  const exchangeRate = await getExchangeRate(
-      user.currency,
-      BASE_CURRENCY
-    );
+    const exchangeRate = await getExchangeRate(user.currency, BASE_CURRENCY);
 
     const userSuccessRate =
       user.oEarned === user.oEarnPotential
@@ -201,9 +199,13 @@ export const getWallet = async (req: IRequest, res: Response) => {
       statusCode: HTTP_STATUS_CODES.SUCCESS,
       msg: "wallet details fetched successfully",
       error: null,
-      data: { ...wallet?wallet.toJSON():{}, config,exchangeRate,
+      data: {
+        ...(wallet ? wallet.toJSON() : {}),
+        config,
+        exchangeRate,
         userSuccessRate,
-        userORate: userSuccessRate, },
+        userORate: userSuccessRate,
+      },
     });
   } catch (error: any) {
     logging.error(
