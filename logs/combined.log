@@ -6364,3 +6364,9 @@ info: POST /api/v1/brands 200 295ms
 {"level":"info","message":"GET /api/v2/listed/user/brand/66cf167e44c89d2db436cddc 200 540ms","timestamp":"2024-08-29T08:48:45.498Z"}
 {"level":"info","message":"GET /api/v2/listed/user/brand/pending/66cf167e44c89d2db436cddc 200 539ms","timestamp":"2024-08-29T08:49:38.488Z"}
 {"level":"info","message":"GET /api/v2/listed/user/brand/66cf167e44c89d2db436cddc 200 521ms","timestamp":"2024-08-29T08:49:48.567Z"}
+{"level":"info","message":"GET /api/v2/listed/user/brand/66cf167e44c89d2db436cddc 200 818ms","timestamp":"2024-08-29T09:07:02.028Z"}
+{"level":"info","message":"GET /api/v2/listed/user/brand/66cf167e44c89d2db436cddc 200 826ms","timestamp":"2024-08-29T09:07:02.032Z"}
+{"level":"info","message":"GET /api/v2/listed/user/brand/66cf167e44c89d2db436cddc 200 1072ms","timestamp":"2024-08-29T09:07:02.033Z"}
+{"level":"info","message":"GET /api/v2/listed/user/brand 200 517ms","timestamp":"2024-08-29T09:07:06.297Z"}
+{"level":"info","message":"GET /api/v2/listed/user/brand/66cf167e44c89d2db436cddc 200 522ms","timestamp":"2024-08-29T09:07:08.716Z"}
+{"level":"info","message":"GET /api/v2/listed/user/brand/66cf167e44c89d2db436cddc 200 532ms","timestamp":"2024-08-29T09:07:08.787Z"}

@@ -6,6 +6,7 @@ import {
   getCollectedOfferQr,
   getCollectedOffers,
   getNumberOfAttempts,
+  getReSoldCollectedOffers,
   reSellCollectedOffer,
 } from "../../controllers/v2/collectedController/collected";
 import { negotiationAttempt } from "../../middleware/negotiationAttempt";
@@ -13,11 +14,11 @@ import { negotiationAttempt } from "../../middleware/negotiationAttempt";
 const router = express.Router();
 
 router.post("/collects", auth, negotiationAttempt, collectOffer);
-router.get("/collects",auth, getCollectedOffers);
+router.get("/collects", auth, getCollectedOffers);
+router.post("/collects/resell", auth, getReSoldCollectedOffers);
 router.get("/collects/attempt", auth, getNumberOfAttempts);
 router.get("/collects/qr/:id", auth, getCollectedOfferQr);
 router.get("/collects/:id", auth, getCollectedOfferDetails);
-router.post("/collected/resell/:id",auth,reSellCollectedOffer)
-
+router.post("/collected/resell/:id", auth, reSellCollectedOffer);
 
 export default router;
