@@ -456,8 +456,15 @@ export const getOffers = async (req: IRequest, res: Response) => {
     const filter = {
       ...(!finder && { user: _id }),
       ...(finder && { totalOffersAvailable: { $gte: 1 } }),
-      ...(finder ? {  $or:[{offerStatus: Number(OFFER_STATUS.LIVE)},{offerStatus: Number(OFFER_STATUS.RESELL)}] }:{offerStatus: Number(offerStatus)}),
-  
+      ...(finder
+        ? {
+            $or: [
+              { offerStatus: Number(OFFER_STATUS.LIVE) },
+              { offerStatus: Number(OFFER_STATUS.RESELL) },
+            ],
+          }
+        : { offerStatus: Number(offerStatus) }),
+
       ...(brandId && { brand: brandId }),
       ...(outlets?.length > 0 && { outlets: { $in: outlets } }),
     };
@@ -514,7 +521,14 @@ export const getOffers = async (req: IRequest, res: Response) => {
 export const getOfferById = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    const offer = await Offer.findById(id);
+    const offer = await Offer.findOne({ _id: id })
+      .sort({ createdAt: -1 })
+      .populate("brand", "brandName brandLogo")
+      .populate({
+        path: "offerDataPoints",
+        populate: { path: "offerData" },
+      })
+      .populate("user", "_id creatorName name");
 
     if (!offer) {
       return responseObj({

@@ -6786,3 +6786,9 @@ info: POST /api/v1/brands 200 295ms
 {"level":"info","message":"GET /api/v2/offers?offerStatus=2&finder=true&outlets[]=66cf191f44c89d2db436cde7 200 838ms","timestamp":"2024-08-29T14:14:29.319Z"}
 {"level":"info","message":"GET /api/v2/brands/location?userLatitude=13.0256069&userLongitude=77.637094 200 568ms","timestamp":"2024-08-29T14:14:40.478Z"}
 {"level":"info","message":"GET /api/v2/offers?offerStatus=2&finder=true&outlets[]=66cf191f44c89d2db436cde7 200 860ms","timestamp":"2024-08-29T14:14:40.854Z"}
+{"level":"info","message":"GET /api/v2/collects 200 616ms","timestamp":"2024-08-29T14:47:47.336Z"}
+{"level":"info","message":"GET /api/v2/collects 200 581ms","timestamp":"2024-08-29T14:56:50.159Z"}
+{"level":"info","message":"GET /api/v2/collects 200 558ms","timestamp":"2024-08-29T14:59:06.443Z"}
+{"level":"info","message":"GET /api/v2/users?initData=true 200 558ms","timestamp":"2024-08-29T14:59:34.327Z"}
+{"level":"info","message":"GET /api/v2/collects 200 611ms","timestamp":"2024-08-29T15:01:29.244Z"}
+{"level":"error","message":"GET /api/v2/offers/66cf61a8800a1e8621f77ee8 404 552ms","timestamp":"2024-08-29T15:01:38.758Z"}
