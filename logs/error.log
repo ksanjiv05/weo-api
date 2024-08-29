@@ -955,3 +955,4 @@ error: POST /api/v1/brands 400 7ms
 {"level":"error","message":"GET /api/v2/collects 500 609ms","timestamp":"2024-08-29T12:40:55.468Z"}
 {"level":"error","message":"GET /api/v2/collects 500 540ms","timestamp":"2024-08-29T12:41:19.644Z"}
 {"level":"error","message":"POST /api/v2/ai/images 500 3057ms","timestamp":"2024-08-29T13:07:34.417Z"}
+{"level":"error","message":"GET /api/v2/offers/66cf61a8800a1e8621f77ee8 404 552ms","timestamp":"2024-08-29T15:01:38.758Z"}
