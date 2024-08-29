@@ -298,7 +298,7 @@ export const getAllListedBrands = async (req: IRequest, res: Response) => {
 
 //TODO : add oearned and how much money earned
 export const getAllListedOffersByBrand = async (
-  req: Request,
+  req: IRequest,
   res: Response
 ) => {
   try {
@@ -312,6 +312,7 @@ export const getAllListedOffersByBrand = async (
             : {
                 brand: new mongoose.Types.ObjectId(id),
                 offerType: { $ne: OFFER_TYPE.RESELL },
+                user: new mongoose.Types.ObjectId(req.user._id),
               }),
           $or: [
             { offerStatus: OFFER_STATUS.LIVE },
