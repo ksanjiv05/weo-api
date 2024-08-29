@@ -378,7 +378,11 @@ export const getOutletsByUserLocation = async (
           pipeline: [
             {
               $match: {
-                status: STATUS.LIVE,
+                $or: [
+                  { status: OFFER_STATUS.LIVE},
+                  { status: OFFER_STATUS.RESELL},
+                ]
+               
                 // user: {
                 //   $ne: new mongoose.Types.ObjectId(req.user._id),
                 // },

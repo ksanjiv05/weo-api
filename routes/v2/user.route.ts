@@ -15,7 +15,7 @@ import {
   isExistingUser,
   isUserNameAvailable,
   register,
-  updateCreatorName,
+  updateCreator,
   updateUser,
 } from "../../controllers/v2/authController/auth";
 import {
@@ -451,10 +451,10 @@ router.post(
 router.get("/users/wallet", auth, getWallet);
 
 router.put(
-  "/users/creatorName",
+  "/users/creator",
   auth,
   userDataValidateCheckPointForCreatorName,
-  updateCreatorName
+  updateCreator
 );
 
 router.put("/users/:id", auth, userDataValidateCheckPointB, updateUser);

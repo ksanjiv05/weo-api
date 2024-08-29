@@ -456,7 +456,8 @@ export const getOffers = async (req: IRequest, res: Response) => {
     const filter = {
       ...(!finder && { user: _id }),
       ...(finder && { totalOffersAvailable: { $gte: 1 } }),
-      offerStatus: Number(offerStatus),
+      ...(finder ? {  $or:[{offerStatus: Number(OFFER_STATUS.LIVE)},{offerStatus: Number(OFFER_STATUS.RESELL)}] }:{offerStatus: Number(offerStatus)}),
+  
       ...(brandId && { brand: brandId }),
       ...(outlets?.length > 0 && { outlets: { $in: outlets } }),
     };

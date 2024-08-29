@@ -162,7 +162,8 @@ export const collectOffer = async (req: IRequest, res: Response) => {
         code: ERROR_CODES.FIELD_VALIDATION_ERR,
       });
     }
-    if (offer.user == req.user._id) {
+
+    if (offer.user.toString() == req.user._id.toString()) {
       return responseObj({
         resObj: res,
         type: "error",
@@ -751,6 +752,35 @@ export const getCollectedOffers = async (req: IRequest, res: Response) => {
           user: new mongoose.Types.ObjectId(req.user._id),
         },
       },
+        {
+    $lookup: {
+      from: "offers",
+      localField: "offer",
+      foreignField: "_id",
+      as: "offer",
+      pipeline: [
+        {
+          $lookup: {
+            from: "offers",
+            localField: "_id",
+            foreignField: "reSoldOfferId",
+            as: "offers"
+          }
+        },
+        {
+          $unwind: "$offers"
+        },
+        {
+          $match: {
+            "offers.offerType": OFFER_TYPE.RESELL
+          }
+        }
+      ]
+    }
+  },
+  {
+    $unwind: "$offer"
+  },
       {
         $lookup: {
           from: "brands",
@@ -783,21 +813,22 @@ export const getCollectedOffers = async (req: IRequest, res: Response) => {
         },
       },
 
-      {
-        $lookup: {
-          from: "offers",
-          localField: "offer",
-          foreignField: "_id",
-          as: "offer",
-        },
-      },
-      {
-        $addFields: {
-          offer: {
-            $first: "$offer",
-          },
-        },
-      },
+      // {
+      //   $lookup: {
+      //     from: "offers",
+      //     localField: "offer",
+      //     foreignField: "_id",
+      //     as: "offer",
+      //     pipeline: []
+      //   },
+      // },
+      // {
+      //   $addFields: {
+      //     offer: {
+      //       $first: "$offer",
+      //     },
+      //   },
+      // },
 
       {
         $lookup: {
@@ -1356,7 +1387,7 @@ export const reSellCollectedOffer = async (req: IRequest, res: Response) => {
       reSeller: req.user._id,
       totalOffersAvailable: 1,
       totalOfferSold: 0,
-      offerStatus: OFFER_STATUS.LIVE,
+      offerStatus: OFFER_STATUS.RESELL,
       reSoldOfferId: offerId,
       offerDataPoints: [
         {
@@ -1413,3 +1444,354 @@ const offerStatusOffed = async () => {
     console.log("offer status update failed", error);
   }
 };
+
+export const getReSoldCollectedOffers = async (
+  req: IRequest,
+  res: Response
+) => {
+  try {
+    const { isReSellable = false } = req.query;
+    const reSellableFilter = [
+      {
+        $match: {
+          "ownership.offer_access_codes.status":
+            OFFER_COLLECTION_EVENTS.COLLECTED,
+        },
+      },
+      {
+        $match: {
+          reSellable: true,
+        },
+      },
+    ];
+
+    const collectedOffers = await Collected.aggregate([
+      {
+        $match: {
+          user: new mongoose.Types.ObjectId(req.user._id),
+        },
+      },
+       {
+    $lookup: {
+      from: "offers",
+      localField: "offer",
+      foreignField: "reSoldOfferId",
+      as: "offer",
+      pipeline: [
+        {
+          $match: {
+            offerType: "resell"
+          }
+        }
+      ]
+    }
+  },
+      {
+        $lookup: {
+          from: "brands",
+          localField: "brand",
+          foreignField: "_id",
+          as: "brands",
+          pipeline: [
+            {
+              $project: {
+                brandName: 1,
+                brandLogo: 1,
+              },
+            },
+          ],
+        },
+      },
+      {
+        $addFields: {
+          brandDetails: {
+            $first: "$brands",
+          },
+        },
+      },
+      {
+        $lookup: {
+          from: "ownerships",
+          localField: "ownership",
+          foreignField: "_id",
+          as: "ownership",
+        },
+      },
+ 
+
+      {
+        $lookup: {
+          from: "offerdatas",
+          localField: "offerDataId",
+          foreignField: "_id",
+          as: "offerDataDetils",
+          pipeline: [
+            {
+              $project: {
+                serviceStartDate: 1,
+                serviceStartTime: 1,
+              },
+            },
+          ],
+        },
+      },
+      {
+        $addFields: {
+          offerDataDetils: {
+            $first: "$offerDataDetils",
+          },
+        },
+      },
+      {
+        $addFields: {
+          ownership: {
+            $first: "$ownership",
+          },
+        },
+      },
+      {
+        $addFields: {
+          reSellable: {
+            $cond: [
+              {
+                $and: [
+                  {
+                    $gt: ["$offerDataDetils.serviceStartDate", new Date()],
+                  },
+                ],
+              },
+              true,
+              false,
+            ],
+          },
+        },
+      },
+      {
+        $facet: {
+          collectedOffers: [...(isReSellable ? reSellableFilter : [])],
+          totalOfferCount: [
+            {
+              $count: "offer",
+            },
+          ],
+          totalInProgress: [
+            {
+              $unwind: "$ownership.offer_access_codes",
+            },
+            {
+              $match: {
+                "ownership.offer_access_codes.status":
+                  OFFER_COLLECTION_EVENTS.COLLECTED,
+              },
+            },
+            {
+              $count: "totalInProgress",
+            },
+          ],
+          totalOEarned: [
+            {
+              $group: {
+                _id: null,
+                total: {
+                  $sum: "$ownership.oEarned",
+                },
+              },
+            },
+            {
+              $project: {
+                _id: 0,
+                totalOEarned: "$total",
+              },
+            },
+          ],
+          totalSpent: [
+            {
+              $unwind: "$ownership",
+            },
+            {
+              $group: {
+                _id: null,
+                total: {
+                  $sum: "$ownership.spent",
+                },
+              },
+            },
+            {
+              $project: {
+                _id: 0,
+                total: "$total",
+              },
+            },
+          ],
+        },
+      },
+      {
+        $project: {
+          collectedOffers: 1,
+          totalOfferCount: {
+            $first: "$totalOfferCount.offer",
+          },
+          totalInProgress: {
+            $first: "$totalInProgress.totalInProgress",
+          },
+          totalOEarned: {
+            $first: "$totalOEarned.totalOEarned",
+          },
+          totalSpent: {
+            $first: "$totalSpent.total",
+          },
+        },
+      },
+    ]);
+    return responseObj({
+      resObj: res,
+      type: "success",
+      statusCode: HTTP_STATUS_CODES.SUCCESS,
+      msg: "Collected Offer",
+      error: null,
+      data: collectedOffers.length > 0 ? collectedOffers[0] : null,
+      code: ERROR_CODES.SUCCESS,
+    });
+  } catch (error: any) {
+    logging.error("Collected Offer", error.message, error);
+    return responseObj({
+      resObj: res,
+      type: "error",
+      statusCode: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR,
+      msg: "Internal server error",
+      error: error.message ? error.message : "internal server error",
+      data: null,
+      code: ERROR_CODES.SERVER_ERR,
+    });
+  }
+};
+
+
+
+
+// export const reSellCollectedOffer = async (req: IRequest, res: Response) => {
+//   const session = await Collected.startSession();
+//   session.startTransaction();
+//   try {
+//     const id = req.params.id;
+//     console.log("id", id, req.user._id);
+//     const { offerPriceAmount, offerPriceMinPercentage } = req.body;
+//     const collectedOffer = await Collected.findOne({
+//       _id: id,
+//       user: req.user._id,
+//     }).populate("ownership");
+//     if (!collectedOffer) {
+//       return responseObj({
+//         resObj: res,
+//         type: "error",
+//         statusCode: HTTP_STATUS_CODES.BAD_REQUEST,
+//         msg: "Invalid Collected Offer to resell",
+//         error: null,
+//         data: null,
+//         code: ERROR_CODES.NOT_FOUND,
+//       });
+//     }
+//     //TODO : if service date is started then offer can not be resold
+//     // const status = collectedOffer?.ownership?.offer_access_codes.find(
+//     //   (code: any) =>
+//     //     code.code === id && code.status === OFFER_COLLECTION_EVENTS.COLLECTED
+//     // );
+//     const offerData = await OfferData.findOne({
+//       _id: collectedOffer.offerDataId,
+//       serviceStartDate: {
+//         $gt: new Date(),
+//       },
+//     });
+
+//     if (!offerData) {
+//       return responseObj({
+//         resObj: res,
+//         type: "error",
+//         statusCode: HTTP_STATUS_CODES.BAD_REQUEST,
+//         msg: "This offer already delivered",
+//         error: null,
+//         data: null,
+//         code: ERROR_CODES.NOT_FOUND,
+//       });
+//     }
+
+//     const offer = collectedOffer.offer;
+//     const offerObj = await Offer.findOne({ _id: offer });
+//     if (!offerData || !offerObj) {
+//       return responseObj({
+//         resObj: res,
+//         type: "error",
+//         statusCode: HTTP_STATUS_CODES.BAD_REQUEST,
+//         msg: "Invalid Offer to resell",
+//         error: null,
+//         data: null,
+//         code: ERROR_CODES.NOT_FOUND,
+//       });
+//     }
+
+//     const offerDataJson = offerData.toJSON();
+//     delete offerDataJson._id;
+//     const newOfferData = new OfferData({
+//       ...offerDataJson,
+//       offerPriceAmount,
+//       offerPriceMinPercentage,
+//       type: OFFER_TYPE.RESELL,
+//     });
+
+//     await newOfferData.save({ session });
+//     const offerId = offerObj._id;
+//     const offerObjJson = offerObj.toJSON();
+//     delete offerObjJson._id;
+
+//     const newOffer = new Offer({
+//       ...offerObjJson,
+//       offerType: OFFER_TYPE.RESELL,
+//       reSeller: req.user._id,
+//       totalOffersAvailable: 1,
+//       totalOfferSold: 0,
+//       offerStatus: OFFER_STATUS.LIVE,
+//       reSoldOfferId: offerId,
+//       offerDataPoints: [
+//         {
+//           offerData: newOfferData._id,
+//         },
+//       ],
+//     });
+
+//     await newOffer.save({ session });
+
+//     const newOfferListed = new listedModel({
+//       user: req.user._id,
+//       offer: offer._id,
+//       brand: offer.brand,
+//       ownerships: [],
+//     });
+
+//     await newOfferListed.save({ session });
+
+//     await session.commitTransaction();
+//     await session.endSession();
+//     return responseObj({
+//       resObj: res,
+//       type: "success",
+//       statusCode: HTTP_STATUS_CODES.SUCCESS,
+//       msg: "Collected Offer Successfully added for resell ",
+//       error: null,
+//       data: null,
+//       code: ERROR_CODES.SUCCESS,
+//     });
+//   } catch (error: any) {
+//     await session.abortTransaction();
+//     await session.endSession();
+//     logging.error("Resell Collected Offer", error.message, error);
+//     return responseObj({
+//       resObj: res,
+//       type: "error",
+//       statusCode: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR,
+//       msg: "Internal server error",
+//       error: error.message ? error.message : "internal server error",
+//       data: null,
+//       code: ERROR_CODES.SERVER_ERR,
+//     });
+//   }
+// };
