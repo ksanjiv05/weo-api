@@ -13,6 +13,7 @@ export enum OFFER_STATUS {
   SOLD = 5,
   EXPIRED = 6,
   REJECTED = 7,
+  RESELL=8
 }
 
 export enum ORDER_TYPE {

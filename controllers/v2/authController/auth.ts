@@ -10,6 +10,8 @@ import { IRequest } from "../../../interfaces/IRequest";
 import { addWallet } from "../../../helper/user";
 import { IWallet } from "../../../models/wallet.model";
 import mongoose from "mongoose";
+import { OFFER_STATUS } from "../../../config/enums";
+import { BRAND_STATUS } from "../../../interfaces/IBrand";
 
 export const register = async (req: Request, res: Response) => {
   try {
@@ -160,15 +162,20 @@ export const isUserNameAvailable = async (req: Request, res: Response) => {
   }
 };
 
-export const updateCreatorName = async (req: IRequest, res: Response) => {
+export const updateCreator = async (req: IRequest, res: Response) => {
   try {
-    const { creatorName = "", description = "" } = req.body;
+    const { creatorName = "", description = "", profileImage = "" } = req.body;
     const { uid = "" } = req.user;
-    if (uid == "" || creatorName == "")
+    if (
+      uid == "" ||
+      creatorName == "" ||
+      description == "" ||
+      profileImage == ""
+    )
       return responseObj({
         statusCode: HTTP_STATUS_CODES.BAD_REQUEST,
         type: "error",
-        msg: "please provide a valid  user ID and creator name",
+        msg: "please provide a valid  user ID and creator name, description and profile image",
         error: null,
         resObj: res,
         data: null,
@@ -202,6 +209,8 @@ export const updateCreatorName = async (req: IRequest, res: Response) => {
     if (!isUserNameAvailable) {
       user.creatorName = creatorName;
       user.description = description === "" ? user.description : description;
+      user.profileImage =
+        profileImage === "" ? user.profileImage : profileImage;
       await user.save();
     } else {
       return responseObj({
@@ -379,6 +388,13 @@ export const getUserProfile = async (req: IRequest, res: Response) => {
             localField: "_id",
             foreignField: "user",
             as: "brands",
+            pipeline: [
+              {
+                $match: {
+                  status: { $ne: BRAND_STATUS.DRAFT },
+                },
+              },
+            ],
           },
         },
         {
@@ -438,6 +454,13 @@ export const getUserPublicProfile = async (req: IRequest, res: Response) => {
           localField: "_id",
           foreignField: "user",
           as: "brands",
+          pipeline: [
+            {
+              $match: {
+                status: { $nq: BRAND_STATUS.DRAFT },
+              },
+            },
+          ],
         },
       },
       {
@@ -446,6 +469,13 @@ export const getUserPublicProfile = async (req: IRequest, res: Response) => {
           localField: "_id",
           foreignField: "user",
           as: "offers",
+          pipeline: [
+            {
+              $match: {
+                status: { $nq: OFFER_STATUS.PENDING },
+              },
+            },
+          ],
         },
       },
       {

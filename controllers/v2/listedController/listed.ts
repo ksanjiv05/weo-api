@@ -15,6 +15,7 @@ import { IRequest } from "../../../interfaces/IRequest";
 import {
   OFFER_COLLECTION_EVENTS,
   OFFER_STATUS,
+  OFFER_TYPE,
   STATUS,
 } from "../../../config/enums";
 import Ownership from "../../../models/ownership.model";
@@ -172,6 +173,9 @@ export const getAllListedBrands = async (req: IRequest, res: Response) => {
                 status: {
                   $ne: 1, // 1: pending or draft
                 },
+                offerType: {
+                  $ne: OFFER_TYPE.RESELL,
+                },
               },
             },
             {
@@ -196,6 +200,9 @@ export const getAllListedBrands = async (req: IRequest, res: Response) => {
                     $cond: [{ $eq: ["$offerStatus", OFFER_STATUS.SOLD] }, 1, 0],
                   },
                 },
+                totalOfferSold: {
+                  $sum: "$totalOfferSold",
+                },
               },
             },
           ],
@@ -210,6 +217,7 @@ export const getAllListedBrands = async (req: IRequest, res: Response) => {
             $arrayElemAt: ["$offers.totalListedOffers", 0],
           },
           completed: { $arrayElemAt: ["$offers.completed", 0] },
+          totalOfferSold: { $arrayElemAt: ["$offers.totalOfferSold", 0] },
         },
       },
       {
@@ -225,6 +233,7 @@ export const getAllListedBrands = async (req: IRequest, res: Response) => {
           totalListedOffers: 1,
           completed: 1,
           brandTransaction: 1,
+          totalOfferSold: 1,
           oStats: {
             $first: "$collecteds",
           },
@@ -236,15 +245,21 @@ export const getAllListedBrands = async (req: IRequest, res: Response) => {
           brands: { $push: "$$ROOT" },
           totalListedOffersSum: { $sum: "$totalListedOffers" },
           totalCompleted: { $sum: "$completed" },
+          totalOEarn: { $sum: "$oStats.oEarned" },
+          totalEarn: { $sum: "$oStats.earn" },
+          totalOfferSold: { $sum: "$totalOfferSold" },
         },
       },
       {
         $project: {
           _id: 0,
           brands: 1,
+          totalEarn: 1,
+          totalOEarn: 1,
           totalListedOffersSum: {
             $sum: ["$totalListedOffersSum", "$totalCompleted"],
           },
+          totalOfferSold: 1,
         },
       },
     ]);
@@ -253,6 +268,9 @@ export const getAllListedBrands = async (req: IRequest, res: Response) => {
       brands: brands[0].brands,
       totalListedOffersSum: brands[0].totalListedOffersSum,
       totalBrands: brands[0].brands.length,
+      totalOEarn: brands[0].totalOEarn,
+      totalEarn: brands[0].totalEarn,
+      totalOfferSold: brands[0].totalOfferSold,
     };
 
     return responseObj({
@@ -289,7 +307,12 @@ export const getAllListedOffersByBrand = async (
     const offers = await Offer.aggregate([
       {
         $match: {
-          ...(id === "All" ? {} : { brand: new mongoose.Types.ObjectId(id) }),
+          ...(id === "All"
+            ? {}
+            : {
+                brand: new mongoose.Types.ObjectId(id),
+                offerType: { $ne: OFFER_TYPE.RESELL },
+              }),
           $or: [
             { offerStatus: OFFER_STATUS.LIVE },
             { offerStatus: OFFER_STATUS.SOLD },
@@ -315,7 +338,7 @@ export const getAllListedOffersByBrand = async (
           offerDescription: { $first: "$offerDescription" },
           totalOffersAvailable: { $first: "$totalOffersAvailable" },
           soldOffers: { $first: "$totalOfferSold" },
-          offerThumbnail: { $first: "$offerDataDetails.offerThumbnail" },
+          offerThumbnail: { $first: "$offerThumbnail" },
           offerAvailabilityStartDate: {
             $first: "$offerDataDetails.offerAvailabilityStartDate",
           },
@@ -449,7 +472,7 @@ export const getAllListedOffersByUser = async (
             $first: "$totalOfferSold",
           },
           offerThumbnail: {
-            $first: "$offerDataDetails.offerThumbnail",
+            $first: "$offerThumbnail",
           },
           offerAvailabilityStartDate: {
             $first: "$offerDataDetails.offerAvailabilityStartDate",
@@ -894,6 +917,21 @@ export const getPendingOffersByBrand = async (req: IRequest, res: Response) => {
           as: "ownerships",
           pipeline: [
             {
+              $match: {
+                "offer_access_codes.status": {
+                  $gt: OFFER_COLLECTION_EVENTS.PENDING,
+                },
+              },
+            },
+            {
+              $unwind: "$owner",
+            },
+            {
+              $match: {
+                "owner.isCurrentOwner": true,
+              },
+            },
+            {
               $lookup: {
                 from: "users",
                 localField: "owner.ownerId",
@@ -901,33 +939,10 @@ export const getPendingOffersByBrand = async (req: IRequest, res: Response) => {
                 as: "customer",
                 pipeline: [
                   {
-                    $match: {
-                      "offer_access_codes.status":
-                        OFFER_COLLECTION_EVENTS.PENDING,
-                    },
-                  },
-                  {
-                    $lookup: {
-                      from: "users",
-                      localField: "owner.ownerId",
-                      foreignField: "_id",
-                      as: "customer",
-                      pipeline: [
-                        {
-                          $project: {
-                            _id: 1,
-                            name: 1,
-                            creatorName: 1,
-                          },
-                        },
-                      ],
-                    },
-                  },
-                  {
-                    $addFields: {
-                      customer: {
-                        $first: "$customer",
-                      },
+                    $project: {
+                      _id: 1,
+                      name: 1,
+                      creatorName: 1,
                     },
                   },
                 ],
@@ -941,6 +956,55 @@ export const getPendingOffersByBrand = async (req: IRequest, res: Response) => {
               },
             },
           ],
+          // pipeline: [
+          //   {
+          //     $lookup: {
+          //       from: "users",
+          //       localField: "owner.ownerId",
+          //       foreignField: "_id",
+          //       as: "customer",
+          //       pipeline: [
+          //         {
+          //           $match: {
+          //             "offer_access_codes.status":
+          //               OFFER_COLLECTION_EVENTS.COLLECTED,
+          //           },
+          //         },
+          //         {
+          //           $lookup: {
+          //             from: "users",
+          //             localField: "owner.ownerId",
+          //             foreignField: "_id",
+          //             as: "customer",
+          //             pipeline: [
+          //               {
+          //                 $project: {
+          //                   _id: 1,
+          //                   name: 1,
+          //                   creatorName: 1,
+          //                 },
+          //               },
+          //             ],
+          //           },
+          //         },
+          //         {
+          //           $addFields: {
+          //             customer: {
+          //               $first: "$customer",
+          //             },
+          //           },
+          //         },
+          //       ],
+          //     },
+          //   },
+          //   {
+          //     $addFields: {
+          //       customer: {
+          //         $first: "$customer",
+          //       },
+          //     },
+          //   },
+          // ],
         },
       },
       {
@@ -967,6 +1031,7 @@ export const getPendingOffersByBrand = async (req: IRequest, res: Response) => {
                 offerDataPoints: 1,
                 totalOffersAvailable: 1,
                 outlets: 1,
+                offerThumbnail: 1,
               },
             },
           ],
@@ -1140,14 +1205,13 @@ export const getCompletedOffersByBrand = async (
         $match: {
           $or: [
             {
-              "offerdatas.offerAvailabilityEndDate": {
+              "offerdatas.serviceEndDate": {
                 $lte: new Date(),
               },
             },
-
-            {
-              "offerdatas.offerLiveTillSoldOut": true,
-            },
+            // {
+            //   "offerdatas.offerLiveTillSoldOut": true,
+            // },
           ],
         },
       },
@@ -1332,6 +1396,7 @@ export const getCustomersByOffer = async (req: IRequest, res: Response) => {
       {
         $match: {
           offer: new mongoose.Types.ObjectId(offerId),
+          user: req.user._id,
         },
       },
 
@@ -1754,7 +1819,7 @@ export const getCustomerDetailsBeforeVerify = async (
       {
         $project: {
           user: 0,
-          ownerships: 0,
+          ownership: 0,
           offerDatas: 0,
         },
       },
