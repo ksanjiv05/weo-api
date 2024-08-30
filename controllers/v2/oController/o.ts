@@ -129,15 +129,15 @@ export const getOHistory = async (req: IRequest, res: Response) => {
                 localField: "user",
                 foreignField: "_id",
                 as: "user",
-                pipeline:[
+                pipeline: [
                   {
                     $project: {
                       _id: 1,
                       name: 1,
-                      creatorName:1
+                      creatorName: 1,
                     },
-                  }
-                ]
+                  },
+                ],
               },
             },
 
@@ -164,9 +164,9 @@ export const getOHistory = async (req: IRequest, res: Response) => {
             },
             {
               $project: {
-                offerDataPoints:0
-              }
-            }
+                offerDataPoints: 0,
+              },
+            },
           ],
         },
       },
@@ -296,15 +296,15 @@ export const getTransactionHistory = async (req: IRequest, res: Response) => {
                 localField: "user",
                 foreignField: "_id",
                 as: "user",
-                pipeline:[
+                pipeline: [
                   {
                     $project: {
                       _id: 1,
                       name: 1,
-                      creatorName:1
+                      creatorName: 1,
                     },
-                  }
-                ]
+                  },
+                ],
               },
             },
 
@@ -324,16 +324,16 @@ export const getTransactionHistory = async (req: IRequest, res: Response) => {
                 brand: {
                   $first: "$brand",
                 },
-                user:{
+                user: {
                   $first: "$user",
-                }
+                },
               },
             },
             {
               $project: {
-                offerDataPoints:0
-              }
-            }
+                offerDataPoints: 0,
+              },
+            },
           ],
         },
       },
@@ -670,6 +670,20 @@ export const oTupUp = async (req: IRequest, res: Response) => {
     const { oAmount } = req.body;
     const { user } = req;
 
+    const wallet = await walletModel.findOne({ user: user._id });
+
+    if (!wallet) {
+      return responseObj({
+        resObj: res,
+        type: "error",
+        statusCode: HTTP_STATUS_CODES.BAD_REQUEST,
+        msg: "Wallet not found",
+        error: "Wallet not found",
+        data: null,
+        code: ERROR_CODES.FIELD_VALIDATION_REQUIRED_ERR,
+      });
+    }
+
     const oConfig = await getOConfig();
     if (!oConfig) {
       return responseObj({
@@ -691,12 +705,41 @@ export const oTupUp = async (req: IRequest, res: Response) => {
     const oPriceRate = oConfig.networkRate + (oConfig.networkRate - userRate);
 
     const oPrice = Math.ceil((oAmount * oPriceRate) / oConfig.oAgainstPrice);
+    console.log(
+      "----o top up oprice and price rate",
+      oPrice,
+      oPriceRate,
+      oConfig.oAgainstPrice
+    );
     const exchangeRate = await getExchangeRate(
       req.user.currency,
       BASE_CURRENCY
     );
 
+    console.log("----o top up exchange rate", exchangeRate);
+
     const amountAfterExchange = oPrice * exchangeRate;
+
+    console.log(
+      "----o top up amount after exchange",
+      amountAfterExchange,
+      wallet.balance
+    );
+
+    if (amountAfterExchange > wallet.balance) {
+      return responseObj({
+        resObj: res,
+        type: "error",
+        statusCode: HTTP_STATUS_CODES.BAD_REQUEST,
+        msg: "Insufficient balance",
+        error: "Insufficient balance",
+        data: null,
+        code: ERROR_CODES.FIELD_VALIDATION_REQUIRED_ERR,
+      });
+    }
+
+    wallet.balance = wallet.balance - amountAfterExchange;
+    await wallet.save();
 
     responseObj({
       resObj: res,
@@ -744,8 +787,8 @@ export const getOConfigAndExchangeRate = async (
       });
     }
     const exchangeRate = await getExchangeRate(
-      req.user.currency,
-      BASE_CURRENCY
+      BASE_CURRENCY,
+      req.user.currency
     );
 
     const userSuccessRate =

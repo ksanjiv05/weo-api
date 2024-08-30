@@ -443,6 +443,11 @@ export const getAllListedOffersByUser = async (
             {
               offerStatus: OFFER_STATUS.SOLD,
             },
+            {
+              offerType: {
+                $eq: OFFER_TYPE.FRESH,
+              },
+            },
           ],
         },
       },
