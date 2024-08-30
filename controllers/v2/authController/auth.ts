@@ -10,7 +10,7 @@ import { IRequest } from "../../../interfaces/IRequest";
 import { addWallet } from "../../../helper/user";
 import { IWallet } from "../../../models/wallet.model";
 import mongoose from "mongoose";
-import { OFFER_STATUS } from "../../../config/enums";
+import { OFFER_STATUS, STATUS } from "../../../config/enums";
 import { BRAND_STATUS } from "../../../interfaces/IBrand";
 
 export const register = async (req: Request, res: Response) => {
@@ -391,7 +391,7 @@ export const getUserProfile = async (req: IRequest, res: Response) => {
             pipeline: [
               {
                 $match: {
-                  status: { $ne: BRAND_STATUS.DRAFT },
+                  status: { $eq: STATUS.LIVE },
                 },
               },
             ],

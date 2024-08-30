@@ -38,7 +38,7 @@ const oLogSchema = new mongoose.Schema(
       oQuantity: Number,
       event: {
         type: Number,
-        required: true,
+        // required: true,
       },
     },
     buyer: {
@@ -46,7 +46,7 @@ const oLogSchema = new mongoose.Schema(
       oQuantity: Number,
       event: {
         type: Number,
-        required: true,
+        // required: true,
       },
     },
     quantity: Number,
