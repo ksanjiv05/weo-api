@@ -956,3 +956,15 @@ error: POST /api/v1/brands 400 7ms
 {"level":"error","message":"GET /api/v2/collects 500 540ms","timestamp":"2024-08-29T12:41:19.644Z"}
 {"level":"error","message":"POST /api/v2/ai/images 500 3057ms","timestamp":"2024-08-29T13:07:34.417Z"}
 {"level":"error","message":"GET /api/v2/offers/66cf61a8800a1e8621f77ee8 404 552ms","timestamp":"2024-08-29T15:01:38.758Z"}
+{"level":"error","message":"GET /api/v2/listed/user/brand 500 533ms","timestamp":"2024-08-30T12:18:14.509Z"}
+{"level":"error","message":"PUT /api/v2/users/creator 400 285ms","timestamp":"2024-08-30T12:29:00.139Z"}
+{"level":"error","message":"POST /api/v2/collects 400 1668ms","timestamp":"2024-08-30T12:38:38.281Z"}
+{"level":"error","message":"POST /api/v2/collects 400 1552ms","timestamp":"2024-08-30T12:42:13.425Z"}
+{"level":"error","message":"GET /api/v2/listed/user/brand 500 615ms","timestamp":"2024-08-30T12:43:36.162Z"}
+{"level":"error","message":"POST /api/v2/collects 400 2066ms","timestamp":"2024-08-30T12:44:44.634Z"}
+{"level":"error","message":"POST /api/v2/collects 400 5769ms","timestamp":"2024-08-30T12:45:47.367Z"}
+{"level":"error","message":"POST /api/v2/collects 500 1662ms","timestamp":"2024-08-30T12:48:33.233Z"}
+{"level":"error","message":"POST /api/v2/collects 400 3101ms","timestamp":"2024-08-30T12:50:19.218Z"}
+{"level":"error","message":"GET /api/v2/listed/user/brand 500 539ms","timestamp":"2024-08-30T12:54:56.734Z"}
+{"level":"error","message":"POST /api/v2/collected/resell/66d1bf72c560eacc5957c865 400 1087ms","timestamp":"2024-08-30T12:59:43.443Z"}
+{"level":"error","message":"GET /api/v2/listed/user/brand 500 528ms","timestamp":"2024-08-30T13:08:58.797Z"}

@@ -712,8 +712,8 @@ export const oTupUp = async (req: IRequest, res: Response) => {
       oConfig.oAgainstPrice
     );
     const exchangeRate = await getExchangeRate(
-      req.user.currency,
-      BASE_CURRENCY
+      BASE_CURRENCY,
+      req.user.currency
     );
 
     console.log("----o top up exchange rate", exchangeRate);
@@ -739,6 +739,7 @@ export const oTupUp = async (req: IRequest, res: Response) => {
     }
 
     wallet.balance = wallet.balance - amountAfterExchange;
+    wallet.oBalance = wallet.oBalance + parseFloat(oAmount);
     await wallet.save();
 
     responseObj({
@@ -753,6 +754,7 @@ export const oTupUp = async (req: IRequest, res: Response) => {
         totalO: oAmount,
         exchangeRate,
       },
+      code: ERROR_CODES.SUCCESS,
     });
   } catch (error: any) {
     logging.error("O Tup Up Error", error.message, error);
@@ -790,6 +792,8 @@ export const getOConfigAndExchangeRate = async (
       BASE_CURRENCY,
       req.user.currency
     );
+
+    console.log("----o top up exchange rate", exchangeRate);
 
     const userSuccessRate =
       user.oEarned === user.oEarnPotential

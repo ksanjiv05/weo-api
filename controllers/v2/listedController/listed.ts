@@ -211,13 +211,29 @@ export const getAllListedBrands = async (req: IRequest, res: Response) => {
       {
         $addFields: {
           totalPushedOffers: {
-            $arrayElemAt: ["$offers.totalPushedOffers", 0],
+            $ifNull: [
+              { $arrayElemAt: ["$offers.totalPushedOffers", 0] },
+              0, // default value if null
+            ],
           },
           totalListedOffers: {
-            $arrayElemAt: ["$offers.totalListedOffers", 0],
+            $ifNull: [
+              { $arrayElemAt: ["$offers.totalListedOffers", 0] },
+              0, // default value if null
+            ],
           },
-          completed: { $arrayElemAt: ["$offers.completed", 0] },
-          totalOfferSold: { $arrayElemAt: ["$offers.totalOfferSold", 0] },
+          completed: {
+            $ifNull: [
+              { $arrayElemAt: ["$offers.completed", 0] },
+              false, // default value if null
+            ],
+          },
+          totalOfferSold: {
+            $ifNull: [
+              { $arrayElemAt: ["$offers.totalOfferSold", 0] },
+              0, // default value if null
+            ],
+          },
         },
       },
       {
@@ -443,12 +459,15 @@ export const getAllListedOffersByUser = async (
             {
               offerStatus: OFFER_STATUS.SOLD,
             },
-            {
-              offerType: {
-                $eq: OFFER_TYPE.FRESH,
-              },
-            },
+            // {
+            //   offerType: {
+            //     $eq: OFFER_TYPE.FRESH,
+            //   },
+            // },
           ],
+          offerType: {
+            $eq: OFFER_TYPE.FRESH,
+          },
         },
       },
       {
@@ -571,15 +590,16 @@ export const getAllListedOffersByUser = async (
                   $sum: "$totalOffersAvailable",
                 },
                 soldStatusCount: {
-                  $sum: {
-                    $cond: [
-                      {
-                        $eq: ["$offerStatus", 5],
-                      },
-                      1,
-                      0,
-                    ],
-                  },
+                  $sum: "$soldOffers",
+                  // $sum: {
+                  //   $cond: [
+                  //     {
+                  //       $eq: ["$offerStatus", OFFER_STATUS.SOLD],
+                  //     },
+                  //     1,
+                  //     0,
+                  //   ],
+                  // },
                 },
                 totalOEarned: {
                   $sum: "$collecteds.oEarned",

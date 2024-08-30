@@ -7,7 +7,7 @@ export const getExchangeRate = async (from: string, to: string) => {
       `https://api.freecurrencyapi.com/v1/latest?apikey=${exchangeRateApiKey}&base_currency=${from.toUpperCase()}`
     );
     if (res.data.data) {
-      return res.data.data[to]; // res.data.data[from];
+      return res.data.data[to.toUpperCase()]; // res.data.data[from];
     }
 
     return 0;

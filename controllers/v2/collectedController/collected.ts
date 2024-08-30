@@ -85,6 +85,7 @@ export const collectOffer = async (req: IRequest, res: Response) => {
         : 0;
 
     if (deductOBalance > 0) {
+      console.log("deductOBalance", deductOBalance);
       if (wallet.oBalance < deductOBalance) {
         return responseObj({
           resObj: res,
@@ -243,7 +244,16 @@ export const collectOffer = async (req: IRequest, res: Response) => {
     offer.totalOffersAvailable = offer.totalOffersAvailable - noOfOffers;
     offer.totalOfferSold = offer.totalOfferSold + noOfOffers;
 
-    if (wallet.balance < amount * noOfOffers * 100) {
+    console.log(
+      "newOfferCollected+++++",
+      wallet.balance,
+      amount,
+      noOfOffers,
+      100,
+      wallet.balance < amount * noOfOffers * 100
+    );
+
+    if (wallet.balance < amount * noOfOffers) {
       return responseObj({
         resObj: res,
         type: "error",
@@ -260,7 +270,7 @@ export const collectOffer = async (req: IRequest, res: Response) => {
       });
     }
     //
-    wallet.balance = wallet.balance - amount * noOfOffers * 100;
+    wallet.balance = wallet.balance - amount * noOfOffers;
     const exchangeRate = await getExchangeRate(wallet.currency, BASE_CURRENCY);
     const amountAfterExchange = amount * exchangeRate;
     const oNetworkConfig = await getOConfig();
