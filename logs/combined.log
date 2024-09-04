@@ -7125,3 +7125,17 @@ info: POST /api/v1/brands 200 295ms
 {"level":"info","message":"GET /api/v2/brands/location?userLatitude=13.0256069&userLongitude=77.637094 200 521ms","timestamp":"2024-08-30T14:03:50.313Z"}
 {"level":"info","message":"GET /api/v2/outlets/location?userLatitude=13.0256069&userLongitude=77.637094 200 512ms","timestamp":"2024-08-30T14:03:57.712Z"}
 {"level":"info","message":"GET /api/v2/offers/outlets/66d1c9bc4f4baf73cbe67297?page=1&perPage=10&finder=true&offerStatus=2 200 821ms","timestamp":"2024-08-30T14:04:04.311Z"}
+{"level":"info","message":"GET /api/v2/o/config 200 281ms","timestamp":"2024-08-30T14:05:39.175Z"}
+{"level":"info","message":"GET /api/v2/collects/attempt?offerId=66d1ca3d4f4baf73cbe672aa 200 559ms","timestamp":"2024-08-30T14:05:39.390Z"}
+{"level":"error","message":"POST /api/v2/collects 400 1110ms","timestamp":"2024-08-30T14:05:53.615Z"}
+{"level":"info","message":"GET /api/v2/users?initData=true 200 567ms","timestamp":"2024-08-30T14:06:07.967Z"}
+{"level":"info","message":"POST /api/v2/ai/logo 200 19393ms","timestamp":"2024-09-01T05:26:12.636Z"}
+{"level":"error","message":"POST /api/v2/ai/logo 500 1537ms","timestamp":"2024-09-01T09:02:30.357Z"}
+{"level":"info","message":"POST /api/v2/ai/logo 200 46914ms","timestamp":"2024-09-01T09:03:43.265Z"}
+{"level":"error","message":"POST /api/v2/ai/logo 500 171233ms","timestamp":"2024-09-01T09:07:50.177Z"}
+{"level":"info","message":"POST /api/v2/ai/logo 200 24388ms","timestamp":"2024-09-01T09:10:10.670Z"}
+{"level":"info","message":"POST /api/v2/ai/logo 200 22415ms","timestamp":"2024-09-01T09:38:20.027Z"}
+{"level":"info","message":"POST /api/v2/ai/logo 200 20096ms","timestamp":"2024-09-01T10:27:12.069Z"}
+{"level":"error","message":"POST /api/v2/ai/test 400 15ms","timestamp":"2024-09-01T11:03:48.758Z"}
+{"level":"info","message":"POST /api/v2/ai/test 200 6274ms","timestamp":"2024-09-01T11:04:17.698Z"}
+{"level":"info","message":"POST /api/v2/ai/test 200 3047ms","timestamp":"2024-09-01T11:05:13.588Z"}
