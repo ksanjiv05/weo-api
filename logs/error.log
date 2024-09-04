@@ -968,3 +968,7 @@ error: POST /api/v1/brands 400 7ms
 {"level":"error","message":"GET /api/v2/listed/user/brand 500 539ms","timestamp":"2024-08-30T12:54:56.734Z"}
 {"level":"error","message":"POST /api/v2/collected/resell/66d1bf72c560eacc5957c865 400 1087ms","timestamp":"2024-08-30T12:59:43.443Z"}
 {"level":"error","message":"GET /api/v2/listed/user/brand 500 528ms","timestamp":"2024-08-30T13:08:58.797Z"}
+{"level":"error","message":"POST /api/v2/collects 400 1110ms","timestamp":"2024-08-30T14:05:53.615Z"}
+{"level":"error","message":"POST /api/v2/ai/logo 500 1537ms","timestamp":"2024-09-01T09:02:30.357Z"}
+{"level":"error","message":"POST /api/v2/ai/logo 500 171233ms","timestamp":"2024-09-01T09:07:50.177Z"}
+{"level":"error","message":"POST /api/v2/ai/test 400 15ms","timestamp":"2024-09-01T11:03:48.758Z"}

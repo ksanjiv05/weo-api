@@ -4,6 +4,7 @@ import logging from "../../../config/logging";
 import { HTTP_STATUS_CODES } from "../../../config/statusCode";
 import { responseObj } from "../../../helper/response";
 import { getQueryResponse } from "../../../helper/chatGptPoweredChatBot";
+import sharp from "sharp";
 
 export const getAiGeneratedLogo = async (req: Request, res: Response) => {
   try {
@@ -56,8 +57,16 @@ export const getAiGeneratedLogo = async (req: Request, res: Response) => {
       prompt: promptString,
       n: n,
       size: "1024x1024",
+      response_format: "b64_json",
     });
-    // console.log("response", response);
+    const img: any = response.data[0].b64_json;
+    const buffer: Buffer = Buffer.from(img, "base64");
+    console.log("buffer", buffer);
+    const imageBuffer: any = await getImageBuffer(buffer);
+
+    res.set("Content-Type", "image/jpeg");
+    res.set("Content-Length", imageBuffer.length);
+    return res.send(imageBuffer);
     const image_urls = response.data;
     return responseObj({
       resObj: res,
@@ -78,6 +87,15 @@ export const getAiGeneratedLogo = async (req: Request, res: Response) => {
       data: null,
     });
   }
+};
+
+const getImageBuffer = async (buffer: any) => {
+  const imageBuffer = await sharp(buffer)
+    .resize({ width: 512, height: 512, fit: "fill" })
+    .toBuffer();
+  // .jpeg({ quality: 20 })
+  // .toFile("image.jpg");
+  return imageBuffer;
 };
 
 export const getAiGeneratedImg = async (req: Request, res: Response) => {
@@ -101,22 +119,44 @@ export const getAiGeneratedImg = async (req: Request, res: Response) => {
     // });
     // https://community.openai.com/t/429-rate-limit-exceeded-limit-0-1min-current-1-1min/565451
 
+    // const response = await openai.images.generate({
+    //   model: "dall-e-3",
+    //   prompt: promptString,
+    //   n: n,
+    //   size: "1024x1024",
+    // });
+    // // console.log("response", response);
+    // const image_urls = response.data;
+
     const response = await openai.images.generate({
       model: "dall-e-3",
       prompt: promptString,
       n: n,
       size: "1024x1024",
+      response_format: "b64_json",
     });
-    // console.log("response", response);
-    const image_urls = response.data;
-    return responseObj({
-      resObj: res,
-      type: "success",
-      statusCode: HTTP_STATUS_CODES.SUCCESS,
-      msg: "here your ai genrated images",
-      error: null,
-      data: image_urls,
-    });
+    const img: any = response.data[0].b64_json;
+    const buffer: Buffer = Buffer.from(img, "base64");
+    const imageBuffer: any = await getImageBuffer(buffer);
+    // const resx = await openai.images.createVariation({
+    //   image: buffer,
+    //   n: 1,
+    //   size: "512x512",
+    // });
+    // console.log("response", resx);
+
+    res.set("Content-Type", "image/jpeg");
+    res.set("Content-Length", imageBuffer.length);
+    return res.send(imageBuffer);
+
+    // return responseObj({
+    //   resObj: res,
+    //   type: "success",
+    //   statusCode: HTTP_STATUS_CODES.SUCCESS,
+    //   msg: "here your ai genrated images",
+    //   error: null,
+    //   data: image_urls,
+    // });
   } catch (error: any) {
     logging.error("AI Bot", "unable to genrate images", error);
     return responseObj({
@@ -164,6 +204,62 @@ export const getAiGeneratedChatResponse = async (
       statusCode: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR,
       msg: "unable to add connect chat bot",
       error: error.message ? error.message : error,
+      data: null,
+    });
+  }
+};
+
+export const getAiGeneratedText = async (req: Request, res: Response) => {
+  try {
+    const { promptString = "" } = req.body;
+    if (promptString == "")
+      return responseObj({
+        resObj: res,
+        type: "error",
+        statusCode: HTTP_STATUS_CODES.BAD_REQUEST,
+        msg: "Please provide promptString",
+        error: null,
+        data: null,
+      });
+
+    const response = await openai.chat.completions.create({
+      model: "gpt-4o",
+      messages: [
+        {
+          role: "user",
+          content: [
+            {
+              type: "text",
+              text: "suggest me 5 brand and short description for vegitable category in json format",
+            },
+          ],
+        },
+      ],
+      temperature: 1,
+      max_tokens: 256,
+      top_p: 1,
+      frequency_penalty: 0,
+      presence_penalty: 0,
+      response_format: {
+        type: "text",
+      },
+    });
+    return responseObj({
+      resObj: res,
+      type: "success",
+      statusCode: HTTP_STATUS_CODES.SUCCESS,
+      msg: "here your answer",
+      error: null,
+      data: response.choices[0].message, //response.data.choices[0].text,
+    });
+  } catch (error: any) {
+    logging.error("AI Bot", "unable to genrate text", error);
+    return responseObj({
+      resObj: res,
+      type: "error",
+      statusCode: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR,
+      msg: "unable to genrate text",
+      error: error.message ? error.message : "internal server error",
       data: null,
     });
   }
