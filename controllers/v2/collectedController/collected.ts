@@ -285,7 +285,7 @@ export const collectOffer = async (req: IRequest, res: Response) => {
         code: ERROR_CODES.FIELD_VALIDATION_ERR,
       });
     }
-    const { toDistribute, totalO } = await oGenerate({
+    const { toDistribute, totalO } =  oGenerate({
       amount: amountAfterExchange,
       discount: offerDataPoint.offerPriceMinPercentage,
       oNetworkConfig,

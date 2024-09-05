@@ -5,7 +5,7 @@ export const getOConfig = async () => {
   return oConfig;
 };
 
-export const oGenerate = async ({
+export const oGenerate =  ({
   discount = 0,
   amount,
   oNetworkConfig,
