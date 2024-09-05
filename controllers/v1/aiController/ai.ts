@@ -26,12 +26,10 @@ export const getAiGeneratedLogo = async (req: Request, res: Response) => {
     // `;
 
     const promptString = `
-    Create a logo featuring a serene artist's studio with soft, warm lighting, including an artist
-     painting on a canvas surrounded by colorful paints and brushes. The scene should evoke creativity 
-     and artistic passion. Apply a spherical glass effect over the entire image. 
-     Include the brand name, ${title}, in a stylish, elegant font that complements the artistic theme. 
+     Create a logo in a spherical glass effect over the entire image. 
+     Include the brand name, ${title}, in a stylish, elegant font. 
      Ensure the brand name is prominently and harmoniously placed within the composition.
-      Additionally, incorporate elements that reflect ${description} to enhance the overall design.
+    Additionally, incorporate elements that reflect ${description} to enhance the overall design.
 
     `;
 
@@ -52,6 +50,8 @@ export const getAiGeneratedLogo = async (req: Request, res: Response) => {
     // });
     // https://community.openai.com/t/429-rate-limit-exceeded-limit-0-1min-current-1-1min/565451
 
+    const callTime = new Date().getTime();
+
     const response = await openai.images.generate({
       model: "dall-e-3",
       prompt: promptString,
@@ -60,21 +60,30 @@ export const getAiGeneratedLogo = async (req: Request, res: Response) => {
       response_format: "b64_json",
     });
     const img: any = response.data[0].b64_json;
+
+    const respTime = new Date().getTime();
+    console.log(
+      "total time to take to genrate",
+      (respTime - callTime) / 1000,
+      "sec"
+    );
     const buffer: Buffer = Buffer.from(img, "base64");
     console.log("buffer", buffer);
     const imageBuffer: any = await getImageBuffer(buffer);
 
-    res.set("Content-Type", "image/jpeg");
-    res.set("Content-Length", imageBuffer.length);
-    return res.send(imageBuffer);
-    const image_urls = response.data;
+    // res.set("Content-Type", "image/jpeg");
+    // res.set("Content-Length", imageBuffer.length);
+    // return res.send(imageBuffer);
+    // const image_urls = response.data;
+    const bs = imageBuffer.toString("base64"); //Buffer.from(imageBuffer).toString("base64")
+    // console.log("bs", bs);
     return responseObj({
       resObj: res,
       type: "success",
       statusCode: HTTP_STATUS_CODES.SUCCESS,
       msg: "here your ai genrated images",
       error: null,
-      data: image_urls,
+      data: bs,
     });
   } catch (error: any) {
     logging.error("AI Bot", "unable to genrate images", error);
@@ -145,18 +154,19 @@ export const getAiGeneratedImg = async (req: Request, res: Response) => {
     // });
     // console.log("response", resx);
 
-    res.set("Content-Type", "image/jpeg");
-    res.set("Content-Length", imageBuffer.length);
-    return res.send(imageBuffer);
+    // res.set("Content-Type", "image/jpeg");
+    // res.set("Content-Length", imageBuffer.length);
+    // return res.send(imageBuffer);
 
-    // return responseObj({
-    //   resObj: res,
-    //   type: "success",
-    //   statusCode: HTTP_STATUS_CODES.SUCCESS,
-    //   msg: "here your ai genrated images",
-    //   error: null,
-    //   data: image_urls,
-    // });
+    const bs = imageBuffer.toString("base64");
+    return responseObj({
+      resObj: res,
+      type: "success",
+      statusCode: HTTP_STATUS_CODES.SUCCESS,
+      msg: "here your ai generated image",
+      error: null,
+      data: bs,
+    });
   } catch (error: any) {
     logging.error("AI Bot", "unable to genrate images", error);
     return responseObj({

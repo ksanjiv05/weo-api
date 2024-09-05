@@ -16,6 +16,9 @@ import { IRequest } from "../../../interfaces/IRequest";
 import mongoose from "mongoose";
 import { KeyProps, deleteS3Files } from "../../../helper/aws";
 import outletModel from "../../../models/outlet.model";
+import { getOConfig, oGenerate } from "../../../helper/oCalculator/v2";
+import { getExchangeRate } from "../../../helper/exchangeRate";
+import { BASE_CURRENCY } from "../../../config/config";
 
 // Function to add the offer
 export const addOffer = async (req: IRequest, res: Response) => {
@@ -813,7 +816,7 @@ export const getOffersByLocation = async (req: Request, res: Response) => {
   }
 };
 
-export const getOfferByOutletId = async (req: Request, res: Response) => {
+export const getOfferByOutletId = async (req: IRequest, res: Response) => {
   try {
     const id = req.params.id;
     const { page = 1, perPage = 10 } = req.query;
@@ -830,7 +833,12 @@ export const getOfferByOutletId = async (req: Request, res: Response) => {
         code: ERROR_CODES.FIELD_VALIDATION_REQUIRED_ERR,
       });
     }
-
+    const exchangeRate = await getExchangeRate(
+      req.user.currency,
+      BASE_CURRENCY
+    );
+    const oNetworkConfig = await getOConfig();
+    //offerPriceAmount
     const offer = await Offer.find({
       offerStatus: OFFER_STATUS.LIVE,
       outlets: { $in: [id] },
@@ -845,14 +853,146 @@ export const getOfferByOutletId = async (req: Request, res: Response) => {
       .populate("user", "_id name creatorName")
       .populate("outlets")
       .skip(skip)
-      .limit(Number(perPage));
+      .limit(Number(perPage))
+      .lean();
+
+    // const offer = await Offer.aggregate([
+    //   {
+    //     $match: {
+    //       offerStatus: OFFER_STATUS.LIVE,
+    //       outlets: { $in: [id] },
+    //       totalOffersAvailable: { $gte: 1 },
+    //     },
+    //   },
+    //   {
+    //     $sort: { createdAt: -1 },
+    //   },
+    //   {
+    //     $lookup: {
+    //       from: "brands",
+    //       localField: "brand",
+    //       foreignField: "_id",
+    //       as: "brandDetails",
+    //       pipeline: [
+    //         {
+    //           $project: {
+    //             brandName: 1,
+    //             brandLogo: 1,
+    //           },
+    //         },
+    //       ],
+    //     },
+    //   },
+    //   {
+    //     $lookup: {
+    //       from: "offerDataPoints",
+    //       localField: "offerDataPoints",
+    //       foreignField: "_id",
+    //       as: "offerDataPoints",
+    //       pipeline: [
+    //         {
+    //           $addFields: {
+    //             reward: {
+    //               $function: {
+    //                 body: function (offerPriceAmount: number) {
+    //                   const { toDistribute } = oGenerate({
+    //                     amount: offerPriceAmount * exchangeRate,
+    //                     discount: 0,
+    //                     oNetworkConfig,
+    //                   });
+    //                   return toDistribute / 2;
+    //                 },
+    //                 args: ["$offerPriceAmount"], // Pass the fields to the function
+    //                 lang: "js",
+    //               },
+    //             },
+    //           },
+    //         },
+    //       ],
+    //     },
+    //   },
+    //   {
+    //     $lookup: {
+    //       from: "users",
+    //       localField: "user",
+    //       foreignField: "_id",
+    //       as: "userDetails",
+    //       pipeline: [
+    //         {
+    //           $project: {
+    //             name: 1,
+    //             creatorName: 1,
+    //           },
+    //         },
+    //       ],
+    //     },
+    //   },
+    //   {
+    //     $lookup: {
+    //       from: "outlets",
+    //       localField: "outlets",
+    //       foreignField: "_id",
+    //       as: "outlets",
+    //     },
+    //   },
+    //   {
+
+    //     $addFields:{
+    //       "brand": {
+    //         $first: "$brandDetails",
+    //     },
+
+    //     "user": {
+    //       $first: "$userDetails",
+    //     },
+
+    //   }
+    // },
+    //   {
+    //     $skip: skip,
+    //   },
+    //   {
+    //     $limit: Number(perPage),
+    //   },
+    // ]);
+
+    const processedOffers = await Promise.all(
+      offer.map(async (offerDoc: any) => {
+        const offerDataPointArray = offerDoc.offerDataPoints;
+
+        const offerDataPoints = offerDataPointArray.map(
+          (offerDataPoint: any) => {
+            console.log("__", offerDataPoint.offerData.offerPriceAmount);
+            const { toDistribute, totalO } = oGenerate({
+              amount: offerDataPoint.offerData.offerPriceAmount * exchangeRate,
+              discount: offerDataPoint.offerData.offerPriceMinPercentage,
+              oNetworkConfig,
+            });
+            // offerDataPoint.offerData.reward = toDistribute / 2;
+            // offerDataPoint.offerData.totalReward = totalO;
+            return {
+              ...offerDataPoint,
+              reward: toDistribute / 2,
+            };
+          }
+        );
+
+        // Add the results of your custom logic to the offerDoc
+        return {
+          ...offerDoc,
+          offerDataPoints,
+          // totalReward:totalO,
+        };
+      })
+    );
+
     return responseObj({
       resObj: res,
       type: "success",
       statusCode: HTTP_STATUS_CODES.SUCCESS,
       msg: "your offer details",
       error: null,
-      data: offer,
+      data: processedOffers,
       code: ERROR_CODES.SUCCESS,
     });
   } catch (error: any) {
