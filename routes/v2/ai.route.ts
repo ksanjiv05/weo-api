@@ -6,13 +6,14 @@ import {
   getAiGeneratedText,
 } from "../../controllers/v1/aiController/ai";
 import { auth } from "../../middleware/auth";
+import aiImgRateLimiterMiddleware from "../../middleware/aiImgRateLimit";
 
 const router = express.Router();
 
-router.post("/ai/logo", auth, getAiGeneratedLogo);
-router.post("/ai/images", auth, getAiGeneratedImg);
+router.post("/ai/logo", auth, aiImgRateLimiterMiddleware, getAiGeneratedLogo);
+router.post("/ai/images", auth, aiImgRateLimiterMiddleware, getAiGeneratedImg);
 router.post("/ai/weo/chat", auth, getAiGeneratedChatResponse);
 
-router.post("/ai/test", getAiGeneratedText);
+router.post("/ai/text", getAiGeneratedText);
 
 export default router;

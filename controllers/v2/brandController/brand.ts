@@ -449,6 +449,7 @@ export const getBrandsByLocation = async (req: IRequest, res: Response) => {
       userLongitude,
       maxDistance,
       status = STATUS.LIVE,
+      type = "list",
     }: any = req.query;
 
     if (!userLatitude || !userLongitude) {
@@ -465,205 +466,119 @@ export const getBrandsByLocation = async (req: IRequest, res: Response) => {
     const lat = parseFloat(userLatitude);
     const lng = parseFloat(userLongitude);
 
-    const brands = await outletModel.aggregate(
-      //   [
-      //   {
-      //     $geoNear: {
-      //       near: {
-      //         type: "Point",
-      //         coordinates: [lat, lng],
-      //       },
-      //       // distanceField: "distance",
-      //       distanceField: "dist.calculated",
-      //       maxDistance: 10000,
-      //       spherical: true,
-      //     },
-      //   },
-      //   { $sort: { "dist.calculated": 1 } },
-      //   {
-      //     $lookup: {
-      //       from: "brands",
-      //       localField: "brand",
-      //       foreignField: "_id",
-      //       as: "brandDetails",
-      //       pipeline: [{ $match: { status: OFFER_STATUS.LIVE } }],
-      //     },
-      //   },
-      //   {
-      //     $unwind: "$brandDetails",
-      //   },
-
-      //   {
-      //     $lookup: {
-      //       from: "offers",
-      //       localField: "brand",
-      //       foreignField: "brand",
-      //       as: "offers",
-      //       pipeline: [
-      //         {
-      //           $match: {
-      //             status: {
-      //               $ne: 1, // 1: pending or draft
-      //             },
-      //           },
-      //         },
-      //         {
-      //           $group: {
-      //             _id: "$brand",
-      //             totalListedOffers: {
-      //               $sum: {
-      //                 $cond: [
-      //                   {
-      //                     $eq: ["$offerStatus", 2],
-      //                   },
-      //                   1,
-      //                   0,
-      //                 ],
-      //               },
-      //             },
-      //           },
-      //         },
-      //       ],
-      //     },
-      //   },
-      //   {
-      //     $addFields: {
-      //       totalListedOffers: {
-      //         $arrayElemAt: ["$offers.totalListedOffers", 0],
-      //       },
-      //     },
-      //   },
-      //   {
-      //     $group: {
-      //       _id: "$brand",
-      //       brandName: {
-      //         $first: "$brandDetails.brandName",
-      //       },
-      //       brandDescription: {
-      //         $first: "$brandDetails.brandDescription",
-      //       },
-      //       brandLogo: {
-      //         $first: "$brandDetails.brandLogo",
-      //       },
-      //       outlets: { $push: "$$ROOT" },
-      //       totalListedOffersSum: { $sum: "$totalListedOffers" },
-      //     },
-      //   },
-      // ]
-      [
-        {
-          $geoNear: {
-            near: {
-              type: "Point",
-              coordinates: [lat, lng],
+    const brands = await outletModel.aggregate([
+      {
+        $geoNear: {
+          near: {
+            type: "Point",
+            coordinates: [lat, lng],
+          },
+          distanceField: "distance",
+          // distanceField: "dist.calculated",
+          maxDistance: type === "list" ? 10000 : 5000,
+          spherical: true,
+        },
+      },
+      {
+        $sort: {
+          distance: 1,
+        },
+      },
+      {
+        $lookup: {
+          from: "brands",
+          localField: "brand",
+          foreignField: "_id",
+          as: "brandDetails",
+          pipeline: [
+            {
+              $match: {
+                status: 2,
+                // user:{
+                //   $ne: new mongoose.Types.ObjectId(req.user._id)
+                // }
+              },
             },
-            distanceField: "distance",
-            // distanceField: "dist.calculated",
-            maxDistance: 5000,
-            spherical: true,
-          },
+          ],
         },
-        {
-          $sort: {
-            distance: 1,
-          },
-        },
-        {
-          $lookup: {
-            from: "brands",
-            localField: "brand",
-            foreignField: "_id",
-            as: "brandDetails",
-            pipeline: [
-              {
-                $match: {
-                  status: 2,
-                  // user:{
-                  //   $ne: new mongoose.Types.ObjectId(req.user._id)
-                  // }
+      },
+      {
+        $unwind: "$brandDetails",
+      },
+      {
+        $lookup: {
+          from: "offers",
+          localField: "_id",
+          foreignField: "outlets",
+          as: "offers",
+          pipeline: [
+            {
+              $match: {
+                status: {
+                  $ne: 1, // 1: pending or draft
                 },
+                totalOffersAvailable: { $gte: 1 },
               },
-            ],
-          },
-        },
-        {
-          $unwind: "$brandDetails",
-        },
-        {
-          $lookup: {
-            from: "offers",
-            localField: "_id",
-            foreignField: "outlets",
-            as: "offers",
-            pipeline: [
-              {
-                $match: {
-                  status: {
-                    $ne: 1, // 1: pending or draft
-                  },
-                  totalOffersAvailable: { $gte: 1 },
-                },
-              },
-              {
-                $group: {
-                  _id: "$brand",
-                  totalListedOffers: {
-                    $sum: {
-                      $cond: [
-                        {
-                          $eq: ["$offerStatus", 2],
-                        },
-                        1,
-                        0,
-                      ],
-                    },
+            },
+            {
+              $group: {
+                _id: "$brand",
+                totalListedOffers: {
+                  $sum: {
+                    $cond: [
+                      {
+                        $eq: ["$offerStatus", 2],
+                      },
+                      1,
+                      0,
+                    ],
                   },
                 },
               },
-            ],
+            },
+          ],
+        },
+      },
+      {
+        $match: {
+          "offers.0": { $exists: true },
+          "offers.0.totalListedOffers": { $ne: 0 },
+        },
+      },
+      {
+        $addFields: {
+          totalListedOffers: {
+            $arrayElemAt: ["$offers.totalListedOffers", 0],
           },
         },
-        {
-          $match: {
-            "offers.0": { $exists: true },
-            "offers.0.totalListedOffers": { $ne: 0 },
+      },
+      {
+        $group: {
+          _id: "$brand",
+          distance: { $first: "$distance" },
+          brandName: {
+            $first: "$brandDetails.brandName",
+          },
+          brandDescription: {
+            $first: "$brandDetails.brandDescription",
+          },
+          brandLogo: {
+            $first: "$brandDetails.brandLogo",
+          },
+          outlets: {
+            $push: "$$ROOT",
+          },
+          totalListedOffersSum: {
+            $sum: "$totalListedOffers",
           },
         },
-        {
-          $addFields: {
-            totalListedOffers: {
-              $arrayElemAt: ["$offers.totalListedOffers", 0],
-            },
-          },
+      },
+      {
+        $sort: {
+          distance: 1,
         },
-        {
-          $group: {
-            _id: "$brand",
-            distance: { $first: "$distance" },
-            brandName: {
-              $first: "$brandDetails.brandName",
-            },
-            brandDescription: {
-              $first: "$brandDetails.brandDescription",
-            },
-            brandLogo: {
-              $first: "$brandDetails.brandLogo",
-            },
-            outlets: {
-              $push: "$$ROOT",
-            },
-            totalListedOffersSum: {
-              $sum: "$totalListedOffers",
-            },
-          },
-        },
-        {
-          $sort: {
-            distance: 1,
-          },
-        },
-      ]
-    );
+      },
+    ]);
 
     return responseObj({
       resObj: res,

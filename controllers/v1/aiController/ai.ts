@@ -240,7 +240,7 @@ export const getAiGeneratedText = async (req: Request, res: Response) => {
           content: [
             {
               type: "text",
-              text: "suggest me 5 brand and short description for vegitable category in json format",
+              text: `suggest me 5 brand and short description for ${promptString} category in json format`,
             },
           ],
         },
@@ -254,13 +254,18 @@ export const getAiGeneratedText = async (req: Request, res: Response) => {
         type: "text",
       },
     });
+    const message: any = response.choices[0].message.content;
+    // console.log("message", message);
+    const data = JSON.parse(
+      message.slice(message.indexOf("["), message.lastIndexOf("]") + 1)
+    );
     return responseObj({
       resObj: res,
       type: "success",
       statusCode: HTTP_STATUS_CODES.SUCCESS,
       msg: "here your answer",
       error: null,
-      data: response.choices[0].message, //response.data.choices[0].text,
+      data: data, //response.data.choices[0].text,
     });
   } catch (error: any) {
     logging.error("AI Bot", "unable to genrate text", error);

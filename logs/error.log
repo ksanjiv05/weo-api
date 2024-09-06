@@ -976,3 +976,5 @@ error: POST /api/v1/brands 400 7ms
 {"level":"error","message":"GET /api/v2/ai/logo 404 21ms","timestamp":"2024-09-05T10:08:40.715Z"}
 {"level":"error","message":"GET /api/v2/offers/outlets/66cf191f44c89d2db436cded?page=1&perPage=10&finder=true&offerStatus=2 500 6657ms","timestamp":"2024-09-05T10:08:47.516Z"}
 {"level":"error","message":"POST /api/v2/brands 400 444ms","timestamp":"2024-09-05T11:49:32.887Z"}
+{"level":"error","message":"POST /api/v2/ai/text 500 4727ms","timestamp":"2024-09-05T19:20:52.754Z"}
+{"level":"error","message":"POST /api/v2/ai/text 500 3421ms","timestamp":"2024-09-05T19:21:43.129Z"}
