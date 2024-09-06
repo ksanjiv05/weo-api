@@ -60,7 +60,7 @@ const brandSchema: Schema = new Schema(
 brandSchema.index({ brandName: 1, user: 1 }, { unique: true });
 
 //set search index on brandName
-brandSchema.index({ brandName: "text" });
+brandSchema.index({ brandName: "text", brandDescription: "text" });
 
 // pre-save hook to assign user reference  to brand
 
