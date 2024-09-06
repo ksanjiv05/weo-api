@@ -5,6 +5,7 @@ import { HTTP_STATUS_CODES } from "../../../config/statusCode";
 import { responseObj } from "../../../helper/response";
 import { getQueryResponse } from "../../../helper/chatGptPoweredChatBot";
 import sharp from "sharp";
+import { ERROR_CODES } from "../../../config/errorCode";
 
 export const getAiGeneratedLogo = async (req: Request, res: Response) => {
   try {
@@ -41,6 +42,7 @@ export const getAiGeneratedLogo = async (req: Request, res: Response) => {
         msg: "Please provide promptString",
         error: null,
         data: null,
+        code: ERROR_CODES.FIELD_VALIDATION_REQUIRED_ERR,
       });
 
     // const response = await openai.createImage({
@@ -84,6 +86,7 @@ export const getAiGeneratedLogo = async (req: Request, res: Response) => {
       msg: "here your ai genrated images",
       error: null,
       data: bs,
+      code: ERROR_CODES.SUCCESS,
     });
   } catch (error: any) {
     logging.error("AI Bot", "unable to genrate images", error);
@@ -94,6 +97,7 @@ export const getAiGeneratedLogo = async (req: Request, res: Response) => {
       msg: "unable to genrate images",
       error: error.message ? error.message : "internal server error",
       data: null,
+      code: ERROR_CODES.SERVER_ERR,
     });
   }
 };
@@ -119,6 +123,7 @@ export const getAiGeneratedImg = async (req: Request, res: Response) => {
         msg: "Please provide promptString",
         error: null,
         data: null,
+        code: ERROR_CODES.FIELD_VALIDATION_REQUIRED_ERR,
       });
 
     // const response = await openai.createImage({
@@ -166,6 +171,7 @@ export const getAiGeneratedImg = async (req: Request, res: Response) => {
       msg: "here your ai generated image",
       error: null,
       data: bs,
+      code: ERROR_CODES.SUCCESS,
     });
   } catch (error: any) {
     logging.error("AI Bot", "unable to genrate images", error);
@@ -176,6 +182,7 @@ export const getAiGeneratedImg = async (req: Request, res: Response) => {
       msg: "unable to genrate images",
       error: error.message ? error.message : "internal server error",
       data: null,
+      code: ERROR_CODES.SERVER_ERR,
     });
   }
 };
@@ -195,6 +202,7 @@ export const getAiGeneratedChatResponse = async (
         msg: "Please provide query",
         error: null,
         data: null,
+        code: ERROR_CODES.FIELD_VALIDATION_REQUIRED_ERR,
       });
 
     const response = await getQueryResponse(queryString);
@@ -205,6 +213,7 @@ export const getAiGeneratedChatResponse = async (
       msg: "here your answer",
       error: null,
       data: response,
+      code: ERROR_CODES.SUCCESS,
     });
   } catch (error: any) {
     logging.error("AI Chat", "unable tos connect chat bot", error);
@@ -215,6 +224,7 @@ export const getAiGeneratedChatResponse = async (
       msg: "unable to add connect chat bot",
       error: error.message ? error.message : error,
       data: null,
+      code: ERROR_CODES.SERVER_ERR,
     });
   }
 };
@@ -230,6 +240,7 @@ export const getAiGeneratedText = async (req: Request, res: Response) => {
         msg: "Please provide promptString",
         error: null,
         data: null,
+        code: ERROR_CODES.FIELD_VALIDATION_REQUIRED_ERR,
       });
 
     const response = await openai.chat.completions.create({
@@ -266,6 +277,7 @@ export const getAiGeneratedText = async (req: Request, res: Response) => {
       msg: "here your answer",
       error: null,
       data: data, //response.data.choices[0].text,
+      code: ERROR_CODES.SUCCESS,
     });
   } catch (error: any) {
     logging.error("AI Bot", "unable to genrate text", error);
@@ -276,6 +288,7 @@ export const getAiGeneratedText = async (req: Request, res: Response) => {
       msg: "unable to genrate text",
       error: error.message ? error.message : "internal server error",
       data: null,
+      code: ERROR_CODES.SERVER_ERR,
     });
   }
 };
