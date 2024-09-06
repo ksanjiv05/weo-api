@@ -10,6 +10,7 @@ export interface IWallet extends Document {
   currency: string;
   oRate: number;
   verifyString?: string;
+  hash?: string;
 }
 
 const walletSchema: Schema = new Schema(
@@ -26,6 +27,7 @@ const walletSchema: Schema = new Schema(
     oBalance: { type: Number, default: 0 },
     oRate: { type: Number, default: 100 },
     verifyString: { type: String, required: true },
+    hash: { type: String },
   },
   {
     timestamps: true,
@@ -46,6 +48,36 @@ const walletSchema: Schema = new Schema(
 
 // walletSchema.post<IWallet>("save", function () {
 //   logging.info("Mongo", "Wallet just saved: ");
+// });
+
+// walletSchema.pre("save", function (next) {
+//   const document = this;
+//   // Concatenate the fields you want to hash
+//   const dataToHash = `${document.user}:${document.balance}:${document.oBalance}:${document.currency}`;
+
+//   // Generate and update the hash field
+//   document.hash = generateHash(dataToHash);
+
+//   next();
+// });
+
+// // Middleware to recompute the hash when using findOneAndUpdate
+// walletSchema.pre<IWallet>("updateOne", function (next) {
+//   const update = this.getUpdate();
+
+//   // Get the new values being updated
+//   const user = update.user || this._update.user;
+//   const balance = update.balance || this._update.balance;
+//   const oBalance = update.oBalance || this._update.oBalance;
+//   const currency = update.currency || this._update.currency;
+
+//   // Concatenate the updated fields
+//   const dataToHash = `${document.user}:${document.balance}:${document.oBalance}:${document.currency}`;
+
+//   // Compute and set the new hash
+//   this._update.hash = generateHash(dataToHash);
+
+//   next();
 // });
 
 export default conn_v2.model<IWallet>("Wallet", walletSchema);

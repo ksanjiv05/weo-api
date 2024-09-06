@@ -747,6 +747,7 @@ export const getOffersByLocation = async (req: Request, res: Response) => {
       userLongitude,
       maxDistance,
       queryString = "",
+      type = "list",
     }: any = req.query;
 
     const keywords = queryString
@@ -767,7 +768,7 @@ export const getOffersByLocation = async (req: Request, res: Response) => {
           // distanceField: "distance",
           distanceField: "dist.calculated",
           spherical: true,
-          maxDistance: 10000,
+          maxDistance: type === "list" ? 10000 : 5000,
         },
       },
       {
