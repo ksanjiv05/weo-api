@@ -39,6 +39,8 @@ export const bucketName = process.env.BUCKET_NAME as string;
 
 export const exchangeRateApiKey = process.env.EXCHANGE_API_KEY as string;
 
+export const hashSecretKey = process.env.HASH_SECRET_KEY as string;
+
 export const BASE_CURRENCY = "USD";
 
 export const oNetworkConfig = {

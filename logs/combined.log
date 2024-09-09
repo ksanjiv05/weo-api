@@ -7255,3 +7255,8 @@ info: POST /api/v1/brands 200 295ms
 {"level":"error","message":"POST /api/v2/ai/text 500 4727ms","timestamp":"2024-09-05T19:20:52.754Z"}
 {"level":"error","message":"POST /api/v2/ai/text 500 3421ms","timestamp":"2024-09-05T19:21:43.129Z"}
 {"level":"info","message":"POST /api/v2/ai/text 200 4209ms","timestamp":"2024-09-05T19:22:31.022Z"}
+{"level":"info","message":"GET /api/v2/offers/brands/search?searchString=peri 200 299ms","timestamp":"2024-09-08T07:47:31.393Z"}
+{"level":"error","message":"GET /favicon.ico 404 3ms","timestamp":"2024-09-08T07:47:31.469Z"}
+{"level":"info","message":"GET /api/v2/offers/brands/search?searchString=to 200 297ms","timestamp":"2024-09-08T07:47:39.617Z"}
+{"level":"info","message":"GET /api/v2/offers/brands/search?searchString=simpl 200 854ms","timestamp":"2024-09-08T07:47:46.295Z"}
+{"level":"info","message":"GET / 200 8ms","timestamp":"2024-09-09T07:46:16.374Z"}

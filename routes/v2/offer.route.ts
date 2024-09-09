@@ -14,6 +14,7 @@ import {
   deleteOffers,
   getOffersByLocation,
   getOfferByOutletId,
+  searchOffers,
 } from "../../controllers/v2/offerController/offer";
 import { auth } from "../../middleware/auth";
 import {
@@ -70,7 +71,7 @@ const router = express.Router();
 
 router.post("/offers", auth, offerValidationCh1, addOffer);
 router.get("/offers", auth, getOffers);
-router.get("/offers/location",auth, getOffersByLocation);
+router.get("/offers/location", auth, getOffersByLocation);
 router.get("/offers/outlets/:id", auth, getOfferByOutletId);
 
 /**
@@ -551,6 +552,7 @@ router.put("/offers/data/:id/8", auth, offerValidationCh8, updateOfferData);
 router.put("/offers/listed/:id", auth, toListOffer);
 
 router.delete("/offers", auth, deleteOffers);
+router.get("/offers/brands/search", searchOffers);
 
 // router.put("/offers/data/:id/7", auth, validateOffer, updateOffer);
 

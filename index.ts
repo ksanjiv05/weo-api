@@ -17,7 +17,6 @@ import { swaggerOptions, swaggerOptionsV2 } from "./config/swagger";
 import loggingMiddleware from "./middleware/logger";
 import routerV2 from "./routes/v2";
 import webhookRouterV2 from "./routes/v2/webhook";
-import { updateOLog } from "./scripts/initalOConfig";
 
 //end scripts
 
@@ -98,4 +97,6 @@ app.use(
 
 // initOConfig()
 
-updateOLog();
+// updateOLog();
+
+// test wallet hooks

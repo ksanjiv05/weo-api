@@ -19,6 +19,7 @@ import outletModel from "../../../models/outlet.model";
 import { getOConfig, oGenerate } from "../../../helper/oCalculator/v2";
 import { getExchangeRate } from "../../../helper/exchangeRate";
 import { BASE_CURRENCY } from "../../../config/config";
+import brandModel from "../../../models/brand.model";
 
 // Function to add the offer
 export const addOffer = async (req: IRequest, res: Response) => {
@@ -999,6 +1000,62 @@ export const getOfferByOutletId = async (req: IRequest, res: Response) => {
   } catch (error: any) {
     logging.error("Get Offer by outlet id", error.message, error);
 
+    return responseObj({
+      resObj: res,
+      type: "error",
+      statusCode: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR,
+      msg: "Offer not found",
+      error: error.message || "internal server error",
+      data: null,
+      code: ERROR_CODES.SERVER_ERR,
+    });
+  }
+};
+
+export const searchOffers = async (req: Request, res: Response) => {
+  try {
+    const { searchString = "" } = req.query;
+
+    if (searchString == "")
+      return responseObj({
+        resObj: res,
+        type: "error",
+        statusCode: HTTP_STATUS_CODES.BAD_REQUEST,
+        msg: "Please provide searchString",
+        error: null,
+        data: null,
+        code: ERROR_CODES.FIELD_VALIDATION_REQUIRED_ERR,
+      });
+
+    let offers = await Offer.find({
+      $or: [
+        { offerName: { $regex: searchString, $options: "i" } },
+        { description: { $regex: searchString, $options: "i" } },
+      ],
+    });
+    if (offers.length == 0) {
+      const brands = await brandModel
+        .find({
+          $or: [
+            { brandName: { $regex: searchString, $options: "i" } },
+            { description: { $regex: searchString, $options: "i" } },
+          ],
+        })
+        .select("_id");
+      offers = await Offer.find({ brand: { $in: brands } });
+    }
+
+    return responseObj({
+      resObj: res,
+      type: "success",
+      statusCode: HTTP_STATUS_CODES.SUCCESS,
+      msg: "your offer details",
+      error: null,
+      data: offers,
+      code: ERROR_CODES.SUCCESS,
+    });
+  } catch (error: any) {
+    logging.error("Offer Search", error.message, error);
     return responseObj({
       resObj: res,
       type: "error",
