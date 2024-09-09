@@ -36,6 +36,7 @@ import listedModel from "../../../models/listed.model";
 import Ownership from "../../../models/ownership.model";
 import NegotiationAttempt from "../../../models/negotiationAttempt.model";
 import User from "../../../models_v1/User";
+import { updateWallet } from "../../../helper/user";
 
 // define function for create Collected
 
@@ -103,7 +104,8 @@ export const collectOffer = async (req: IRequest, res: Response) => {
         });
       }
       wallet.oBalance = wallet.oBalance - deductOBalance;
-      await wallet.save();
+      // await wallet.save();
+      await updateWallet(wallet, req.user._id);
       const newOLogForONegotiation = new oLogModel({
         // event: O_EVENTS.COLLECTED,
         amount: 0,
@@ -285,7 +287,7 @@ export const collectOffer = async (req: IRequest, res: Response) => {
         code: ERROR_CODES.FIELD_VALIDATION_ERR,
       });
     }
-    const { toDistribute, totalO } =  oGenerate({
+    const { toDistribute, totalO } = oGenerate({
       amount: amountAfterExchange,
       discount: offerDataPoint.offerPriceMinPercentage,
       oNetworkConfig,
@@ -434,7 +436,8 @@ export const collectOffer = async (req: IRequest, res: Response) => {
       console.log("--0--");
       console.log("--1--");
 
-      await wallet.save({ session });
+      // await wallet.save({ session });
+      await updateWallet(wallet, req.user._id);
       await sellerWallet.save({ session });
       console.log("--2--");
 
@@ -477,7 +480,9 @@ export const collectOffer = async (req: IRequest, res: Response) => {
       console.log("--0--");
       console.log("--1--");
 
-      await wallet.save({ session });
+      // await wallet.save({ session });
+      await updateWallet(wallet, req.user._id);
+
       await sellerWallet.save({ session });
 
       console.log("--2--");

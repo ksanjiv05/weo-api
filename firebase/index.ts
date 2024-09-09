@@ -1,5 +1,5 @@
 import admin from "firebase-admin";
-import * as serviceAccount from "../weolight-b0c0b-firebase-adminsdk-ovgvm-028dae8a4d.json";
+import * as serviceAccount from "../weo-app-1f0a7-firebase-adminsdk-drksr-f8083ce65a.json";
 
 const params = {
   type: serviceAccount.type,

@@ -162,9 +162,13 @@ export const encryptTextWithPassword = ({
  * @param {string} data - The data to be hashed .
  * @return {string} Returns  the generated hash.
  */
+export const generateHashWithKey = (key: string, data: string) => {
+  // const hash = crypto.createHash("sha256").update(data).digest("hex");
+  return crypto.createHmac("sha256", key).update(data).digest("hex");
+};
+
 export const generateHash = (data: string) => {
   const hash = crypto.createHash("sha256").update(data).digest("hex");
-  console.log("--", hash);
   return hash;
 };
 

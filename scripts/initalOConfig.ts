@@ -72,14 +72,14 @@ export const initOConfig = async () => {
 //   }
 // };
 
-export const updateOLog = async () => {
-  await oLogModel.updateMany(
-    {},
-    {
-      $set: {
-        "buyer.event": O_EVENTS.COLLECTED,
-        "seller.event": O_EVENTS.SOLD,
-      },
-    }
-  );
-};
+// export const updateOLog = async () => {
+//   await oLogModel.updateMany(
+//     {},
+//     {
+//       $set: {
+//         "buyer.event": O_EVENTS.COLLECTED,
+//         "seller.event": O_EVENTS.SOLD,
+//       },
+//     }
+//   );
+// };
