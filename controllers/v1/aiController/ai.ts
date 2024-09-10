@@ -251,7 +251,7 @@ export const getAiGeneratedText = async (req: Request, res: Response) => {
           content: [
             {
               type: "text",
-              text: `suggest me 5 brand and short description for ${promptString} category in json format`,
+              text: `suggest me 3 brand and short description for ${promptString} category in json format`,
             },
           ],
         },
@@ -266,7 +266,7 @@ export const getAiGeneratedText = async (req: Request, res: Response) => {
       },
     });
     const message: any = response.choices[0].message.content;
-    // console.log("message", message);
+    console.log("message", message);
     const data = JSON.parse(
       message.slice(message.indexOf("["), message.lastIndexOf("]") + 1)
     );

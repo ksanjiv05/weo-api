@@ -11,6 +11,7 @@ import {
   getBrandByName,
   getBrands,
   getBrandsByLocation,
+  searchBrandsWithinByLocation,
   updateBrand,
 } from "../../controllers/v2/brandController/brand";
 import { auth } from "../../middleware/auth";
@@ -145,6 +146,7 @@ router.post("/brands", auth, addBrandValidation, addBrand);
 
 router.get("/brands", auth, getBrands);
 router.get("/brands/location", auth, getBrandsByLocation);
+router.get("/brands/location/search", auth, searchBrandsWithinByLocation);
 
 /**
  * @swagger

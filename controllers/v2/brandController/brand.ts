@@ -604,6 +604,119 @@ export const getBrandsByLocation = async (req: IRequest, res: Response) => {
   }
 };
 
+export const searchBrandsWithinByLocation = async (
+  req: IRequest,
+  res: Response
+) => {
+  try {
+    const {
+      userLatitude,
+      userLongitude,
+      maxDistance,
+      status = STATUS.LIVE,
+      search = "",
+      type = "list",
+    }: any = req.query;
+
+    if (!userLatitude || !userLongitude) {
+      return responseObj({
+        resObj: res,
+        type: "error",
+        statusCode: HTTP_STATUS_CODES.BAD_REQUEST,
+        msg: "userLatitude and userLongitude are required",
+        error: "userLatitude and userLongitude are required",
+        data: null,
+        code: ERROR_CODES.FIELD_VALIDATION_REQUIRED_ERR,
+      });
+    }
+    const lat = parseFloat(userLatitude);
+    const lng = parseFloat(userLongitude);
+
+    const brands = await outletModel.aggregate([
+      {
+        $geoNear: {
+          near: {
+            type: "Point",
+            coordinates: [lat, lng],
+          },
+          distanceField: "distance",
+          // distanceField: "dist.calculated",
+          maxDistance: type === "list" ? 25000 : 10000,
+          spherical: true,
+        },
+      },
+      {
+        $sort: {
+          distance: 1,
+        },
+      },
+      {
+        $lookup: {
+          from: "brands",
+          localField: "brand",
+          foreignField: "_id",
+          as: "brandDetails",
+          pipeline: [
+            {
+              $match: {
+                status: status,
+              },
+            },
+          ],
+        },
+      },
+      {
+        $unwind: "$brandDetails",
+      },
+      {
+        $match: {
+          $or: [
+            {
+              "brandDetails.brandName": {
+                $regex: search,
+                $options: "i",
+              },
+            },
+            {
+              "brandDetails.description": {
+                $regex: search,
+                $options: "i",
+              },
+            },
+          ],
+        },
+      },
+      {
+        $sort: {
+          distance: 1,
+        },
+      },
+    ]);
+
+    return responseObj({
+      resObj: res,
+      type: "success",
+      statusCode: HTTP_STATUS_CODES.SUCCESS,
+      msg: "brands",
+      error: null,
+      data: brands,
+      code: ERROR_CODES.SUCCESS,
+    });
+  } catch (error: any) {
+    logging.error("Get Brands by location", error.message, error);
+
+    return responseObj({
+      resObj: res,
+      type: "error",
+      statusCode: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR,
+      msg: "brands not found",
+      error: error.message ? error.message : "internal server error",
+      data: null,
+      code: ERROR_CODES.SERVER_ERR,
+    });
+  }
+};
+
 // export const getBrandStats= async (req: Request, res: Response) => {
 //   try {
 

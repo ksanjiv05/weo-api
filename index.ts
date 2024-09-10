@@ -17,6 +17,7 @@ import { swaggerOptions, swaggerOptionsV2 } from "./config/swagger";
 import loggingMiddleware from "./middleware/logger";
 import routerV2 from "./routes/v2";
 import webhookRouterV2 from "./routes/v2/webhook";
+import { createSuperAdmin } from "./scripts/createAdmin";
 
 //end scripts
 
@@ -100,3 +101,8 @@ app.use(
 // updateOLog();
 
 // test wallet hooks
+
+const run = () => {
+  try {
+  } catch (error) {}
+};

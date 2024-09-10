@@ -360,6 +360,8 @@ export const getOutletsByUserLocation = async (
       type = "list",
     }: any = req.query;
 
+    console.log("list ", type, userLatitude, userLongitude);
+
     const lat = parseFloat(userLatitude);
     const lng = parseFloat(userLongitude);
     const outlets = await Outlet.aggregate([
@@ -370,7 +372,7 @@ export const getOutletsByUserLocation = async (
             coordinates: [lat, lng],
           },
           distanceField: "distance",
-          maxDistance: type == "list" ? 10000 : 5000,
+          maxDistance: 25000, //type == "list" ? 25000 : 10000,
           spherical: true,
         },
       },
@@ -383,11 +385,7 @@ export const getOutletsByUserLocation = async (
           pipeline: [
             {
               $match: {
-                $or: [
-                  { status: OFFER_STATUS.LIVE },
-                  { status: OFFER_STATUS.RESELL },
-                ],
-
+                status: STATUS.LIVE,
                 // user: {
                 //   $ne: new mongoose.Types.ObjectId(req.user._id),
                 // },
