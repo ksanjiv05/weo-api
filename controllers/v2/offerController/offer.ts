@@ -1014,36 +1014,48 @@ export const getOfferByOutletId = async (req: IRequest, res: Response) => {
 
 export const searchOffers = async (req: Request, res: Response) => {
   try {
-    const { searchString = "" } = req.query;
+    const {
+      searchString = "",
+      brandId = "",
+      page = 1,
+      perPage = 10,
+    } = req.query;
 
-    if (searchString == "")
+    if (brandId == "")
       return responseObj({
         resObj: res,
         type: "error",
         statusCode: HTTP_STATUS_CODES.BAD_REQUEST,
-        msg: "Please provide searchString",
+        msg: "Please provide search String and brand id",
         error: null,
         data: null,
         code: ERROR_CODES.FIELD_VALIDATION_REQUIRED_ERR,
       });
 
+    const skip = (Number(page) - 1) * Number(perPage);
+
     let offers = await Offer.find({
+      brand: brandId,
+      offerStatus: OFFER_STATUS.LIVE,
       $or: [
         { offerName: { $regex: searchString, $options: "i" } },
         { description: { $regex: searchString, $options: "i" } },
       ],
-    });
-    if (offers.length == 0) {
-      const brands = await brandModel
-        .find({
-          $or: [
-            { brandName: { $regex: searchString, $options: "i" } },
-            { description: { $regex: searchString, $options: "i" } },
-          ],
-        })
-        .select("_id");
-      offers = await Offer.find({ brand: { $in: brands } });
-    }
+    })
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(Number(perPage));
+    // if (offers.length == 0) {
+    //   const brands = await brandModel
+    //     .find({
+    //       $or: [
+    //         { brandName: { $regex: searchString, $options: "i" } },
+    //         { description: { $regex: searchString, $options: "i" } },
+    //       ],
+    //     })
+    //     .select("_id");
+    //   offers = await Offer.find({ brand: { $in: brands } });
+    // }
 
     return responseObj({
       resObj: res,

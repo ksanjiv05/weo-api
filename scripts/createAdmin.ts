@@ -8,6 +8,9 @@ export const createSuperAdmin = async () => {
     const userObj: any = {
       displayName: "Admin",
       isAdminAccess: true,
+      email: "",
+      phone: "",
+      password: "",
     };
     const newUserRecord = await getAuth(adminApp).createUser(userObj);
     await getAuth(adminApp).setCustomUserClaims(newUserRecord.uid, {

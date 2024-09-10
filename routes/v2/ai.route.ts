@@ -4,7 +4,7 @@ import {
   getAiGeneratedImg,
   getAiGeneratedChatResponse,
   getAiGeneratedText,
-} from "../../controllers/v1/aiController/ai";
+} from "../../controllers/v2/aiController/ai";
 import { auth } from "../../middleware/auth";
 import aiImgRateLimiterMiddleware from "../../middleware/aiImgRateLimit";
 
