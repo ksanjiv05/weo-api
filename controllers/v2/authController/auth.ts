@@ -457,7 +457,7 @@ export const getUserPublicProfile = async (req: IRequest, res: Response) => {
           pipeline: [
             {
               $match: {
-                status: { $nq: BRAND_STATUS.DRAFT },
+                status: { $ne: BRAND_STATUS.DRAFT },
               },
             },
           ],
@@ -472,7 +472,7 @@ export const getUserPublicProfile = async (req: IRequest, res: Response) => {
           pipeline: [
             {
               $match: {
-                status: { $nq: OFFER_STATUS.PENDING },
+                status: { $ne: OFFER_STATUS.PENDING },
               },
             },
           ],

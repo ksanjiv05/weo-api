@@ -40,6 +40,30 @@ export const createCustomer = async (req: Request, res: Response) => {
   }
 };
 
+export const createPaymentIntent = async (req: Request, res: Response) => {
+  try {
+    const clientSecret = await stripe.paymentIntents.create(
+      {
+        amount: 200,
+        // payment_method: "usd",
+        payment_method_types: ["card"], //["google_pay"],
+        currency: "inr",
+        // gateway: "googlepay",
+      },
+      {
+        idempotencyKey: Math.random().toString(36).substring(7),
+      }
+    );
+    console.log("clientSecret", clientSecret);
+    res.status(200).json({
+      clientSecret: clientSecret.client_secret,
+    });
+  } catch (err) {
+    console.log("err", err);
+    res.status(500).json({ error: err });
+  }
+};
+
 // {
 //     "id": "cus_PthH7K7mSTKpUC",
 //     "object": "customer",

@@ -13,6 +13,6 @@ export const getExchangeRate = async (from: string, to: string) => {
     return 0;
   } catch (err) {
     console.log(err);
-    return 0;
+    throw new Error("Exchange Api Error ");
   }
 };

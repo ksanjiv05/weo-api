@@ -11,6 +11,7 @@ import oLogModel from "../../../models/oLog.model";
 import mongoose from "mongoose";
 import walletModel from "../../../models/wallet.model";
 import User from "../../../models_v1/User";
+import { O_EVENTS } from "../../../config/enums";
 
 export const oRewardCalculate = async (req: IRequest, res: Response) => {
   try {
@@ -67,7 +68,6 @@ export const oRewardCalculate = async (req: IRequest, res: Response) => {
   }
 };
 
-//TODO all data should be brand wise
 export const getOHistory = async (req: IRequest, res: Response) => {
   try {
     const { _id = "" } = req.user;
@@ -181,10 +181,38 @@ export const getOHistory = async (req: IRequest, res: Response) => {
         $facet: {
           oHistory: [],
 
+          // eventWise: [
+          //   {
+          //     $group: {
+          //       _id: "$user.event",
+          //       total: {
+          //         $sum: "$user.oQuantity",
+          //       },
+          //     },
+          //   },
+          // ],
           eventWise: [
             {
               $group: {
-                _id: "$user.event",
+                _id: {
+                  $switch: {
+                    branches: [
+                      {
+                        case: {
+                          $in: ["$user.event", [1, 2]],
+                        },
+                        then: "earn", // Group for eventType1 and eventType2
+                      },
+                      {
+                        case: {
+                          $in: ["$user.event", [3]],
+                        },
+                        then: "topup", // Group for eventType3 and eventType4
+                      },
+                    ],
+                    default: "spent", // All other event types in a separate group
+                  },
+                },
                 total: {
                   $sum: "$user.oQuantity",
                 },
@@ -196,9 +224,7 @@ export const getOHistory = async (req: IRequest, res: Response) => {
       {
         $project: {
           oHistory: 1,
-          earn: {
-            $first: "$eventWise.total",
-          },
+          eventWise: 1,
         },
       },
     ]);
@@ -209,15 +235,15 @@ export const getOHistory = async (req: IRequest, res: Response) => {
       statusCode: HTTP_STATUS_CODES.SUCCESS,
       msg: "your o history",
       error: null,
-      data:
-        oHistory.length > 0
-          ? {
-              oHistory: oHistory[0].oHistory,
-              stats: {
-                earn: oHistory[0].earn,
-              },
-            }
-          : null,
+      data: oHistory.length > 0 ? oHistory[0] : null,
+      // oHistory.length > 0
+      //   ? {
+      //       oHistory: oHistory[0].oHistory,
+      //       stats: {
+      //         earn: oHistory[0].earn,
+      //       },
+      //     }
+      //   : null,
       code: ERROR_CODES.SUCCESS,
     });
   } catch (error: any) {
@@ -666,6 +692,8 @@ export const getGraphData = async (req: IRequest, res: Response) => {
 };
 
 export const oTupUp = async (req: IRequest, res: Response) => {
+  const session = await walletModel.startSession();
+  session.startTransaction();
   try {
     const { oAmount } = req.body;
     const { user } = req;
@@ -716,15 +744,7 @@ export const oTupUp = async (req: IRequest, res: Response) => {
       req.user.currency
     );
 
-    console.log("----o top up exchange rate", exchangeRate);
-
     const amountAfterExchange = oPrice * exchangeRate;
-
-    console.log(
-      "----o top up amount after exchange",
-      amountAfterExchange,
-      wallet.balance
-    );
 
     if (amountAfterExchange > wallet.balance) {
       return responseObj({
@@ -740,7 +760,35 @@ export const oTupUp = async (req: IRequest, res: Response) => {
 
     wallet.balance = wallet.balance - amountAfterExchange;
     wallet.oBalance = wallet.oBalance + parseFloat(oAmount);
-    await wallet.save();
+    await wallet.save({ session });
+
+    const newOLogForONegotiation = new oLogModel({
+      // event: O_EVENTS.COLLECTED,
+      amount: amountAfterExchange,
+      offer: null,
+      brand: null,
+      seller: null,
+      outlet: null,
+      buyer: {
+        id: req.user._id,
+        oQuantity: oAmount,
+        event: O_EVENTS.TOP_UP,
+      },
+      discount: 0,
+      quantity: 0,
+      noOfOffers: 0,
+      oAgainstPrice: 0,
+      oGenerated: 0,
+      atPlatformCutOffRate: 0,
+      atRateCutOffFromDiscount: 0,
+      toPlatformCutOffRateFromDiscount: 0,
+      toPlatformCutOffRate: 0,
+    });
+
+    await newOLogForONegotiation.save({ session });
+
+    await session.commitTransaction();
+    await session.endSession();
 
     responseObj({
       resObj: res,
@@ -757,6 +805,8 @@ export const oTupUp = async (req: IRequest, res: Response) => {
       code: ERROR_CODES.SUCCESS,
     });
   } catch (error: any) {
+    await session.abortTransaction();
+    await session.endSession();
     logging.error("O Tup Up Error", error.message, error);
     return responseObj({
       resObj: res,
@@ -828,3 +878,5 @@ export const getOConfigAndExchangeRate = async (
 };
 // total potential o
 // total reward he earned
+
+//search in transaction and collect list
