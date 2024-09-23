@@ -83,8 +83,7 @@ export const collectOffer = async (req: IRequest, res: Response) => {
       negotiationAttemptInstance &&
       negotiationAttemptInstance.noOfAttempts > negotiationConfig.freeAttempts
         ? negotiationConfig.oCharge
-        : negotiation
-        ? negotiationConfig.oCharge
+        
         : 0;
 
     if (deductOBalance > 0) {
