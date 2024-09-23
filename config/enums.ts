@@ -13,7 +13,7 @@ export enum OFFER_STATUS {
   SOLD = 5,
   EXPIRED = 6,
   REJECTED = 7,
-  RESELL=8
+  RESELL = 8,
 }
 
 export enum ORDER_TYPE {
@@ -27,6 +27,7 @@ export enum O_EVENTS {
   TOP_UP = 3,
   PURCHASE = 4,
   NEGOTIATION_ATTEMPT = 5,
+  WALLET_TOP_UP = 6,
 }
 
 export enum OFFER_COLLECTION_EVENTS {

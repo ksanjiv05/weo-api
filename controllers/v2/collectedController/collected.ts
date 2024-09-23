@@ -53,6 +53,7 @@ export const collectOffer = async (req: IRequest, res: Response) => {
     negotiationAttemptInstance = null,
     outletId = null,
     offerType = OFFER_TYPE.FRESH,
+    negotiation = true,
   } = req.body;
   const uid = req.user._id;
   const session = await Collected.startSession();
@@ -79,9 +80,10 @@ export const collectOffer = async (req: IRequest, res: Response) => {
     }
 
     const deductOBalance =
-      req.body?.negotiationAttemptInstance &&
-      req.body.negotiationAttemptInstance.noOfAttempts >
-        negotiationConfig.freeAttempts
+      negotiationAttemptInstance &&
+      negotiationAttemptInstance.noOfAttempts > negotiationConfig.freeAttempts
+        ? negotiationConfig.oCharge
+        : negotiation
         ? negotiationConfig.oCharge
         : 0;
 
@@ -112,6 +114,7 @@ export const collectOffer = async (req: IRequest, res: Response) => {
         offer: id,
         brand: null,
         seller: null,
+        outlet: null,
         buyer: {
           id: req.user._id,
           oQuantity: deductOBalance,
@@ -217,6 +220,19 @@ export const collectOffer = async (req: IRequest, res: Response) => {
     const serviceStartDate = offerDataPoint.serviceStartDate;
 
     const serviceDays = getDaysBetweenTwoDate(serviceStartDate, serviceEndDate);
+
+    console.log(
+      "serviceDays",
+      serviceDays,
+      "--",
+      serviceEndDate,
+      serviceStartDate,
+      "con",
+      serviceDays >= duration,
+      offerValueAfterDiscount >= amount,
+      offerValueAfterDiscount,
+      amount
+    );
 
     if (serviceDays >= duration && offerValueAfterDiscount >= amount) {
       return responseObj({
@@ -329,6 +345,7 @@ export const collectOffer = async (req: IRequest, res: Response) => {
       amount: amount * noOfOffers,
       offer: id,
       brand: offer.brand,
+      outlet: outletId,
       seller: {
         id: offerType === OFFER_TYPE.RESELL ? offer.reSeller : offer.user,
         oQuantity: toDistribute / 2,
