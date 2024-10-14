@@ -18,6 +18,7 @@ import loggingMiddleware from "./middleware/logger";
 import routerV2 from "./routes/v2";
 import webhookRouterV2 from "./routes/v2/webhook";
 import { createSuperAdmin } from "./scripts/createAdmin";
+import { generateQR } from "./helper/utils";
 
 //end scripts
 
@@ -41,6 +42,8 @@ app.use(helmet.frameguard()); // set X-Frame-Options header
 app.use(helmet.xssFilter()); // set X-XSS-Protection header
 app.use(cors());
 
+app.use("/webhook/v2", webhookRouterV2);
+
 app.use(express.json({ limit: "100mb" }));
 app.use(express.urlencoded({ extended: true }));
 
@@ -53,7 +56,7 @@ app.use(rateLimiterMiddleware);
 app.use("/static", express.static(path.join(__dirname, "uploads")));
 app.use("/api/v1", router);
 app.use("/api/v2", routerV2);
-app.use("/webhook/v2", webhookRouterV2);
+// app.use("/webhook/v2", webhookRouterV2);
 
 app.get("/", (req: Request, res: Response) => {
   res.send("server is running");
@@ -102,7 +105,10 @@ app.use(
 
 // test wallet hooks
 
-const run = () => {
+const run = async () => {
   try {
+    const collectedOfferQR = await generateQR("hii sanjiv");
   } catch (error) {}
 };
+
+run();

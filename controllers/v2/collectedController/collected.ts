@@ -83,7 +83,6 @@ export const collectOffer = async (req: IRequest, res: Response) => {
       negotiationAttemptInstance &&
       negotiationAttemptInstance.noOfAttempts > negotiationConfig.freeAttempts
         ? negotiationConfig.oCharge
-        
         : 0;
 
     if (deductOBalance > 0) {
@@ -197,6 +196,22 @@ export const collectOffer = async (req: IRequest, res: Response) => {
         statusCode: HTTP_STATUS_CODES.BAD_REQUEST,
         msg: "Offer not found",
         error: "Offer not found",
+        data: {
+          remainingAttempts,
+          remainingFreeAttempts,
+        },
+        code: ERROR_CODES.FIELD_VALIDATION_ERR,
+      });
+    }
+    //added per offer per customer limit
+    const totalCollected = await Collected.count({ offer: offer._id });
+    if (offerDataPoint.offerLimitPerCustomer <= totalCollected) {
+      return responseObj({
+        resObj: res,
+        type: "error",
+        statusCode: HTTP_STATUS_CODES.BAD_REQUEST,
+        msg: "Maximum per offer  per customer limit reached",
+        error: "Maximum per offer  per customer limit reached",
         data: {
           remainingAttempts,
           remainingFreeAttempts,

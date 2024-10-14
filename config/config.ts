@@ -28,6 +28,7 @@ export const STATIC_FILE_PATH: string =
 
 export const STP_SECRET_KEY = process.env.STP_SECRET_KEY as string;
 export const STP_PUBLISHABLE_KEY = process.env.STP_PUBLISHABLE_KEY as string;
+export const STP_ENDPOINT_SECRET = process.env.STP_ENDPOINT_SECRET as string;
 
 import Stripe from "stripe";
 export const stripe = new Stripe(STP_SECRET_KEY);

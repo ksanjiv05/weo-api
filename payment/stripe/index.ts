@@ -26,41 +26,55 @@ export const deposit = async (req: Request, res: Response) => {
   }
 };
 
-export const createCustomer = async (req: Request, res: Response) => {
+export const createCustomer = async ({
+  email = "",
+  name = "",
+  description = "",
+}) => {
   try {
-    const { email, name, description } = req.body;
     const customer = await stripe.customers.create({
       email,
       name,
       description,
     });
-    res.json(customer);
+    return customer;
   } catch (error: any) {
-    res.status(500).json({ error: error.message });
+    throw new Error(error);
+    // return null;
   }
 };
 
-export const createPaymentIntent = async (req: Request, res: Response) => {
+export const createPaymentIntent = async ({
+  amount,
+  currency,
+  metadata,
+}: any) => {
   try {
+    console.log("meta data ", metadata, {
+      amount,
+      // payment_method: "usd",
+      payment_method_types: ["card"], //["google_pay"],
+      currency,
+      metadata,
+      // gateway: "googlepay",
+    });
     const clientSecret = await stripe.paymentIntents.create(
       {
-        amount: 200,
+        amount,
         // payment_method: "usd",
         payment_method_types: ["card"], //["google_pay"],
-        currency: "inr",
+        currency,
+        metadata,
         // gateway: "googlepay",
       },
       {
         idempotencyKey: Math.random().toString(36).substring(7),
       }
     );
-    console.log("clientSecret", clientSecret);
-    res.status(200).json({
-      clientSecret: clientSecret.client_secret,
-    });
+    return clientSecret;
   } catch (err) {
-    console.log("err", err);
-    res.status(500).json({ error: err });
+    console.log(err);
+    return null;
   }
 };
 
