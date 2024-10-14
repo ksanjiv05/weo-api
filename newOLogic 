@@ -1,0 +1,16 @@
+We’ll dive into specifics with you tomorrow evening, though here’s the logic for you to start thinking about it:
+
+O-swap
+(Our O trading network growth strategy/setup)
+
+1. User buys Os to pay for network services 
+2. Starting O price is an (adjustable at network level) increase by at least 1point from our 0 point or inflation free baseline. For example, if we set network Os at 1¢, then a 1% markup would make it cost $0.101 per O to purchase. We always make money when user buys Os.
+3. Staking Os happens in the O Wallet of the user. The user has the option of taking any part of their O balance and staking/betting it for future increase. When user stakes their Os, those Os are no longer available to them as a utility. The user who staked the O is effectively putting them into a pool for other users to buy Os from that came after them. Over time, the network O price will increase based on activity and individual user success rate to determine a price higher than the network baseline. 
+4. At the network level. The network owners can set the weights on the markup (1-n%) to manage our price, our markup, the number of users staking, the percentage of their balance they’re staking, the per wallet/account average, the number of Os staked, the initial profit (to the network) the earning potential of the staked Os, or the difference between the marked up cost and the current O network price
+
+Feature wise, this involves the following :
+A. Add a staking section in the O wallet 
+B. Select number of Os to stake. 
+C. Buy the Os at the network markup to stake (if markup is 1%, then O price is $0.0101) 
+D. Show the current value of the staked Os (yield) and when buying Os again, the user has the option of buying Os from their staked amount if that yield is higher (thus cheaper) than the current network rate with their success rate as another pricing factor. The comparison is also visible on their O wallet. 
+E. At the network dashboard level, the network owner (us initially) can set the markup, show how many users are staking, how many Os are being staked and what is the profit the network is making from either the next users buying Os from the O pool or back themselves because they’re getting a better rate compared to their current rate and the increased network O price from the original baseline of $0.01/O

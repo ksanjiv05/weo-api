@@ -6,10 +6,17 @@ import logging from "../../../config/logging";
 import { IRequest } from "../../../interfaces/IRequest";
 import { ORDER_TYPE } from "../../../config/enums";
 import { ERROR_CODES } from "../../../config/errorCode";
+import { createPaymentIntent } from "../../../payment/stripe";
 
 export const newPurchaseOrder = async (req: IRequest, res: Response) => {
   try {
-    const { offerId, sellerId, amount, oDataId } = req.body;
+    const {
+      offerId,
+      sellerId,
+      amount,
+      oDataId,
+      paymentGetWay = "stripe",
+    } = req.body;
     const { currency } = req.user;
 
     if (
@@ -30,22 +37,47 @@ export const newPurchaseOrder = async (req: IRequest, res: Response) => {
       });
     }
 
-    const order = await createOrder({
-      amount: amount * 100,
-      receipt: sellerId,
-      notes: { offerId, oDataId, type: ORDER_TYPE.PURCHASE },
-      currency,
-    });
-    if (order)
-      return responseObj({
-        resObj: res,
-        type: "success",
-        statusCode: HTTP_STATUS_CODES.SUCCESS,
-        msg: "order created successfully",
-        error: null,
-        data: order,
-        code: ERROR_CODES.SUCCESS,
+    if (paymentGetWay === "razorpay") {
+      const order = await createOrder({
+        amount: amount * 100,
+        receipt: sellerId,
+        notes: { offerId, oDataId, type: ORDER_TYPE.PURCHASE },
+        currency,
       });
+      if (order)
+        return responseObj({
+          resObj: res,
+          type: "success",
+          statusCode: HTTP_STATUS_CODES.SUCCESS,
+          msg: "order created successfully",
+          error: null,
+          data: order,
+          code: ERROR_CODES.SUCCESS,
+        });
+    }
+    if (paymentGetWay === "stripe") {
+      const order = await createPaymentIntent({
+        amount: amount * 100,
+        currency: currency.toLowerCase(),
+        metadata: {
+          user: req.user._id,
+          sellerId,
+          offerId,
+          oDataId,
+          type: ORDER_TYPE.PURCHASE,
+        },
+      });
+      if (order)
+        return responseObj({
+          resObj: res,
+          type: "success",
+          statusCode: HTTP_STATUS_CODES.SUCCESS,
+          msg: "payment intent created successfully",
+          error: null,
+          data: order,
+          code: ERROR_CODES.SUCCESS,
+        });
+    }
     return responseObj({
       resObj: res,
       type: "error",
@@ -72,8 +104,8 @@ export const newPurchaseOrder = async (req: IRequest, res: Response) => {
 
 export const newTopUpOrder = async (req: IRequest, res: Response) => {
   try {
-    const { amount } = req.body;
-    console.log("---",req.user);
+    const { amount, paymentGetWay = "stripe" } = req.body;
+    console.log("---", req.user);
     const { currency } = req.user;
     if (
       currency === "KWD" ||
@@ -92,30 +124,53 @@ export const newTopUpOrder = async (req: IRequest, res: Response) => {
         code: ERROR_CODES.FIELD_VALIDATION_ERR,
       });
     }
-    const order = await createOrder({
-      amount: amount * 100,
-      receipt: req.user._id,
-      notes: { user: req.user._id, type: ORDER_TYPE.TOPUP },
-      currency: currency.toUpperCase(),
-    });
-    console.log("----",order);
-    if (order)
-      return responseObj({
-        resObj: res,
-        type: "success",
-        statusCode: HTTP_STATUS_CODES.SUCCESS,
-        msg: "order created successfully",
-        error: null,
-        data: order,
-        code: ERROR_CODES.SUCCESS,
+
+    if (paymentGetWay === "razorpay") {
+      const order = await createOrder({
+        amount: amount * 100,
+        receipt: req.user._id,
+        notes: { user: req.user._id, type: ORDER_TYPE.TOPUP },
+        currency: currency.toUpperCase(),
       });
+      if (order)
+        return responseObj({
+          resObj: res,
+          type: "success",
+          statusCode: HTTP_STATUS_CODES.SUCCESS,
+          msg: "order created successfully",
+          error: null,
+          data: order,
+          code: ERROR_CODES.SUCCESS,
+        });
+    }
+    if (paymentGetWay === "stripe") {
+      const order = await createPaymentIntent({
+        amount: amount * 100,
+        currency: currency.toLowerCase(),
+        metadata: {
+          user: req.user._id.toString(),
+          type: ORDER_TYPE.TOPUP,
+        },
+      });
+      if (order)
+        return responseObj({
+          resObj: res,
+          type: "success",
+          statusCode: HTTP_STATUS_CODES.SUCCESS,
+          msg: "order created successfully",
+          error: null,
+          data: order,
+          code: ERROR_CODES.SUCCESS,
+        });
+    }
+
     return responseObj({
       resObj: res,
       type: "error",
       statusCode: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR,
       msg: "Unable to create order",
       error: null,
-      data: order,
+      data: null,
       code: ERROR_CODES.SERVER_ERR,
     });
   } catch (error: any) {
