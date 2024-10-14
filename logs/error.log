@@ -1066,3 +1066,6 @@ error: POST /api/v1/brands 400 7ms
 {"level":"error","message":"POST /webhook/v2/stripe/event 400 14ms","timestamp":"2024-10-09T10:46:03.094Z"}
 {"level":"error","message":"POST /webhook/v2/stripe/event 400 19ms","timestamp":"2024-10-09T10:46:48.378Z"}
 {"level":"error","message":"GET /api/v2/users?initData=false 403 3ms","timestamp":"2024-10-14T05:42:31.221Z"}
+{"level":"error","message":"POST /api/v2/orders/topup 500 1715ms","timestamp":"2024-10-14T10:03:36.096Z"}
+{"level":"error","message":"POST /api/v2/orders/topup 500 850ms","timestamp":"2024-10-14T10:03:42.913Z"}
+{"level":"error","message":"POST /api/v2/orders/topup 500 818ms","timestamp":"2024-10-14T10:03:46.468Z"}

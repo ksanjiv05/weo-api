@@ -167,9 +167,25 @@ export const getBrands = async (req: IRequest, res: Response) => {
 export const getBrandById = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    const brand = await Brand.findById(id);
+    // const brand = await Brand.findById(id);
 
-    if (!brand) {
+    const brand = await Brand.aggregate([
+      {
+        $match: {
+          _id: new mongoose.Types.ObjectId(id),
+        },
+      },
+      {
+        $lookup: {
+          from: "outlets",
+          localField: "_id",
+          foreignField: "brand",
+          as: "outlets",
+        },
+      },
+    ]);
+
+    if (brand.length < 1) {
       return responseObj({
         resObj: res,
         type: "error",
@@ -181,13 +197,14 @@ export const getBrandById = async (req: Request, res: Response) => {
       });
     }
 
+
     return responseObj({
       resObj: res,
       type: "success",
       statusCode: HTTP_STATUS_CODES.SUCCESS,
       msg: "Brand found",
       error: null,
-      data: brand,
+      data: brand.length > 0 ? brand[0] : null,
     });
   } catch (error: any) {
     logging.error("Get brand by id", error.message, error);
